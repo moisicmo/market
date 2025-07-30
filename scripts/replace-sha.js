@@ -18,7 +18,7 @@ fs.writeFileSync(filePath, content);
 
 const fileApplePath = path.resolve(__dirname, '..', 'public', '.well-known', 'apple-app-site-association');
 let contentApple = fs.readFileSync(fileApplePath, 'utf8');
-content = content.replace('MI_APP_ID', appIdApple);
+contentApple = contentApple.replace('MI_APP_ID', appIdApple);
 fs.writeFileSync(fileApplePath, contentApple);
 
 console.log('✅ SHA256 insertado en assetlinks.json');
