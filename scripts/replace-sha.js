@@ -17,7 +17,7 @@ content = content.replace('TU_SHA256_AQUI', sha256);
 fs.writeFileSync(filePath, content);
 
 const fileApplePath = path.resolve(__dirname, '..', 'public', '.well-known', 'apple-app-site-association');
-let contentApple = fs.readFileSync(filePath, 'utf8');
+let contentApple = fs.readFileSync(fileApplePath, 'utf8');
 content = content.replace('MI_APP_ID', appIdApple);
 fs.writeFileSync(fileApplePath, contentApple);
 
