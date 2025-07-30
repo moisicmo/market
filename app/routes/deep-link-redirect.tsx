@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 export default function DeepLinkRedirect() {
   const [storeUrl, setStoreUrl] = useState("#");
   const [intentUrl, setIntentUrl] = useState("#");
-
   useEffect(() => {
     const url = new URL(window.location.href);
     const route = url.searchParams.get("route");
@@ -27,11 +26,12 @@ export default function DeepLinkRedirect() {
       setIntentUrl(intent);
       window.location.href = intent;
     } else if (isIOS) {
-      window.location.href = `myappscheme://deep-link-redirect?${params}`;
+      window.location.href = `https://jhomir.vercel.app/deep-link-redirect?${params}`;
     } else {
       window.location.href = store;
     }
   }, []);
+
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 text-center p-4">
