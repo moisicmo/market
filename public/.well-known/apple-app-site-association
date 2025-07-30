@@ -4,7 +4,7 @@
     "details": [
       {
         "appIDs": ["MI_APP_ID"],
-        "paths": ["/deep-link-redirect/*"]
+        "paths": ["/miscuentas-website/deep-link-redirect/*"]
       }
     ]
   }
