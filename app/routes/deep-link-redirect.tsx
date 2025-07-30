@@ -3,34 +3,43 @@ import { useEffect, useState } from "react";
 export default function DeepLinkRedirect() {
   const [storeUrl, setStoreUrl] = useState("#");
   const [intentUrl, setIntentUrl] = useState("#");
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    const route = url.searchParams.get("route");
-    const client = url.searchParams.get("client");
-    const params = `route=${route}&client=${client}`;
+useEffect(() => {
+  const alreadyRedirected = sessionStorage.getItem("redirect_done");
+  if (alreadyRedirected) return;
 
-    const playStore = "https://play.google.com/store/apps/details?id=miscuentas.com.bo.miscuentas";
-    const appStore = "https://apps.apple.com/app/id6448075291";
-    const appGallery = "https://appgallery.huawei.com/app/CXXXXXXXX";
+  const url = new URL(window.location.href);
+  const route = url.searchParams.get("route");
+  const client = url.searchParams.get("client");
 
-    const userAgent = navigator.userAgent || "";
-    const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
-    const isHuawei = /Huawei/i.test(userAgent) && /AppGallery/i.test(userAgent);
-    const isAndroid = /Android/i.test(userAgent);
+  if (!route || !client) return;
 
-    const store = isIOS ? appStore : isHuawei ? appGallery : playStore;
-    setStoreUrl(store);
+  const params = `route=${route}&client=${client}`;
 
-    if (isAndroid) {
-      const intent = `intent://deep-link-redirect?${params}#Intent;scheme=https;package=miscuentas.com.bo.miscuentas;S.browser_fallback_url=${encodeURIComponent(store)};end`;
-      setIntentUrl(intent);
-      window.location.href = intent;
-    } else if (isIOS) {
-      window.location.href = `https://jhomir.vercel.app/deep-link-redirect?${params}`;
-    } else {
-      window.location.href = store;
-    }
-  }, []);
+  const playStore = "https://play.google.com/store/apps/details?id=miscuentas.com.bo.miscuentas";
+  const appStore = "https://apps.apple.com/app/id6448075291";
+  const appGallery = "https://appgallery.huawei.com/app/CXXXXXXXX";
+
+  const userAgent = navigator.userAgent || "";
+  const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
+  const isHuawei = /Huawei/i.test(userAgent) && /AppGallery/i.test(userAgent);
+  const isAndroid = /Android/i.test(userAgent);
+
+  const store = isIOS ? appStore : isHuawei ? appGallery : playStore;
+  setStoreUrl(store);
+
+  sessionStorage.setItem("redirect_done", "1"); // ✅ Marcar que ya redirigimos
+
+  if (isAndroid) {
+    const intent = `intent://deep-link-redirect?${params}#Intent;scheme=https;package=miscuentas.com.bo.miscuentas;S.browser_fallback_url=${encodeURIComponent(store)};end`;
+    setIntentUrl(intent);
+    window.location.href = intent;
+  } else if (isIOS) {
+    window.location.href = `https://jhomir.vercel.app/deep-link-redirect?${params}`;
+  } else {
+    window.location.href = store;
+  }
+}, []);
+
 
 
   return (
