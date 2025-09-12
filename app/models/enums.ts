@@ -45,8 +45,7 @@ export enum TypeSubject {
   assignmentSchedule = "asignación de horarios",
   booking = "reservas",
   branch = "sucursales",
-  room = "aulas",
-  category = "especialidades",
+  category = "categoria",
   schedule = "horarios",
   inscription = "incripciones",
   Debt = "deudas de inscripción",
@@ -68,3 +67,11 @@ export enum PayMethod {
   BANK = "TRANSFERENCIA",
   QR = "PAGO QR",
 } 
+
+export enum TypeUnit {
+  UNIDAD = "UNIDAD",
+  LIBRA = "LIBRA",
+  KILO = "KILO",
+  CAJA = "CAJA",
+  DOCENA = "DOCENA",
+}

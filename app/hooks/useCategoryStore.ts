@@ -45,7 +45,7 @@ export const useCategoryStore = () => {
       const { data } = await coffeApi.post(`${baseUrl}`, body);
       console.log(data);
       getCategories();
-      showSuccess('Especialidad creada correctamente');
+      showSuccess('Categoría creada correctamente');
     } catch (error) {
       throw handleError(error);
     }
@@ -55,7 +55,7 @@ export const useCategoryStore = () => {
       const { data } = await coffeApi.patch(`/${baseUrl}/${id}`, body);
       console.log(data);
       getCategories();
-      showSuccess('Especialidad editada correctamente');
+      showSuccess('Categoría editada correctamente');
     } catch (error) {
       throw handleError(error);
     }
@@ -66,7 +66,7 @@ export const useCategoryStore = () => {
       if (result.isConfirmed) {
         await coffeApi.delete(`/${baseUrl}/${id}`);
         getCategories();
-        showSuccess('Especialidad eliminado correctamente');
+        showSuccess('Categoría eliminado correctamente');
       } else {
         showError('Cancelado', 'El módulo esta a salvo :)');
       }

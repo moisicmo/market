@@ -1,17 +1,25 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { ProductModel } from '@/models';
-import { ProductCreate, ProductTable } from '.';
+import type { ProductModel, ProductPresentationModel } from '@/models';
+import { ProductCreate, ProductPresentationCreate, ProductTable } from '.';
 import { Button } from '@/components';
-import { useProductStore } from '@/hooks';
+import { useProductPresentationStore, useProductStore } from '@/hooks';
 
 const productView = () => {
-    const { dataProduct, getProducts, createProduct, updateProduct, deleteProduct } = useProductStore();
+  const { dataProduct, getProducts, createProduct, updateProduct, deleteProduct } = useProductStore();
+  const { deleteProductPresentation } = useProductPresentationStore();
 
   const [openDialog, setOpenDialog] = useState(false);
   const [itemEdit, setItemEdit] = useState<ProductModel | null>(null);
 
+  const [openDialogPresentation, setOpenDialogPresentation] = useState(false);
+  const [presentationEdit, setPresentationEdit] = useState<ProductPresentationModel | null>(null);
   const handleDialog = useCallback((value: boolean) => {
     if (!value) setItemEdit(null);
+    setOpenDialogPresentation(value);
+  }, []);
+
+  const handleDialogPresentation = useCallback((value: boolean) => {
+    if (!value) setPresentationEdit(null);
     setOpenDialog(value);
   }, []);
 
@@ -30,26 +38,42 @@ const productView = () => {
 
       {/* Tabla de product */}
       <ProductTable
+        dataProduct={dataProduct}
+        onRefresh={getProducts}
         handleEdit={(v) => {
           setItemEdit(v);
           handleDialog(true);
         }}
-        dataProduct={dataProduct}
-        onRefresh={getProducts}
         onDelete={deleteProduct}
+        handleEditPresentation={(v) => { }}
+        onDeletePresentation={deleteProductPresentation}
+        onCreatePresentation={() => handleDialogPresentation(true)}
       />
 
 
-      {/* Dialogo para crear o editar */}
+      {/* Dialogo para crear o editar productos*/}
       {openDialog && (
         <ProductCreate
-          open={openDialog}
-          handleClose={() => handleDialog(false)}
-          item={itemEdit == null ? null : { ...itemEdit }}
-          onCreate={createProduct}
-          onUpdate={updateProduct}
+        open={openDialog}
+        handleClose={() => handleDialog(false)}
+        item={itemEdit == null ? null : { ...itemEdit }}
+        onCreate={createProduct}
+        onUpdate={updateProduct}
         />
       )}
+
+      {/* Dialogo para crear o editar presentaciones*/}
+      {
+        openDialogPresentation && (
+          <ProductPresentationCreate
+            open={openDialog}
+            handleClose={() => handleDialog(false)}
+            item={presentationEdit == null ? null : { ...presentationEdit }}
+            onCreate={createProduct}
+            onUpdate={updateProduct}
+          />
+        )
+      }
     </>
   );
 };

@@ -1,8 +1,7 @@
 import { useCartStore } from '@/hooks';
 import { ChevronDown, ChevronUp, Download, Pencil, ShoppingCart, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
-import { Popover, PopoverTrigger } from './ui/popover';
-
+import { Popover, PopoverTrigger } from '.';
 interface ActionButtonsProps<T extends { id?: string; userId?: string }> {
   item: T;
   onEdit?: (item: T) => void;

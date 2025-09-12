@@ -1,31 +1,40 @@
 import { useEffect, useState } from 'react';
-import type { BaseResponse, ProductModel } from '@/models';
+import type { BaseResponse, ProductModel, ProductPresentationModel } from '@/models';
 import { useDebounce } from '@/hooks';
 import { PaginationControls } from '@/components/pagination.control';
 import { ActionButtons, InputCustom } from '@/components';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import React from 'react';
+import { ProductPresentationTable } from '.';
 
 interface Props {
-  handleEdit: (product: ProductModel) => void;
   limitInit?: number;
   itemSelect?: (product: ProductModel) => void;
   dataProduct: BaseResponse<ProductModel>;
   onRefresh: (page?: number, limit?: number, keys?: string) => void;
+  handleEdit: (product: ProductModel) => void;
   onDelete: (id: string) => void;
+  handleEditPresentation: (presentation: ProductPresentationModel) => void;
+  onDeletePresentation: (id: string) => void;
+  onCreatePresentation: (productId: string) => void;
 }
 
 export const ProductTable = (props: Props) => {
   const {
-    handleEdit,
     itemSelect,
     limitInit = 10,
     dataProduct,
     onRefresh,
+    handleEdit,
     onDelete,
+    handleEditPresentation,
+    onDeletePresentation,
+    onCreatePresentation,
   } = props;
 
 
   const [page, setPage] = useState(1);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [rowsPerPage, setRowsPerPage] = useState(limitInit);
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 1500);
@@ -40,6 +49,14 @@ export const ProductTable = (props: Props) => {
     onRefresh(page, rowsPerPage, debouncedQuery)
   }, [page, rowsPerPage, debouncedQuery]);
 
+  const handleSelect = async (id: string) => {
+    if (expandedId === id) {
+      // Si ya está abierto, ciérralo
+      setExpandedId(null);
+      return;
+    }
+    setExpandedId(id);
+  };
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -53,30 +70,45 @@ export const ProductTable = (props: Props) => {
       <Table className='mb-3'>
         <TableHeader>
           <TableRow>
+            <TableHead>Código</TableHead>
             <TableHead>Nombre</TableHead>
-            <TableHead>Sucursal</TableHead>
-            <TableHead>Número de sesiones</TableHead>
-            <TableHead>Costo estimado por sesión</TableHead>
+            <TableHead>Categoría</TableHead>
             <TableHead className="sticky right-0 z-10 bg-white">Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {dataProduct.data.map((product) => 
-            <TableRow key={product.id}>
-              <TableCell>{product.name}</TableCell>
-              <TableCell>{product.name}</TableCell>
-              <TableCell>{product.branch.name}</TableCell>
-              <TableCell>{product.typeUnit}</TableCell>
-              <TableCell>{product.price}</TableCell>
-              <TableCell className="sticky right-0 z-10 bg-white">
-                <ActionButtons
-                  item={product}
-                  onEdit={handleEdit}
-                  onDelete={onDelete}
-                />
-              </TableCell>
-            </TableRow>
-          )}
+          {dataProduct.data.map((product) => (
+
+            <React.Fragment key={product.id}>
+              <TableRow>
+                <TableCell>{product.code}</TableCell>
+                <TableCell>{product.name}</TableCell>
+                <TableCell>{product.category.name}</TableCell>
+                <TableCell className="sticky right-0 z-10 bg-white">
+                  <ActionButtons
+                    item={product}
+                    onSelect={handleSelect}
+                    onEdit={handleEdit}
+                    onDelete={onDelete}
+                  />
+                </TableCell>
+              </TableRow>
+              {expandedId === product.id && (
+                <TableRow className="bg-gray-50">
+                  <TableCell colSpan={12} className="p-0">
+                    <ProductPresentationTable
+                      productId={expandedId}
+                      productPresentations={product.productPresentations}
+                      handleEdit={handleEditPresentation}
+                      onDelete={onDeletePresentation}
+                      onCreate={()=>{onCreatePresentation(product.id)}}
+                      />
+                  </TableCell>
+                </TableRow>
+              )}
+
+            </React.Fragment>
+          ))}
         </TableBody>
       </Table>
       {/* Controles de paginación */}

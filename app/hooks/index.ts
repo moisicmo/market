@@ -13,6 +13,7 @@ export * from './usePermissionStore';
 export * from './useRoleStore';
 export * from './useCategoryStore';
 export * from './useProductStore';
+export * from './useProductPresentationStore';
 export * from './useCustomerStore';
 export * from './useCartStore';
 export * from './useDebounce';

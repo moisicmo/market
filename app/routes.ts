@@ -16,8 +16,4 @@ export default [
       route("payment", "routes/admin/payment/payment.view.tsx"),
     ]),
   ]),
-
-
-  route("deep-link-redirect", "routes/deep-link-redirect.tsx"),
-
 ] satisfies RouteConfig;

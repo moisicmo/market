@@ -1,17 +1,17 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useForm, useBranchStore, useCategoryStore } from '@/hooks';
 import { Button, InputCustom, SelectCustom, ValueSelect } from '@/components';
-import { formProductFields, formProductValidations, TypeUnit, type ProductModel, type ProductRequest } from '@/models';
+import { formProductFields, formProductValidations, TypeUnit, type ProductPresentationModel, type ProductRequest } from '@/models';
 
 interface Props {
   open: boolean;
   handleClose: () => void;
-  item: ProductModel | null;
+  item: ProductPresentationModel | null;
   onCreate: (body: ProductRequest) => void;
   onUpdate: (id: string, body: ProductRequest) => void;
 }
 
-export const ProductCreate = (props: Props) => {
+export const ProductPresentationCreate = (props: Props) => {
   const {
     open,
     handleClose,
@@ -95,7 +95,7 @@ export const ProductCreate = (props: Props) => {
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">
-          {item ? 'Editar Sucursal' : 'Nueva Sucursal'}
+          {item ? 'Editar Presentación' : 'Nueva Presentación'}
         </h2>
 
         <form onSubmit={sendSubmit} className="space-y-4">
