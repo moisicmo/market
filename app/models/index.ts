@@ -4,6 +4,7 @@ export * from './request/address.request';
 export * from './request/branch.request';
 export * from './request/category.request';
 export * from './request/product.request';
+export * from './request/product.presentation.request';
 export * from './request/debt.request';
 export * from './request/user.request';
 export * from './request/customer.request';
@@ -31,6 +32,7 @@ export * from './response/price.response';
 export * from './response/payment.response';
 export * from './response/invoice.response';
 export * from './response/dashboard.response';
+export * from './response/kardex.response';
 
 export * from './pagination';
 

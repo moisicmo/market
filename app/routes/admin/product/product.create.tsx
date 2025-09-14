@@ -26,6 +26,7 @@ export const ProductCreate = (props: Props) => {
     category,
     branch,
     name,
+    namePresentation,
     typeUnit,
     price,
     onInputChange,
@@ -35,6 +36,7 @@ export const ProductCreate = (props: Props) => {
     categoryValid,
     branchValid,
     nameValid,
+    namePresentationValid,
     typeUnitValid,
     priceValid,
   } = useForm(item ?? formProductFields, formProductValidations);
@@ -51,6 +53,7 @@ export const ProductCreate = (props: Props) => {
         categoryId: category.id,
         branchId: branch.id,
         name: name.trim(),
+        namePresentation: namePresentation.trim(),
         typeUnit:typeUnit.trim(),
         price: parseFloat(price),
       });
@@ -59,6 +62,7 @@ export const ProductCreate = (props: Props) => {
         categoryId: category.id,
         branchId: branch.id,
         name: name.trim(),
+        namePresentation: namePresentation.trim(),
         typeUnit:typeUnit.trim(),
         price: parseFloat(price),
       });
@@ -95,7 +99,7 @@ export const ProductCreate = (props: Props) => {
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">
-          {item ? 'Editar Sucursal' : 'Nueva Sucursal'}
+          {item ? 'Editar Producto' : 'Producto Nuevo'}
         </h2>
 
         <form onSubmit={sendSubmit} className="space-y-4">
@@ -133,6 +137,14 @@ export const ProductCreate = (props: Props) => {
             error={!!nameValid && formSubmitted}
             helperText={formSubmitted ? nameValid : ''}
           />
+          <InputCustom
+            name="namePresentation"
+            value={namePresentation}
+            label="Nombre de presentación"
+            onChange={onInputChange}
+            error={!!namePresentationValid && formSubmitted}
+            helperText={formSubmitted ? namePresentationValid : ''}
+          />
            <SelectCustom
             label="Tipo de unidad"
               options={typeUnitOptions}
@@ -160,6 +172,7 @@ export const ProductCreate = (props: Props) => {
 
           <div className="flex justify-end gap-2 pt-2">
             <Button
+              type="button"  
               onClick={() => {
                 onResetForm();
                 handleClose();

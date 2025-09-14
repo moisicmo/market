@@ -1,30 +1,29 @@
-import { useDispatch } from 'react-redux';
 import { coffeApi } from '@/services';
 import { useAlertStore, useErrorStore } from '.';
-import { InitBaseResponse, type BaseResponse, type ProductModel, type ProductRequest } from '@/models';
-import { useState } from 'react';
+import { type ProductPresentationModel, type ProductPresentationRequest } from '@/models';
 
 export const useProductPresentationStore = () => {
   const { handleError } = useErrorStore();
   const { showSuccess, showWarning, showError } = useAlertStore();
-  const baseUrl = 'product';
+  const baseUrl = 'product/presentation';
 
-  const createProductPresentation = async (body: ProductRequest) => {
+  const createProductPresentation = async ( body: ProductPresentationRequest ): Promise<ProductPresentationModel> => {
     try {
-      const { data } = await coffeApi.post(`${baseUrl}`, body);
-      console.log(data);
-      // getProducts();
-      showSuccess('Producto creado correctamente');
+      const res = await coffeApi.post(`${baseUrl}`, body);
+      const data = res.data as ProductPresentationModel;
+      showSuccess("Presentación creada correctamente");
+      return data;
     } catch (error) {
       throw handleError(error);
     }
   };
-  const updateProductPresentation = async (id: string, body: ProductRequest) => {
+
+  const updateProductPresentation = async (id: string, body: ProductPresentationRequest) => {
     try {
       const { data } = await coffeApi.patch(`/${baseUrl}/${id}`, body);
       console.log(data);
       // getProducts();
-      showSuccess('Producto editado correctamente');
+      showSuccess('Presentación editado correctamente');
     } catch (error) {
       throw handleError(error);
     }
@@ -35,7 +34,7 @@ export const useProductPresentationStore = () => {
       if (result.isConfirmed) {
         await coffeApi.delete(`/${baseUrl}/${id}`);
         // getProducts();
-        showSuccess('Producto eliminado correctamente');
+        showSuccess('Presentación eliminado correctamente');
       } else {
         showError('Cancelado', 'El módulo esta a salvo :)');
       }

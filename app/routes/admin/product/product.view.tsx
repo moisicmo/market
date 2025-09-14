@@ -1,31 +1,25 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { ProductModel, ProductPresentationModel } from '@/models';
-import { ProductCreate, ProductPresentationCreate, ProductTable } from '.';
+import type { ProductModel } from '@/models';
+import { ProductCreate, ProductTable } from '.';
 import { Button } from '@/components';
-import { useProductPresentationStore, useProductStore } from '@/hooks';
+import { useProductStore } from '@/hooks';
 
 const productView = () => {
   const { dataProduct, getProducts, createProduct, updateProduct, deleteProduct } = useProductStore();
-  const { deleteProductPresentation } = useProductPresentationStore();
 
   const [openDialog, setOpenDialog] = useState(false);
   const [itemEdit, setItemEdit] = useState<ProductModel | null>(null);
 
-  const [openDialogPresentation, setOpenDialogPresentation] = useState(false);
-  const [presentationEdit, setPresentationEdit] = useState<ProductPresentationModel | null>(null);
   const handleDialog = useCallback((value: boolean) => {
     if (!value) setItemEdit(null);
-    setOpenDialogPresentation(value);
-  }, []);
-
-  const handleDialogPresentation = useCallback((value: boolean) => {
-    if (!value) setPresentationEdit(null);
     setOpenDialog(value);
   }, []);
+
 
   useEffect(() => {
     getProducts();
   }, []);
+
   return (
     <>
       {/* Encabezado */}
@@ -45,9 +39,6 @@ const productView = () => {
           handleDialog(true);
         }}
         onDelete={deleteProduct}
-        handleEditPresentation={(v) => { }}
-        onDeletePresentation={deleteProductPresentation}
-        onCreatePresentation={() => handleDialogPresentation(true)}
       />
 
 
@@ -61,19 +52,6 @@ const productView = () => {
         onUpdate={updateProduct}
         />
       )}
-
-      {/* Dialogo para crear o editar presentaciones*/}
-      {
-        openDialogPresentation && (
-          <ProductPresentationCreate
-            open={openDialog}
-            handleClose={() => handleDialog(false)}
-            item={presentationEdit == null ? null : { ...presentationEdit }}
-            onCreate={createProduct}
-            onUpdate={updateProduct}
-          />
-        )
-      }
     </>
   );
 };

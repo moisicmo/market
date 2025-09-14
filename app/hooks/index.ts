@@ -22,3 +22,4 @@ export * from './useEnumStore';
 export * from './usePaymentStore';
 export * from './useDashboardStore';
 export * from './useCityStore';
+export * from './useKardexStore';

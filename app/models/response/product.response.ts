@@ -9,13 +9,12 @@ export interface ProductModel {
   visible: boolean;
   image: string;
   productPresentations: ProductPresentationModel[];
-  // branch: BranchModel;
-  // typeUnit: TypeUnit;
-  // price: number;
 }
 
 export interface ProductPresentationModel {
   id: string;
+  product?: ProductModel;
+  name: string;
   typeUnit: TypeUnit;
   branch: BranchModel;
   prices: PriceModel[];

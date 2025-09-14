@@ -1,45 +1,36 @@
 import type { BranchModel } from "../response/branch.response";
 import type { CategoryModel } from "../response/category.response";
 
-export interface ProductRequest {
-  categoryId: string;
+export interface ProductPresentationRequest {
+  productId: string;
   branchId: string;
   name: string;
-  namePresentation: string;
   typeUnit: string;
   price: number;
 }
 
-interface FormProductModel {
-  category: CategoryModel | null;
+interface FormProductPresentationModel {
   branch: BranchModel | null;
   name: string;
-  namePresentation: string;
   typeUnit: string;
   price: number;
 };
-export const formProductFields: FormProductModel = {
-  category: null,
+export const formProductPresentationFields: FormProductPresentationModel = {
   branch: null,
   name: '',
-  namePresentation: '',
   typeUnit: '',
   price: 0,
 };
 
-interface FormProductValidations {
-  category: [(value: CategoryModel) => boolean, string];
+interface FormProductPresentationValidations {
   branch: [(value: BranchModel) => boolean, string];
-  namePresentation: [(value: string) => boolean, string];
   name: [(value: string) => boolean, string];
   typeUnit: [(value: string) => boolean, string];
   price: [(value: string) => boolean, string];
 }
-export const formProductValidations: FormProductValidations = {
-  category: [(value) => value != null, 'Debe ingresar la categoria'],
+export const formProductPresentationValidations: FormProductPresentationValidations = {
   branch: [(value) => value != null, 'Debe ingresar la sucursal'],
   name: [(value) => value.length >= 1, 'Debe ingresar el nombre'],
-  namePresentation: [(value) => value.length >= 1, 'Debe ingresar el nombre de presentación'],
   typeUnit: [(value) => value.length > 0, 'Debe ingresar el número de sesiones'],
   price: [(value) => value.length > 0, 'Debe ingresar el costo estimado por sesión'],
 };
