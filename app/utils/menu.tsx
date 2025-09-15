@@ -38,16 +38,16 @@ export const menu = () => {
       permission: 'show-catalog',
       group: [
         {
-          path: '/admin/product',
-          title: 'Productos',
-          icon: <GraduationCap size={18} />,
-          permission: 'show-products',
-        },
-        {
           path: '/admin/category',
           title: 'Categorías',
           icon: <BookOpenText size={18} />,
           permission: 'show-categories',
+        },
+        {
+          path: '/admin/product',
+          title: 'Productos',
+          icon: <GraduationCap size={18} />,
+          permission: 'show-products',
         },
       ],
     },
@@ -60,12 +60,6 @@ export const menu = () => {
           title: 'Inventario',
           icon: <ClipboardList size={18} />,
           permission: 'show-inventory',
-        },
-        {
-          path: '/admin/purchases',
-          title: 'Ingresos (Compras)',
-          icon: <HandCoins size={18} />,
-          permission: 'show-purchases',
         },
         {
           path: '/admin/deliveries',

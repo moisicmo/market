@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import type { BaseResponse, KardexModel, ProductModel } from '@/models';
+import { useCallback, useEffect, useState } from 'react';
+import type { BaseResponse, KardexModel, ProductModel, ProductPresentationModel } from '@/models';
 import { PaginationControls } from '@/components/pagination.control';
-import { InputCustom } from '@/components';
+import { ActionButtons, Button, InputCustom } from '@/components';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import React from 'react';
 
@@ -19,8 +19,12 @@ export const PresentationTable = (props: Props) => {
   } = props;
 
   const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(limitInit);
   const [query, setQuery] = useState('');
+  const [rowsPerPage, setRowsPerPage] = useState(limitInit);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [itemEdit, setItemEdit] = useState<ProductPresentationModel | null>(null);
+
   useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(dataKardex.total / rowsPerPage));
     if (page > maxPage) {
@@ -28,8 +32,18 @@ export const PresentationTable = (props: Props) => {
     }
   }, [dataKardex.total, rowsPerPage]);
 
+  const handleDialog = useCallback((value: boolean) => {
+    if (!value) setItemEdit(null);
+    setOpenDialog(value);
+  }, []);
 
-
+  const handleSelect = async (id: string) => {
+    if (expandedId === id) {
+      setExpandedId(null);
+      return;
+    }
+    setExpandedId(id);
+  };
   return (
     <>
       <div className="space-y-4">
@@ -48,6 +62,7 @@ export const PresentationTable = (props: Props) => {
               <TableHead>Presentación</TableHead>
               <TableHead>Categoría</TableHead>
               <TableHead>Stock</TableHead>
+              <TableHead className="sticky right-0 z-10 bg-white">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -59,6 +74,14 @@ export const PresentationTable = (props: Props) => {
                   <TableCell>{kardex.presentation.product?.category.name}</TableCell>
                   <TableCell>{kardex.stock}</TableCell>
                   <TableCell className="sticky right-0 z-10 bg-white">
+                    <ActionButtons
+                      item={kardex.presentation}
+                      onSelect={handleSelect}
+                      onAdd={()=>{
+                        setItemEdit(kardex.presentation);
+                        handleDialog(true);
+                      }}
+                    />
                   </TableCell>
                 </TableRow>
               </React.Fragment>
