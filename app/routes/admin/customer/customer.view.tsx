@@ -18,10 +18,10 @@ const customerView = () => {
     <>
       {/* Encabezado */}
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-800">Customeres</h2>
+        <h2 className="text-xl font-semibold text-gray-800">Clientes</h2>
         <Button
           onClick={() => handleDialog(true)}
-        >Nuevo customer</Button>
+        >Nuevo Cliente</Button>
       </div>
 
       {/* Tabla de teacher */}
