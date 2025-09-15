@@ -13,6 +13,7 @@ export * from './request/permission.request';
 export * from './request/role.request';
 export * from './request/price.request';
 export * from './request/cart.request';
+export * from './request/input.request';
 
 // RESPONSE
 export * from './response/response';

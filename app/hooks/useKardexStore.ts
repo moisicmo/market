@@ -6,7 +6,6 @@ import { useState } from 'react';
 export const useKardexStore = () => {
   const [dataKardexPresentation, setDataKardexPresentation] = useState<BaseResponse<KardexModel>>(InitBaseResponse);
   const { handleError } = useErrorStore();
-  const { showSuccess } = useAlertStore();
   const baseUrl = 'kardex';
 
   const getPresentationsByBranchId = async (branchId: string, page: number = 1, limit: number = 10, keys: string = '') => {
@@ -24,22 +23,11 @@ export const useKardexStore = () => {
     }
   };
 
-  const createProduct = async (body: ProductRequest) => {
-    try {
-      const { data } = await coffeApi.post(`${baseUrl}`, body);
-      console.log(data);
-      showSuccess('Producto creado correctamente');
-    } catch (error) {
-      throw handleError(error);
-    }
-  };
-
 
   return {
     //* Propiedades
     dataKardexPresentation,
     //* Métodos
     getPresentationsByBranchId,
-    createProduct,
   };
 };

@@ -4,8 +4,12 @@ import { PaginationControls } from '@/components/pagination.control';
 import { ActionButtons, Button, InputCustom } from '@/components';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import React from 'react';
+import { InputCreate } from './input.create';
+import { useInputStore } from '@/hooks/useInputStore';
+import { MovimentsTable } from './moviments.table';
 
 interface Props {
+  branchId: string;
   limitInit?: number;
   itemSelect?: (product: ProductModel) => void;
   dataKardex: BaseResponse<KardexModel>;
@@ -13,6 +17,7 @@ interface Props {
 
 export const PresentationTable = (props: Props) => {
   const {
+    branchId,
     itemSelect,
     limitInit = 10,
     dataKardex,
@@ -24,6 +29,8 @@ export const PresentationTable = (props: Props) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [itemEdit, setItemEdit] = useState<ProductPresentationModel | null>(null);
+
+  const { createInput } = useInputStore();
 
   useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(dataKardex.total / rowsPerPage));
@@ -54,6 +61,9 @@ export const PresentationTable = (props: Props) => {
             placeholder="Buscar presentación..."
             onChange={(e) => setQuery(e.target.value)}
           />
+          <Button
+            onClick={() => handleDialog(true)}
+          >Ingresar Stock</Button>
         </div>
         <Table className='mb-3'>
           <TableHeader>
@@ -77,13 +87,20 @@ export const PresentationTable = (props: Props) => {
                     <ActionButtons
                       item={kardex.presentation}
                       onSelect={handleSelect}
-                      onAdd={()=>{
-                        setItemEdit(kardex.presentation);
-                        handleDialog(true);
-                      }}
                     />
                   </TableCell>
                 </TableRow>
+                {expandedId === kardex.presentation.id && (
+                  <TableRow className="bg-gray-50">
+                    <TableCell colSpan={12} className="p-0">
+                      <div className="rounded-md border border-slate-300 bg-white p-4 shadow-sm">
+                        <MovimentsTable
+                          moviments={kardex.kardex}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
               </React.Fragment>
             ))}
           </TableBody>
@@ -100,6 +117,15 @@ export const PresentationTable = (props: Props) => {
           }}
         />
       </div>
+      {/* Dialogo para registrar entrada de presentación */}
+      {openDialog && (
+        <InputCreate
+          branchId={branchId}
+          dataKardex={dataKardex.data}
+          handleClose={() => handleDialog(false)}
+          onCreate={createInput}
+        />
+      )}
     </>
   );
 };
