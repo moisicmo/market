@@ -7,6 +7,7 @@ export const authSlice = createSlice({
     status: 'checking',
     user: {},
     roleUser: null as RoleModel | null,
+    showPasswordChangeModal: false,
   },
   reducers: {
     onLogin: (state, { payload }) => {
@@ -17,13 +18,17 @@ export const authSlice = createSlice({
     onLogout: (state) => {
       state.status = 'not-authenticated';
       state.user = {};
+      state.showPasswordChangeModal = false; // Reset on logout
     },
     setRoleUser: (state, { payload }) => {
       state.roleUser = payload.role;
-    }
+    },
+    onSetShowPasswordChangeModal: (state, { payload }) => {
+      state.showPasswordChangeModal = payload;
+    },
   }
 });
 
 
 // Action creators are generated for each case reducer function
-export const { onLogin, onLogout, setRoleUser } = authSlice.actions;
+export const { onLogin, onLogout, setRoleUser, onSetShowPasswordChangeModal } = authSlice.actions;

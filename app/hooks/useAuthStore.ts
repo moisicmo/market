@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { coffeApi } from '@/services';
-import { onLogin, onLogout, setRoleUser } from '@/store';
+import { onLogin, onLogout, setRoleUser, onSetShowPasswordChangeModal } from '@/store';
 import { useErrorStore } from '.';
 import type { AuthModel, AuthRequest } from '@/models';
 
 export const useAuthStore = () => {
-  const { status, user } = useSelector((state: any) => state.auth);
+  const { status, user, showPasswordChangeModal } = useSelector((state: any) => state.auth);
   const dispatch = useDispatch();
   const { handleError } = useErrorStore();
 
@@ -20,11 +20,28 @@ export const useAuthStore = () => {
       localStorage.setItem('role', JSON.stringify(role));
       dispatch(onLogin(user));
       dispatch(setRoleUser({ role }));
+
+      if (data.requiresPasswordChange) {
+        dispatch(onSetShowPasswordChangeModal(true));
+        console.log('showPasswordChangeModal set to true', true);
+      }
+
     } catch (error) {
       dispatch(onLogout());
       throw handleError(error);
     }
   };
+
+  const startChangePassword = async (newPassword: string) => {
+    try {
+      await coffeApi.post('/auth/change-password', { newPassword });
+      dispatch(onSetShowPasswordChangeModal(false));
+      return { success: true };
+    } catch (error) {
+      throw handleError(error);
+    }
+  };
+
   const checkAuthToken = async () => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -43,10 +60,12 @@ export const useAuthStore = () => {
     //* Propiedades
     status,
     user,
+    showPasswordChangeModal,
 
     //* Métodos
     startLogin,
     checkAuthToken,
+    startChangePassword,
   };
 };
 
