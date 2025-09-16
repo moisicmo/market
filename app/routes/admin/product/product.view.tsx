@@ -5,7 +5,7 @@ import { Button } from '@/components';
 import { useProductStore } from '@/hooks';
 
 const productView = () => {
-    const { dataProduct, getProducts, createProduct, updateProduct, deleteProduct } = useProductStore();
+  const { dataProduct, getProducts, createProduct, updateProduct, deleteProduct } = useProductStore();
 
   const [openDialog, setOpenDialog] = useState(false);
   const [itemEdit, setItemEdit] = useState<ProductModel | null>(null);
@@ -15,9 +15,11 @@ const productView = () => {
     setOpenDialog(value);
   }, []);
 
+
   useEffect(() => {
     getProducts();
   }, []);
+
   return (
     <>
       {/* Encabezado */}
@@ -30,24 +32,24 @@ const productView = () => {
 
       {/* Tabla de product */}
       <ProductTable
+        dataProduct={dataProduct}
+        onRefresh={getProducts}
         handleEdit={(v) => {
           setItemEdit(v);
           handleDialog(true);
         }}
-        dataProduct={dataProduct}
-        onRefresh={getProducts}
         onDelete={deleteProduct}
       />
 
 
-      {/* Dialogo para crear o editar */}
+      {/* Dialogo para crear o editar productos*/}
       {openDialog && (
         <ProductCreate
-          open={openDialog}
-          handleClose={() => handleDialog(false)}
-          item={itemEdit == null ? null : { ...itemEdit }}
-          onCreate={createProduct}
-          onUpdate={updateProduct}
+        open={openDialog}
+        handleClose={() => handleDialog(false)}
+        item={itemEdit == null ? null : { ...itemEdit }}
+        onCreate={createProduct}
+        onUpdate={updateProduct}
         />
       )}
     </>

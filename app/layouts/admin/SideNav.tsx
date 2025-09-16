@@ -18,7 +18,7 @@ export const SideNav = (props: Props) => {
   const { pathname } = useLocation();
 
   const content = (
-    <nav className="w-[180px] h-full px-2 py-4  shadow-md overflow-y-auto ">
+    <nav className="w-[200px] h-full px-2 py-4  shadow-md overflow-y-auto ">
       <div className="flex flex-col items-center">
         <img src={logo} alt="Logo" className="w-24 mb-4" />
         <ul className="w-full space-y-2">
@@ -55,7 +55,7 @@ export const SideNav = (props: Props) => {
   // 👉 Sidebar permanente en pantallas grandes
   if (isLargeScreen) {
     return (
-      <aside className="h-screen fixed top-0 left-0 bg-white w-[180px]  z-40">
+      <aside className="h-screen fixed top-0 left-0 bg-white w-[200px]  z-40">
         {content}
       </aside>
 
@@ -70,7 +70,7 @@ export const SideNav = (props: Props) => {
       )}
 
       <aside
-        className={`fixed top-0 left-0 h-full z-50 bg-white w-[190px] transform ${open ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 left-0 h-full z-50 bg-white w-[200px] transform ${open ? 'translate-x-0' : '-translate-x-full'
           } transition-transform duration-300`}
       >
         {content}

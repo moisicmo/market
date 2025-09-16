@@ -14,10 +14,8 @@ export default [
       route("staff", "routes/admin/staff/staff.view.tsx"),
       route("customer", "routes/admin/customer/customer.view.tsx"),
       route("payment", "routes/admin/payment/payment.view.tsx"),
+      
+      route("inventory", "routes/admin/inventory/inventory.view.tsx"),
     ]),
   ]),
-
-
-  route("deep-link-redirect", "routes/deep-link-redirect.tsx"),
-
 ] satisfies RouteConfig;

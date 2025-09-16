@@ -1,45 +1,42 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { useForm, useBranchStore, useCategoryStore } from '@/hooks';
+import { useForm, useBranchStore } from '@/hooks';
 import { Button, InputCustom, SelectCustom, ValueSelect } from '@/components';
-import { formProductFields, formProductValidations, TypeUnit, type ProductModel, type ProductRequest } from '@/models';
+import { formProductPresentationFields, formProductPresentationValidations, TypeUnit, type ProductPresentationModel, type ProductPresentationRequest } from '@/models';
 
 interface Props {
   open: boolean;
   handleClose: () => void;
-  item: ProductModel | null;
-  onCreate: (body: ProductRequest) => void;
-  onUpdate: (id: string, body: ProductRequest) => void;
+  productId: string;
+  item: ProductPresentationModel | null;
+  onCreate: (body: ProductPresentationRequest) => void;
+  onUpdate: (id: string, body: ProductPresentationRequest) => void;
 }
 
-export const ProductCreate = (props: Props) => {
+export const ProductPresentationCreate = (props: Props) => {
   const {
     open,
     handleClose,
+    productId,
     item,
     onCreate,
     onUpdate,
   } = props;
   const { dataBranch, getBranches } = useBranchStore();
-  const { dataCategory, getCategories } = useCategoryStore();
 
   const {
-    category,
     branch,
     name,
-    namePresentation,
     typeUnit,
     price,
     onInputChange,
     onResetForm,
     isFormValid,
     onValueChange,
-    categoryValid,
     branchValid,
     nameValid,
-    namePresentationValid,
     typeUnitValid,
     priceValid,
-  } = useForm(item ?? formProductFields, formProductValidations);
+  } = useForm(item ?? formProductPresentationFields, formProductPresentationValidations);
 
   const [formSubmitted, setFormSubmitted] = useState(false);
 
@@ -50,19 +47,17 @@ export const ProductCreate = (props: Props) => {
 
     if (item == null) {
       await onCreate({
-        categoryId: category.id,
+        productId,
         branchId: branch.id,
         name: name.trim(),
-        namePresentation: namePresentation.trim(),
         typeUnit:typeUnit.trim(),
         price: parseFloat(price),
       });
     } else {
       await onUpdate(item.id, {
-        categoryId: category.id,
+        productId,
         branchId: branch.id,
         name: name.trim(),
-        namePresentation: namePresentation.trim(),
         typeUnit:typeUnit.trim(),
         price: parseFloat(price),
       });
@@ -82,7 +77,6 @@ export const ProductCreate = (props: Props) => {
 
   useEffect(() => {
     getBranches();
-    getCategories();
   }, [])
 
 
@@ -99,23 +93,9 @@ export const ProductCreate = (props: Props) => {
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">
-          {item ? 'Editar Producto' : 'Producto Nuevo'}
+          {item ? 'Editar Presentación' : 'Nueva Presentación'}
         </h2>
-
         <form onSubmit={sendSubmit} className="space-y-4">
-          <SelectCustom
-            label="Categoria"
-            options={dataCategory.data?.map((category) => ({ id: category.id, value: category.name })) ?? []}
-            selected={category ? { id: category.id, value: category.name } : null}
-            onSelect={(value) => {
-              if (value && !Array.isArray(value)) {
-                const select = dataCategory.data?.find((r) => r.id === value.id);
-                onValueChange('category', select);
-              }
-            }}
-            error={!!categoryValid && formSubmitted}
-            helperText={formSubmitted ? categoryValid : ''}
-          />
           <SelectCustom
             label="Sucursal"
             options={dataBranch.data?.map((branch) => ({ id: branch.id, value: branch.name })) ?? []}
@@ -136,14 +116,6 @@ export const ProductCreate = (props: Props) => {
             onChange={onInputChange}
             error={!!nameValid && formSubmitted}
             helperText={formSubmitted ? nameValid : ''}
-          />
-          <InputCustom
-            name="namePresentation"
-            value={namePresentation}
-            label="Nombre de presentación"
-            onChange={onInputChange}
-            error={!!namePresentationValid && formSubmitted}
-            helperText={formSubmitted ? namePresentationValid : ''}
           />
            <SelectCustom
             label="Tipo de unidad"
@@ -174,7 +146,8 @@ export const ProductCreate = (props: Props) => {
             <Button
               type="button"  
               onClick={() => {
-                onResetForm();
+                console.log('hola cerrando')
+                // onResetForm();
                 handleClose();
               }}
               color='bg-gray-400'

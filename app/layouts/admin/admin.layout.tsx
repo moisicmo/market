@@ -11,7 +11,7 @@ const AdminLayout = () => {
   const [openNav, setOpenNav] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
 
-  const SIDENAV_WIDTH = 190;
+  const SIDENAV_WIDTH = 210;
   const [isLargeScreen, setIsLargeScreen] = useState(false);
 
 

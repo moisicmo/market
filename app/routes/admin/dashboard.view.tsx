@@ -23,14 +23,14 @@ const dashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
-            <h2 className="text-lg font-semibold">Estudiantes</h2>
+            <h2 className="text-lg font-semibold">Productos</h2>
             <p className="text-3xl font-bold">{data.metrics?.totalStudents ?? "..."}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-4">
-            <h2 className="text-lg font-semibold">Profesores</h2>
+            <h2 className="text-lg font-semibold">Clientes</h2>
             <p className="text-3xl font-bold">{data.metrics?.totalTeachers ?? "..."}</p>
           </CardContent>
         </Card>
@@ -52,7 +52,7 @@ const dashboard = () => {
 
       {/* Gráfico de Inscripciones */}
       <div className="bg-white rounded-2xl shadow p-4">
-        <h2 className="text-xl font-semibold mb-4">Inscripciones por Mes</h2>
+        <h2 className="text-xl font-semibold mb-4">Ventas por Mes</h2>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={data.inscriptionsData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -70,8 +70,8 @@ const dashboard = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Cod. Estudiante</TableHead>
-              <TableHead>Estudiante</TableHead>
+              <TableHead>Código</TableHead>
+              <TableHead>Cliente</TableHead>
               <TableHead>Monto Total (Bs)</TableHead>
               <TableHead>Saldo (Bs)</TableHead>
               <TableHead>Vencimiento</TableHead>

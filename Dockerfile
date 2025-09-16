@@ -1,22 +1,22 @@
-FROM node:20-alpine AS development-dependencies-env
-COPY . /app
-WORKDIR /app
-RUN npm ci
+# Etapa 1: Build del frontend
+FROM node:20-alpine AS builder
 
-FROM node:20-alpine AS production-dependencies-env
-COPY ./package.json package-lock.json /app/
 WORKDIR /app
-RUN npm ci --omit=dev
+COPY . .
+RUN yarn install --frozen-lockfile
+RUN yarn build
 
-FROM node:20-alpine AS build-env
-COPY . /app/
-COPY --from=development-dependencies-env /app/node_modules /app/node_modules
-WORKDIR /app
-RUN npm run build
-
+# Etapa 2: Producción con servidor Node (si usas react-router-serve o similar)
 FROM node:20-alpine
-COPY ./package.json package-lock.json /app/
-COPY --from=production-dependencies-env /app/node_modules /app/node_modules
-COPY --from=build-env /app/build /app/build
+
 WORKDIR /app
-CMD ["npm", "run", "start"]
+COPY package.json yarn.lock ./
+RUN yarn install --production --frozen-lockfile
+
+# Copiar solo el build final
+COPY --from=builder /app/build /app/build
+
+EXPOSE 3000
+
+# Usa tu servidor (ajusta según tu config)
+CMD ["yarn", "start"]

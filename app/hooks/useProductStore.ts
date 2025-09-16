@@ -30,7 +30,7 @@ export const useProductStore = () => {
       const { data } = await coffeApi.post(`${baseUrl}`, body);
       console.log(data);
       getProducts();
-      showSuccess('Especialidad creada correctamente');
+      showSuccess('Producto creado correctamente');
     } catch (error) {
       throw handleError(error);
     }
@@ -40,7 +40,7 @@ export const useProductStore = () => {
       const { data } = await coffeApi.patch(`/${baseUrl}/${id}`, body);
       console.log(data);
       getProducts();
-      showSuccess('Especialidad editada correctamente');
+      showSuccess('Producto editado correctamente');
     } catch (error) {
       throw handleError(error);
     }
@@ -51,7 +51,7 @@ export const useProductStore = () => {
       if (result.isConfirmed) {
         await coffeApi.delete(`/${baseUrl}/${id}`);
         getProducts();
-        showSuccess('Especialidad eliminado correctamente');
+        showSuccess('Producto eliminado correctamente');
       } else {
         showError('Cancelado', 'El módulo esta a salvo :)');
       }

@@ -8,4 +8,6 @@ export * from './input.phone.custom';
 export * from './user.form';
 
 
-export { Button } from "@/components/ui/button";
+export * from '@/components/ui/button';
+export * from '@/components/ui/table';
+export * from '@/components/ui/popover';
