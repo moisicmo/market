@@ -22,7 +22,7 @@ export const menu = () => {
       icon: <Home size={18} />,
     },
     {
-      title: 'Ubicación y Sucursales',
+      title: 'Sucursales',
       permission: 'show-branches',
       group: [
         {

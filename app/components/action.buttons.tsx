@@ -1,25 +1,25 @@
 import { useCartStore } from '@/hooks';
-import { ChevronDown, ChevronUp, Download, PackagePlus, Pencil, ShoppingCart, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Download, Pencil, ShoppingCart, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Popover, PopoverTrigger } from '.';
 interface ActionButtonsProps<T extends { id?: string; userId?: string }> {
   item: T;
   onEdit?: (item: T) => void;
   onDelete?: (id: string) => void;
-  onAdd?: (id: string) => void;
+  onSale?: (id: string) => void;
   onDownload?: (id: string) => void;
   onPayment?: (id: string) => void;
   onSelect?: (id: string) => void;
   isSelected?: boolean;
   children?: React.ReactNode;
-   isPopoverOpen?: boolean;
+  isPopoverOpen?: boolean;
 }
 
 export const ActionButtons = <T extends { id?: string; userId?: string }>({
   item,
   onEdit,
   onDelete,
-  onAdd,
+  onSale,
   onDownload,
   onPayment,
   onSelect,
@@ -29,7 +29,7 @@ export const ActionButtons = <T extends { id?: string; userId?: string }>({
 }: ActionButtonsProps<T>) => {
   const identifier = item.userId ?? item.id ?? '';
   const { cart } = useCartStore();
-  const isInCart = cart.some((e) => e.debt.id === item.id);
+  const isInCart = cart.some((e) => e.productPresentationModel.id === item.id);
   return (
     <div className="flex justify-center items-center gap-3">
       {onSelect && identifier && (
@@ -81,10 +81,26 @@ export const ActionButtons = <T extends { id?: string; userId?: string }>({
           <Download color="var(--color-info)" className="w-5 h-5" />
         </button>
       )}
-      {onAdd && identifier && (
-        <button onClick={() => onAdd(identifier)} title="Agregar" className="cursor-pointer">
-          <PackagePlus color="var(--color-info)" className="w-5 h-5" />
-        </button>
+      {onSale && identifier && (
+        // <button onClick={() => onSale(identifier)} title="Agregar" className="cursor-pointer">
+        //   <PackagePlus color="var(--color-info)" className="w-5 h-5" />
+        // </button>
+        <Button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!isInCart) {
+              onSale?.(identifier);
+            }
+          }}
+          size="sm"
+          variant="outline"
+          className="flex items-center gap-1"
+          title="Agregar al carrito de pagos"
+          disabled={isInCart}
+        >
+          <ShoppingCart className="w-5 h-5" />
+          {isInCart ? "Agregado" : "Agregar"}
+        </Button>
       )}
       {onEdit && (
         <button onClick={() => onEdit(item)} title="Editar" className="cursor-pointer">

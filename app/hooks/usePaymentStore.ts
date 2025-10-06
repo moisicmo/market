@@ -12,7 +12,7 @@ export const usePaymentStore = () => {
   const { showLoading, swalClose } = useAlertStore();
   const { handlePdf } = usePrintStore();
 
-  const baseUrl = 'payment';
+  const baseUrl = 'order';
 
   const getPayments = async (page: number = 1, limit: number = 10, keys: string = '') => {
     try {
@@ -34,7 +34,7 @@ export const usePaymentStore = () => {
   const sentPayments = async (body: CartRequest) => {
     try {
       showLoading('Registrando los pago(s)..');
-      const res = await coffeApi.post(`/${baseUrl}/sendings`, body);
+      const res = await coffeApi.post(`/${baseUrl}`, body);
       const { finalInvoice, pdfBase64 } = res.data;
       const invoice: InvoiceModel = finalInvoice;
       invoice.payments.forEach(payment => {

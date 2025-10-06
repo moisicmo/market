@@ -1,26 +1,37 @@
 
-import type { PaymentRequest } from "..";
+import type { CustomerModel, ProductPresentationModel } from "..";
 export interface CartRequest {
-  buyerNit: string;
-  buyerName: string;
-  payments: PaymentRequest[];
+  customerId: string;
+  branchId: string;
+  amount: number;
+  outputs: OputputRequest[];
+}
+
+export interface OputputRequest {
+  productPresentationId: string;
+  quantity: number;
+  price: number;
 }
 
 export interface FormCartModel {
-  buyerNit: string;
-  buyerName: string;
+  customer: CustomerModel | null;
 }
 
 export const formCartInit: FormCartModel = {
-  buyerNit: '',
-  buyerName: '',
+  customer: null,
 };
 interface FormCartValidations {
-  buyerNit: [(value: string) => boolean, string];
-  buyerName: [(value: string) => boolean, string];
+  customer: [(value: CustomerModel) => boolean, string];
 }
 
 export const formCartValidations: FormCartValidations = {
-  buyerNit: [(value) => value.length > 0, 'Debe ingresar un número de facturación'],
-  buyerName: [(value) => value.length > 0, 'Debe ingresar un nombre de facturación'],
+  customer: [(value) => value !== null, 'Debe ingresar un cliente'],
 };
+
+// desde aqui vale
+export interface CartItem {
+  productPresentationModel: ProductPresentationModel;
+  stock: number;
+  quantity: number;
+  price: number;
+}

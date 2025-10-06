@@ -1,19 +1,16 @@
 import { useEffect, useState } from 'react';
-import type { BaseResponse, InputRequest, KardexModel, ProductModel } from '@/models';
+import type { BaseResponse, KardexModel, ProductModel } from '@/models';
 import { PaginationControls } from '@/components/pagination.control';
-import { ActionButtons, Button, InputCustom } from '@/components';
+import { ActionButtons } from '@/components';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import React from 'react';
-import { InputCreate } from './input.create';
-import { useInputStore } from '@/hooks/useInputStore';
-import { MovimentsTable } from './moviments.table';
+import { useCartStore } from '@/hooks';
 
 interface Props {
   branchId: string;
   limitInit?: number;
   itemSelect?: (product: ProductModel) => void;
   dataKardex: BaseResponse<KardexModel>;
-  onCreate: (body: InputRequest) => void;
 }
 
 export const PresentationTable = (props: Props) => {
@@ -22,16 +19,11 @@ export const PresentationTable = (props: Props) => {
     itemSelect,
     limitInit = 10,
     dataKardex,
-    onCreate,
   } = props;
 
   const [page, setPage] = useState(1);
-  const [query, setQuery] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(limitInit);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-
-  
+  const { addCard } = useCartStore();
 
   useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(dataKardex.total / rowsPerPage));
@@ -40,28 +32,9 @@ export const PresentationTable = (props: Props) => {
     }
   }, [dataKardex.total, rowsPerPage]);
 
-
-  const handleSelect = async (id: string) => {
-    if (expandedId === id) {
-      setExpandedId(null);
-      return;
-    }
-    setExpandedId(id);
-  };
   return (
     <>
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <InputCustom
-            name="query"
-            value={query}
-            placeholder="Buscar presentación..."
-            onChange={(e) => setQuery(e.target.value)}
-          />
-          <Button
-            onClick={() => setOpenDialog(true)}
-          >Ingresar Productos</Button>
-        </div>
         <Table className='mb-3'>
           <TableHeader>
             <TableRow>
@@ -83,21 +56,18 @@ export const PresentationTable = (props: Props) => {
                   <TableCell className="sticky right-0 z-10 bg-white">
                     <ActionButtons
                       item={kardex.presentation}
-                      onSelect={handleSelect}
+                      onSale={(i) => {
+                        addCard({
+                          productPresentationModel: kardex.presentation,
+                          stock: kardex.stock,
+                          quantity: 1,
+                          price: kardex.presentation.prices.length > 0 ? kardex.presentation.prices[0].price : 0,
+                        });
+                        console.log(kardex.presentation)
+                      }}
                     />
                   </TableCell>
                 </TableRow>
-                {expandedId === kardex.presentation.id && (
-                  <TableRow className="bg-gray-50">
-                    <TableCell colSpan={12} className="p-0">
-                      <div className="rounded-md border border-slate-300 bg-white p-4 shadow-sm">
-                        <MovimentsTable
-                          moviments={kardex.kardex}
-                        />
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )}
               </React.Fragment>
             ))}
           </TableBody>
@@ -114,15 +84,6 @@ export const PresentationTable = (props: Props) => {
           }}
         />
       </div>
-      {/* Dialogo para registrar entrada de presentación */}
-      {openDialog && (
-        <InputCreate
-          branchId={branchId}
-          dataKardex={dataKardex.data}
-          handleClose={() => setOpenDialog(false)}
-          onCreate={onCreate}
-        />
-      )}
     </>
   );
 };

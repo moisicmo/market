@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useForm } from '@/hooks';
-import { Button, InputCustom, SelectCustom, ValueSelect } from '@/components';
+import { Button, DateTimePickerCustom, InputCustom, SelectCustom, ValueSelect } from '@/components';
 import {
   formInputFields,
   formInputValidations,
@@ -21,6 +21,7 @@ interface Props {
 type PresentationErrors = {
   quantity?: string;
   price?: string;
+  dueDate?: string;
 };
 
 export const InputCreate = ({
@@ -46,9 +47,11 @@ export const InputCreate = ({
       const errors: PresentationErrors = {};
       const [validQty, msgQty] = presentationValidations.quantity;
       const [validPrice, msgPrice] = presentationValidations.price;
+      const [validDue, msgDue] = presentationValidations.dueDate;
 
       if (!validQty(p.quantity)) errors.quantity = msgQty;
       if (!validPrice(p.price)) errors.price = msgPrice;
+      if (!validDue(p.dueDate)) errors.dueDate = msgDue;
 
       return errors;
     });
@@ -77,6 +80,7 @@ export const InputCreate = ({
       productPresentationId: p.productPresentation.id,
       quantity: p.quantity,
       price: p.price,
+      dueDate: p.dueDate,
     }));
     console.log('creando')
     await onCreate({
@@ -185,6 +189,16 @@ export const InputCreate = ({
                       onChange={(e) => handleUpdate(i, 'price', Number(e.target.value))}
                       error={!!presentationErrors[i]?.price && formSubmitted}
                       helperText={formSubmitted ? presentationErrors[i]?.price : ''}
+                    />
+
+                    <DateTimePickerCustom
+                      name={`presentations[${i}].dueDate`}
+                      value={p.dueDate}
+                      label="Fecha vencimiento"
+                      mode="date"
+                      onChange={(date) => handleUpdate(i, 'dueDate', date)}
+                      error={!!presentationErrors[i]?.dueDate && formSubmitted}
+                      helperText={formSubmitted ? presentationErrors[i]?.dueDate : ''}
                     />
                   </div>
                 </div>

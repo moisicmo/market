@@ -12,7 +12,6 @@ interface Presentation {
   productPresentationId: string;
   quantity: number;
   price: number;
-  dueDate: Date;
 }
 
 // model
@@ -29,7 +28,7 @@ export interface PresentationModel {
 }
 
 export const formInputFields: FormInputModel = {
-  detail: '',
+  detail: 'compra',
   presentations: [],
 };
 
@@ -45,12 +44,10 @@ interface PresentationValidations {
   productPresentation: [(value: ProductPresentationModel | null) => boolean, string];
   quantity: [(value: number) => boolean, string];
   price: [(value: number) => boolean, string];
-  dueDate: [(value: Date) => boolean, string];
 }
 
 export const presentationValidations: PresentationValidations = {
   productPresentation: [(value) => value != null, 'Debe seleccionar una presentación de producto'],
   quantity: [(value) => value > 0, 'La cantidad debe ser mayor a 0'],
   price: [(value) => value > 0, 'El precio debe ser mayor a 0'],
-  dueDate: [(value) => !isNaN(value.getTime()), 'Debe ingresar una fecha de vencimiento válida'],
 };

@@ -1,7 +1,8 @@
-import type { FormPaymentModel } from '@/models';
+// import type { FormPaymentModel } from '@/models';
+import type { CartItem } from '@/models';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-const dataInit: FormPaymentModel[] = [];
+const dataInit: CartItem[] = [];
 
 export const cartSlice = createSlice({
   name: 'cart',
@@ -13,26 +14,25 @@ export const cartSlice = createSlice({
       state.cart = [];
     },
 
-    setAddCart: (state, action: PayloadAction<FormPaymentModel>) => {
-      const item = state.cart.find((item) => item.debt.id == action.payload.debt.id);
+    setAddCart: (state, action: PayloadAction<CartItem>) => {
+      const item = state.cart.find((item) => item.productPresentationModel.id == action.payload.productPresentationModel.id);
       if (!item) {
         state.cart = [...state.cart, action.payload]
       }
     },
 
-    setUpdateItemCart: (state, { payload }) => {
-      // const itemCart: CartModel = payload.itemCart;
-      // state.cart = state.cart.map((item) => {
-      //   if (item.DebtModel.id == itemCart.DebtModel.id) {
-      //     return itemCart;
-      //   }
-      //   return item;
-      // })
+    setUpdateItemCart: (state, action: PayloadAction<CartItem>) => {
+      state.cart = state.cart.map((item) => {
+        if (item.productPresentationModel.id == action.payload.productPresentationModel.id) {
+          return action.payload;
+        }
+        return item;
+      });
     },
 
-    setRemoveCart: (state, action: PayloadAction<FormPaymentModel>) => {
+    setRemoveCart: (state, action: PayloadAction<CartItem>) => {
       state.cart = state.cart.filter(
-        (e) => e.debt.id !== action.payload.debt.id
+        (e) => e.productPresentationModel.id !== action.payload.productPresentationModel.id
       );
     },
   }

@@ -30,7 +30,7 @@ export const useCustomerStore = () => {
     try {
       await coffeApi.post(`/${baseUrl}/`, body);
       await getCustomers();
-      showSuccess('Customer creado correctamente');
+      showSuccess('Cliente creado correctamente');
     } catch (error) {
       throw handleError(error);
     }
@@ -40,7 +40,7 @@ export const useCustomerStore = () => {
     try {
       await coffeApi.patch(`/${baseUrl}/${id}`, body);
       await getCustomers();
-      showSuccess('Customer editado correctamente');
+      showSuccess('Cliente editado correctamente');
     } catch (error) {
       throw handleError(error);
     }
@@ -52,9 +52,9 @@ export const useCustomerStore = () => {
       if (result.isConfirmed) {
         await coffeApi.delete(`/${baseUrl}/${id}`);
         await getCustomers();
-        showSuccess('Customer eliminado correctamente');
+        showSuccess('Cliente eliminado correctamente');
       } else {
-        showError('Cancelado', 'El Customer está a salvo :)');
+        showError('Cancelado', 'El Cliente está a salvo :)');
       }
     } catch (error) {
       throw handleError(error);

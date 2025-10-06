@@ -16,6 +16,7 @@ export default [
       route("payment", "routes/admin/payment/payment.view.tsx"),
       
       route("inventory", "routes/admin/inventory/inventory.view.tsx"),
+      route("pos", "routes/admin/pos/pos.view.tsx"),
     ]),
   ]),
 ] satisfies RouteConfig;

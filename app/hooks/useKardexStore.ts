@@ -1,6 +1,6 @@
 import { coffeApi } from '@/services';
-import { useAlertStore, useErrorStore } from '.';
-import { InitBaseResponse, type BaseResponse, type KardexModel, type ProductRequest } from '@/models';
+import { useErrorStore } from '.';
+import { InitBaseResponse, type BaseResponse, type KardexModel, type Movement } from '@/models';
 import { useState } from 'react';
 
 export const useKardexStore = () => {
@@ -23,11 +23,32 @@ export const useKardexStore = () => {
     }
   };
 
+  const updatePresentations = (moviments: Movement[]) => {
+    setDataKardexPresentation({
+      ...dataKardexPresentation,
+      data: dataKardexPresentation.data.map(d => {
+        const moviment = moviments.find(
+          m => (m.input?.productPresentationId ?? m.output?.productPresentationId) === d.presentation.id
+        );
+        if (moviment) {
+          return {
+            ...d,
+            stock: moviment.stock,
+            kardex: [moviment, ...(d.kardex ?? [])]
+          };
+        }
+        return d;
+      })
+    });
+  };
+
+
 
   return {
     //* Propiedades
     dataKardexPresentation,
     //* Métodos
     getPresentationsByBranchId,
+    updatePresentations,
   };
 };

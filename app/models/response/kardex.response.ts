@@ -9,9 +9,19 @@ export interface KardexModel {
 
 export interface Movement{
   stock: number;
-  input: Input;
+  input: Input | null;
+  output: Output | null;
 }
 
+interface Output {
+  id: string;
+  branchId: string;
+  productPresentationId: string;
+  quantity: number;
+  price: number;
+  detail: string;
+  createdAt: Date;
+}
 interface Input {
   id: string;
   branchId: string;

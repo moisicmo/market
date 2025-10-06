@@ -16,7 +16,6 @@ export const PaymentTable = (props: Props) => {
   } = props;
 
   const { dataPayment, getPayments } = usePaymentStore();
-  // const { getTypePayment, getTypePaymentClass } = useEnums();
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(limitInit);
   const [query, setQuery] = useState('');

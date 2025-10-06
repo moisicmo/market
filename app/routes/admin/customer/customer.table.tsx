@@ -45,7 +45,7 @@ export const CustomerTable = (props: Props) => {
         <InputCustom
           name="query"
           value={query}
-          placeholder="Buscar customer..."
+          placeholder="Buscar cliente..."
           onChange={(e) => setQuery(e.target.value)}
         />
       </div>
