@@ -14,6 +14,7 @@ export * from './request/role.request';
 export * from './request/price.request';
 export * from './request/cart.request';
 export * from './request/input.request';
+export * from './request/transfer.request';
 
 // RESPONSE
 export * from './response/response';

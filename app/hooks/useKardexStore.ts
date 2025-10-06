@@ -24,6 +24,7 @@ export const useKardexStore = () => {
   };
 
   const updatePresentations = (moviments: Movement[]) => {
+    console.log('moviments:', moviments);
     setDataKardexPresentation({
       ...dataKardexPresentation,
       data: dataKardexPresentation.data.map(d => {
@@ -41,6 +42,7 @@ export const useKardexStore = () => {
       })
     });
   };
+
 
 
 

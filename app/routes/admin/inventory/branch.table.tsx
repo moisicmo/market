@@ -1,8 +1,8 @@
-import type { BaseResponse, BranchModel, InputRequest } from '@/models';
+import type { BaseResponse, BranchModel, InputRequest, TransferRequest } from '@/models';
 import { Card, CardContent } from '@/components/ui/card';
 import React, { useEffect, useRef, useState } from 'react';
 import { PresentationTable } from '.';
-import { useKardexStore } from '@/hooks';
+import { useKardexStore, useTransferStore } from '@/hooks';
 import { useInputStore } from '@/hooks/useInputStore';
 
 interface Props {
@@ -13,6 +13,7 @@ export const BranchList = ({ dataBranch }: Props) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const { dataKardexPresentation, getPresentationsByBranchId, updatePresentations } = useKardexStore();
   const { createInput } = useInputStore();
+  const { createTransfer } = useTransferStore();
   const initialized = useRef(false);
 
   const handleSelect = async (id: string) => {
@@ -37,6 +38,22 @@ export const BranchList = ({ dataBranch }: Props) => {
     const moviments = await createInput(inputRequest);
     updatePresentations(moviments);
   }
+
+
+  const handleCreateTransfer = async (transferRequest: TransferRequest) => {
+    const transfers = await createTransfer(transferRequest);
+
+    // Agrupamos todos los movimientos
+    const allMovements = transfers.map(element => ({
+      stock: element.from.stock,
+      output: element.from.output,
+      input: null,
+    }));
+
+    // Una sola actualización final
+    updatePresentations(allMovements);
+  };
+
 
   return (
     <div className="space-y-4">
@@ -65,7 +82,9 @@ export const BranchList = ({ dataBranch }: Props) => {
                 <PresentationTable
                   branchId={branch.id}
                   dataKardex={dataKardexPresentation}
-                  onCreate={handleCreateInput}
+                  onInputCreate={handleCreateInput}
+                  onTransferCreate={handleCreateTransfer}
+                  dataBranch={dataBranch}
                 />
               </div>
             )}

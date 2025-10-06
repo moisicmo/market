@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
-import type { BaseResponse, InputRequest, KardexModel, ProductModel } from '@/models';
+import type { BaseResponse, BranchModel, InputRequest, KardexModel, ProductModel, TransferRequest } from '@/models';
 import { PaginationControls } from '@/components/pagination.control';
 import { ActionButtons, Button, InputCustom } from '@/components';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import React from 'react';
 import { InputCreate } from './input.create';
-import { useInputStore } from '@/hooks/useInputStore';
 import { MovimentsTable } from './moviments.table';
+import { TransferCreate } from './transfer.create';
 
 interface Props {
   branchId: string;
   limitInit?: number;
   itemSelect?: (product: ProductModel) => void;
   dataKardex: BaseResponse<KardexModel>;
-  onCreate: (body: InputRequest) => void;
+  onInputCreate: (body: InputRequest) => void;
+  onTransferCreate: (body: TransferRequest) => void;
+  dataBranch: BaseResponse<BranchModel>;
 }
 
 export const PresentationTable = (props: Props) => {
@@ -22,16 +24,19 @@ export const PresentationTable = (props: Props) => {
     itemSelect,
     limitInit = 10,
     dataKardex,
-    onCreate,
+    onInputCreate,
+    onTransferCreate,
+    dataBranch,
   } = props;
 
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(limitInit);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openInputDialog, setOpenInputDialog] = useState(false);
+  const [openTransferDialog, setOpenTransferDialog] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  
+
 
   useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(dataKardex.total / rowsPerPage));
@@ -51,7 +56,7 @@ export const PresentationTable = (props: Props) => {
   return (
     <>
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center space-x-2">
           <InputCustom
             name="query"
             value={query}
@@ -59,8 +64,11 @@ export const PresentationTable = (props: Props) => {
             onChange={(e) => setQuery(e.target.value)}
           />
           <Button
-            onClick={() => setOpenDialog(true)}
+            onClick={() => setOpenInputDialog(true)}
           >Ingresar Productos</Button>
+          <Button
+            onClick={() => setOpenTransferDialog(true)}
+          >Transferir Productos</Button>
         </div>
         <Table className='mb-3'>
           <TableHeader>
@@ -115,12 +123,22 @@ export const PresentationTable = (props: Props) => {
         />
       </div>
       {/* Dialogo para registrar entrada de presentación */}
-      {openDialog && (
+      {openInputDialog && (
         <InputCreate
           branchId={branchId}
           dataKardex={dataKardex.data}
-          handleClose={() => setOpenDialog(false)}
-          onCreate={onCreate}
+          handleClose={() => setOpenInputDialog(false)}
+          onInputCreate={onInputCreate}
+        />
+      )}
+
+      {openTransferDialog && (
+        <TransferCreate
+          branchId={branchId}
+          dataKardex={dataKardex.data}
+          handleClose={() => setOpenTransferDialog(false)}
+          onTransferCreate={onTransferCreate}
+          dataBranch={dataBranch}
         />
       )}
     </>

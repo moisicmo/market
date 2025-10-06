@@ -7,10 +7,31 @@ export interface KardexModel {
 }
 
 
-export interface Movement{
+export interface Movement {
   stock: number;
   input: Input | null;
   output: Output | null;
+}
+
+export interface TransferResponse {
+  from: {
+    stock: number;
+    output: Output;
+  };
+  to: {
+    stock: number;
+    input: Input;
+  };
+  transfer: {
+    id: string;
+    fromBranchId: string;
+    toBranchId: string;
+    productPresentationId: string;
+    quantity: number;
+    price: number;
+    detail: string;
+    createdAt: Date;
+  };
 }
 
 interface Output {

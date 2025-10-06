@@ -2,12 +2,14 @@ import { useState, type FormEvent } from 'react';
 import { useForm } from '@/hooks';
 import { Button, InputCustom, SelectCustom, ValueSelect } from '@/components';
 import {
-  formInputFields,
-  formInputValidations,
   presentationValidations,
   type KardexModel,
-  type InputRequest,
   type PresentationModel,
+  type BaseResponse,
+  type BranchModel,
+  formTransferFields,
+  formTransferValidations,
+  type TransferRequest,
 } from '@/models';
 import { Trash2 } from 'lucide-react';
 
@@ -15,7 +17,8 @@ interface Props {
   branchId: string;
   dataKardex: KardexModel[];
   handleClose: () => void;
-  onInputCreate: (body: InputRequest) => void;
+  onTransferCreate: (body: TransferRequest) => void;
+  dataBranch: BaseResponse<BranchModel>;
 }
 
 type PresentationErrors = {
@@ -23,38 +26,56 @@ type PresentationErrors = {
   price?: string;
 };
 
-export const InputCreate = ({
+export const TransferCreate = ({
   branchId,
   dataKardex,
   handleClose,
-  onInputCreate,
+  onTransferCreate,
+  dataBranch,
 }: Props) => {
   const {
     detail,
+    branch,
     onInputChange,
     onResetForm,
     isFormValid,
+    onValueChange,
     detailValid,
-  } = useForm(formInputFields, formInputValidations);
+    branchValid,
+  } = useForm(formTransferFields, formTransferValidations);
 
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [presentations, setPresentations] = useState<PresentationModel[]>([]);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 
-  const validatePresentations = (presentations: PresentationModel[]): PresentationErrors[] => {
+  const validatePresentations = (
+    presentations: PresentationModel[],
+    dataKardex: KardexModel[]
+  ): PresentationErrors[] => {
     return presentations.map((p) => {
       const errors: PresentationErrors = {};
       const [validQty, msgQty] = presentationValidations.quantity;
       const [validPrice, msgPrice] = presentationValidations.price;
 
-      if (!validQty(p.quantity)) errors.quantity = msgQty;
+      if (!validQty(p.quantity)) {
+        errors.quantity = msgQty;
+      } else {
+        // ✅ Verificar stock
+        const kardexItem = dataKardex.find(k => k.presentation.id === p.productPresentation.id);
+        if (kardexItem && p.quantity > kardexItem.stock) {
+          errors.quantity = `La cantidad (${p.quantity}) excede el stock disponible (${kardexItem.stock})`;
+        }
+      }
+
       if (!validPrice(p.price)) errors.price = msgPrice;
 
       return errors;
     });
   };
 
-  const presentationErrors = validatePresentations(presentations);
+
+  const presentationErrors = validatePresentations(presentations, dataKardex);
+
   const hasPresentationErrors = presentationErrors.some((err) =>
     Object.values(err).some(Boolean)
   );
@@ -78,11 +99,17 @@ export const InputCreate = ({
       quantity: p.quantity,
       price: p.price,
     }));
-    console.log('creando')
-    await onInputCreate({
-      branchId,
+    console.log('transfiriendo', {
+      fromBranchId: branchId,
+      toBranchId: branch.id,
       detail: detail.trim(),
-      presentations: formattedPresentations,
+      outputs: formattedPresentations,
+    })
+    await onTransferCreate({
+      fromBranchId: branchId,
+      toBranchId: branch.id,
+      detail: detail.trim(),
+      outputs: formattedPresentations,
     });
 
     handleClose();
@@ -124,10 +151,8 @@ export const InputCreate = ({
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4">Nueva Entrada</h2>
-
+        <h2 className="text-xl font-bold mb-4">Nueva Transferencia</h2>
         <form onSubmit={sendSubmit} className="space-y-4">
-
           {/* Detalle */}
           <InputCustom
             name="detail"
@@ -137,6 +162,27 @@ export const InputCreate = ({
             error={!!detailValid && formSubmitted}
             helperText={formSubmitted ? detailValid : ''}
           />
+          <SelectCustom
+            label="Sucursal destino"
+            options={
+              dataBranch.data
+                ?.filter(branch => branch.id !== branchId)
+                .map(branch => ({
+                  id: branch.id,
+                  value: branch.name
+                })) ?? []
+            }
+            selected={branch ? { id: branch.id, value: branch.name } : null}
+            onSelect={(value) => {
+              if (value && !Array.isArray(value)) {
+                const selectedCustomer = dataBranch.data?.find((c) => c.id === value.id);
+                onValueChange('branch', selectedCustomer);
+              }
+            }}
+            error={!!branchValid && formSubmitted}
+            helperText={formSubmitted ? branchValid : ''}
+          />
+
           {/* Selector de presentación */}
           <div className="flex items-end gap-2">
             <SelectCustom
@@ -161,11 +207,21 @@ export const InputCreate = ({
               {presentations.map((p, i) => (
                 <div key={i} className="rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm space-y-3">
                   <div className="flex justify-between items-center mb-4">
-                    <p className="text-sm font-semibold mb-2">{p.productPresentation.name}</p>
+                    <div>
+                      <p className="text-sm font-semibold">{p.productPresentation.name}</p>
+                      {/* 👇 Mostrar stock disponible */}
+                      <p className="text-xs text-gray-700">
+                        Stock disponible:{" "}
+                        {
+                          dataKardex.find(k => k.presentation.id === p.productPresentation.id)?.stock ?? 0
+                        }
+                      </p>
+                    </div>
                     <button onClick={() => handleRemove(i)} title="Eliminar" className="cursor-pointer">
                       <Trash2 color="var(--color-error)" className="w-5 h-5" />
                     </button>
                   </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     <InputCustom
                       name={`presentations[${i}].quantity`}
