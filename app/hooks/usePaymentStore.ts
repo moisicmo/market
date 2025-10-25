@@ -35,11 +35,13 @@ export const usePaymentStore = () => {
     try {
       showLoading('Registrando los pago(s)..');
       const res = await coffeApi.post(`/${baseUrl}`, body);
-      const { finalInvoice, pdfBase64 } = res.data;
-      const invoice: InvoiceModel = finalInvoice;
-      invoice.payments.forEach(payment => {
-        dispatch(updateDebtByStudent(payment.debt));
-      });
+      const { kardexLists, pdfBase64 } = res.data;
+      console.log(kardexLists);
+      console.log(pdfBase64);
+      // const invoice: InvoiceModel = kardexLists;
+      // invoice.payments.forEach(payment => {
+      //   dispatch(updateDebtByStudent(payment.debt));
+      // });
       swalClose();
       await handlePdf(pdfBase64);
       dispatch(setClearCart());
