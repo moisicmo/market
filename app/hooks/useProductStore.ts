@@ -1,4 +1,3 @@
-import { useDispatch } from 'react-redux';
 import { coffeApi } from '@/services';
 import { useAlertStore, useErrorStore } from '.';
 import { InitBaseResponse, type BaseResponse, type ProductModel, type ProductRequest } from '@/models';
@@ -60,6 +59,24 @@ export const useProductStore = () => {
     }
   };
 
+  const importXlsx = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      await coffeApi.post(`/${baseUrl}/import`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      getProducts();
+      showSuccess('Archivo importado correctamente');
+    } catch (error) {
+      throw handleError(error);
+    }
+  };
+
   return {
     //* Propiedades
     dataProduct,
@@ -68,5 +85,6 @@ export const useProductStore = () => {
     createProduct,
     updateProduct,
     deleteProduct,
+    importXlsx,
   };
 };

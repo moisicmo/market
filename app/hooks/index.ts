@@ -12,6 +12,8 @@ export * from './useDebtStore';
 export * from './usePermissionStore';
 export * from './useRoleStore';
 export * from './useCategoryStore';
+export * from './useBrandStore';
+export * from './useProviderStore';
 export * from './useProductStore';
 export * from './useProductPresentationStore';
 export * from './useCustomerStore';

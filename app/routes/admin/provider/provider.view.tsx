@@ -1,0 +1,58 @@
+import { useCallback, useEffect, useState } from 'react';
+import type { ProviderModel } from '@/models';
+import { ProviderCreate, ProviderTable } from '.';
+import { Button } from '@/components';
+import { useProviderStore } from '@/hooks';
+
+const providerView = () => {
+  const { dataProvider, getCategories, createProvider, updateProvider, deleteProvider } = useProviderStore();
+
+  const [openDialog, setOpenDialog] = useState(false);
+  const [itemEdit, setItemEdit] = useState<ProviderModel | null>(null);
+
+  const handleDialog = useCallback((value: boolean) => {
+    if (!value) setItemEdit(null);
+    setOpenDialog(value);
+  }, []);
+
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+  return (
+    <>
+      {/* Encabezado */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold text-gray-800">Proveedores</h2>
+        <Button
+          onClick={() => handleDialog(true)}
+        >Nuevo Proveedor</Button>
+      </div>
+
+      {/* Tabla de provider */}
+      <ProviderTable
+        handleEdit={(v) => {
+          setItemEdit(v);
+          handleDialog(true);
+        }}
+        dataProvider={dataProvider}
+        onRefresh={getCategories}
+        onDelete={deleteProvider}
+      />
+
+
+      {/* Dialogo para crear o editar */}
+      {openDialog && (
+        <ProviderCreate
+          open={openDialog}
+          handleClose={() => handleDialog(false)}
+          item={itemEdit == null ? null : { ...itemEdit }}
+          onCreate={createProvider}
+          onUpdate={updateProvider}
+        />
+      )}
+    </>
+  );
+};
+
+export default providerView

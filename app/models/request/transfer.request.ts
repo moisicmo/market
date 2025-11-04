@@ -19,10 +19,10 @@ interface Presentation {
 interface FormTransferModel {
   detail: string;
   branch: BranchModel | null;
-  presentations: PresentationModel[];
+  presentations: PresentationModelz[];
 };
 
-export interface PresentationModel {
+export interface PresentationModelz {
   productPresentation: ProductPresentationModel;
   quantity: number;
   price: number;

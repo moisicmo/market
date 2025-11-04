@@ -73,7 +73,7 @@ export const BranchList = ({ dataBranch }: Props) => {
               </div>
               <CardContent className="p-0">
                 <h3 className="text-base font-semibold text-gray-800">{branch.name}</h3>
-                <p className="text-sm text-gray-500">{branch.address}</p>
+                <p className="text-sm text-gray-500">{branch.address.city}</p>
               </CardContent>
             </div>
 

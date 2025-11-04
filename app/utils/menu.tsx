@@ -44,6 +44,18 @@ export const menu = () => {
           permission: 'show-categories',
         },
         {
+          path: '/admin/brand',
+          title: 'Marcas',
+          icon: <BookOpenText size={18} />,
+          permission: 'show-categories',
+        },
+        {
+          path: '/admin/provider',
+          title: 'Proveedores',
+          icon: <BookOpenText size={18} />,
+          permission: 'show-categories',
+        },
+        {
           path: '/admin/product',
           title: 'Productos',
           icon: <GraduationCap size={18} />,

@@ -2,10 +2,7 @@
 
 export interface AddressModel {
   id: string;
+  city: string;
   zone: string;
   detail: string;
-  city: {
-    id: string;
-    name: string;
-  }
 }
