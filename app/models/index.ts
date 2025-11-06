@@ -21,7 +21,6 @@ export * from './request/transfer.request';
 // RESPONSE
 export * from './response/response';
 export * from './response/address.response';
-export * from './response/city.response';
 export * from './response/auth.response';
 export * from './response/user.response';
 export * from './response/customer.response';

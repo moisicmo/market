@@ -54,6 +54,7 @@ export const BrandTable = (props: Props) => {
         <TableHeader>
           <TableRow>
             <TableHead>Nombre</TableHead>
+            <TableHead>Descripción</TableHead>
             <TableHead className="sticky right-0 z-10 bg-white">Acciones</TableHead>
           </TableRow>
         </TableHeader>
@@ -61,6 +62,7 @@ export const BrandTable = (props: Props) => {
           {dataBrand.data.map((brand) => 
             <TableRow key={brand.id}>
               <TableCell>{brand.name}</TableCell>
+              <TableCell>{brand.description}</TableCell>
               <TableCell className="sticky right-0 z-10 bg-white">
                 <ActionButtons
                   item={brand}

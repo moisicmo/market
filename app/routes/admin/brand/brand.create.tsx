@@ -23,11 +23,13 @@ export const BrandCreate = (props: Props) => {
 
   const {
     name,
+    description,
     onInputChange,
     onResetForm,
     isFormValid,
     onValueChange,
     nameValid,
+    descriptionValid,
   } = useForm(item ?? formBrandFields, formBrandValidations);
 
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -40,10 +42,12 @@ export const BrandCreate = (props: Props) => {
     if (item == null) {
       await onCreate({
         name: name.trim(),
+        description: description.trim(),
       });
     } else {
       await onUpdate(item.id, {
         name: name.trim(),
+        description: description.trim(),
       });
     }
 
@@ -68,7 +72,7 @@ export const BrandCreate = (props: Props) => {
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">
-          {item ? 'Editar Sucursal' : 'Nueva Sucursal'}
+          {item ? 'Editar Marca' : 'Nueva Marca'}
         </h2>
 
         <form onSubmit={sendSubmit} className="space-y-4">
@@ -79,6 +83,14 @@ export const BrandCreate = (props: Props) => {
             onChange={onInputChange}
             error={!!nameValid && formSubmitted}
             helperText={formSubmitted ? nameValid : ''}
+          />
+          <InputCustom
+            name="description"
+            value={description}
+            label="Descripción"
+            onChange={onInputChange}
+            error={!!descriptionValid && formSubmitted}
+            helperText={formSubmitted ? descriptionValid : ''}
           />
 
           <div className="flex justify-end gap-2 pt-2">

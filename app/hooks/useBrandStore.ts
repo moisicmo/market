@@ -10,24 +10,9 @@ export const useBrandStore = () => {
   const { showSuccess, showWarning, showError } = useAlertStore();
   const baseUrl = 'brand';
 
-  const getCategories = async (page: number = 1, limit: number = 10, keys: string = '') => {
+  const getBrands = async (page: number = 1, limit: number = 10, keys: string = '') => {
     try {
       const res = await coffeApi.get(`/${baseUrl}?page=${page}&limit=${limit}&keys=${keys}`);
-      const { data, meta } = res.data;
-      console.log(res.data);
-      const payload: BaseResponse<BrandModel> = {
-        ...meta,
-        data,
-      };
-      setDataBrand(payload);
-    } catch (error) {
-      throw handleError(error);
-    }
-  };
-
-  const getCategoriesByBranch = async (branchId: string, page: number = 1, limit: number = 10, keys: string = '') => {
-    try {
-      const res = await coffeApi.get(`/${baseUrl}/branch/${branchId}?page=${page}&limit=${limit}&keys=${keys}`);
       const { data, meta } = res.data;
       console.log(res.data);
       const payload: BaseResponse<BrandModel> = {
@@ -44,8 +29,8 @@ export const useBrandStore = () => {
     try {
       const { data } = await coffeApi.post(`${baseUrl}`, body);
       console.log(data);
-      getCategories();
-      showSuccess('Categoría creada correctamente');
+      getBrands();
+      showSuccess('Marca creada correctamente');
     } catch (error) {
       throw handleError(error);
     }
@@ -54,8 +39,8 @@ export const useBrandStore = () => {
     try {
       const { data } = await coffeApi.patch(`/${baseUrl}/${id}`, body);
       console.log(data);
-      getCategories();
-      showSuccess('Categoría editada correctamente');
+      getBrands();
+      showSuccess('Marca editada correctamente');
     } catch (error) {
       throw handleError(error);
     }
@@ -65,10 +50,10 @@ export const useBrandStore = () => {
       const result = await showWarning();
       if (result.isConfirmed) {
         await coffeApi.delete(`/${baseUrl}/${id}`);
-        getCategories();
-        showSuccess('Categoría eliminado correctamente');
+        getBrands();
+        showSuccess('Marca eliminada correctamente');
       } else {
-        showError('Cancelado', 'El módulo esta a salvo :)');
+        showError('Cancelado', 'La marca esta a salvo :)');
       }
     } catch (error) {
       throw handleError(error);
@@ -79,8 +64,7 @@ export const useBrandStore = () => {
     //* Propiedades
     dataBrand,
     //* Métodos
-    getCategories,
-    getCategoriesByBranch,
+    getBrands,
     createBrand,
     updateBrand,
     deleteBrand,

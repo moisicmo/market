@@ -18,15 +18,15 @@
 
   /* color primary */
   --color-primary: #ac1380;
-  --color-primary-100: #fce9f5;
-  --color-primary-200: #f5c1e1;
-  --color-primary-300: #ee99cc;
-  --color-primary-400: #e771b8;
-  --color-primary-500: #ac1380;
-  --color-primary-600: #90116c;
-  --color-primary-700: #740e58;
-  --color-primary-800: #580b44;
-  --color-primary-900: #3c082f;
+  --color-primary-100: #ffdedd;
+  --color-primary-200: #ffb7b7;
+  --color-primary-300: #ff9191;
+  --color-primary-400: #ff6664;
+  --color-primary-500: #fe1002;
+  --color-primary-600: #cd0a01;
+  --color-primary-700: #9b0601;
+  --color-primary-800: #6c0300;
+  --color-primary-900: #440100;
 
   /* color secondary */
   --color-secondary: #6ca636;
@@ -105,7 +105,7 @@
 html,
 body {
   font-family: var(--font-body);
-  @apply bg-white ;
+  @apply bg-background;
 
   @media (prefers-color-scheme: light) {
     color-scheme: light;

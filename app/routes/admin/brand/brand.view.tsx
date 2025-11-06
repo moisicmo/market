@@ -5,7 +5,7 @@ import { Button } from '@/components';
 import { useBrandStore } from '@/hooks';
 
 const brandView = () => {
-  const { dataBrand, getCategories, createBrand, updateBrand, deleteBrand } = useBrandStore();
+  const { dataBrand, getBrands, createBrand, updateBrand, deleteBrand } = useBrandStore();
 
   const [openDialog, setOpenDialog] = useState(false);
   const [itemEdit, setItemEdit] = useState<BrandModel | null>(null);
@@ -16,7 +16,7 @@ const brandView = () => {
   }, []);
 
   useEffect(() => {
-    getCategories();
+    getBrands();
   }, []);
 
   return (
@@ -36,7 +36,7 @@ const brandView = () => {
           handleDialog(true);
         }}
         dataBrand={dataBrand}
-        onRefresh={getCategories}
+        onRefresh={getBrands}
         onDelete={deleteBrand}
       />
 

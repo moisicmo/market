@@ -54,6 +54,11 @@ export const ProviderTable = (props: Props) => {
         <TableHeader>
           <TableRow>
             <TableHead>Nombre</TableHead>
+            <TableHead>Nit</TableHead>
+            <TableHead>Teléfonos</TableHead>
+            <TableHead>Ciudad</TableHead>
+            <TableHead>Zona</TableHead>
+            <TableHead>Dirección</TableHead>
             <TableHead className="sticky right-0 z-10 bg-white">Acciones</TableHead>
           </TableRow>
         </TableHeader>
@@ -61,6 +66,11 @@ export const ProviderTable = (props: Props) => {
           {dataProvider.data.map((provider) => 
             <TableRow key={provider.id}>
               <TableCell>{provider.name}</TableCell>
+              <TableCell>{provider.nit}</TableCell>
+              <TableCell>{provider.phone}</TableCell>
+              <TableCell>{provider.address?.city}</TableCell>
+              <TableCell>{provider.address?.zone}</TableCell>
+              <TableCell>{provider.address?.detail}</TableCell>
               <TableCell className="sticky right-0 z-10 bg-white">
                 <ActionButtons
                   item={provider}

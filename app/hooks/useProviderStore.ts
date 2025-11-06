@@ -1,4 +1,3 @@
-import { useDispatch } from 'react-redux';
 import { coffeApi } from '@/services';
 import { useAlertStore, useErrorStore } from '.';
 import { InitBaseResponse, type BaseResponse, type ProviderModel, type ProviderRequest } from '@/models';
@@ -10,24 +9,9 @@ export const useProviderStore = () => {
   const { showSuccess, showWarning, showError } = useAlertStore();
   const baseUrl = 'provider';
 
-  const getCategories = async (page: number = 1, limit: number = 10, keys: string = '') => {
+  const getProviders = async (page: number = 1, limit: number = 10, keys: string = '') => {
     try {
       const res = await coffeApi.get(`/${baseUrl}?page=${page}&limit=${limit}&keys=${keys}`);
-      const { data, meta } = res.data;
-      console.log(res.data);
-      const payload: BaseResponse<ProviderModel> = {
-        ...meta,
-        data,
-      };
-      setDataProvider(payload);
-    } catch (error) {
-      throw handleError(error);
-    }
-  };
-
-  const getCategoriesByBranch = async (branchId: string, page: number = 1, limit: number = 10, keys: string = '') => {
-    try {
-      const res = await coffeApi.get(`/${baseUrl}/branch/${branchId}?page=${page}&limit=${limit}&keys=${keys}`);
       const { data, meta } = res.data;
       console.log(res.data);
       const payload: BaseResponse<ProviderModel> = {
@@ -44,18 +28,19 @@ export const useProviderStore = () => {
     try {
       const { data } = await coffeApi.post(`${baseUrl}`, body);
       console.log(data);
-      getCategories();
-      showSuccess('Categoría creada correctamente');
+      getProviders();
+      showSuccess('Proveedor creada correctamente');
     } catch (error) {
       throw handleError(error);
     }
   };
+
   const updateProvider = async (id: string, body: ProviderRequest) => {
     try {
       const { data } = await coffeApi.patch(`/${baseUrl}/${id}`, body);
       console.log(data);
-      getCategories();
-      showSuccess('Categoría editada correctamente');
+      getProviders();
+      showSuccess('Proveedor editada correctamente');
     } catch (error) {
       throw handleError(error);
     }
@@ -65,10 +50,10 @@ export const useProviderStore = () => {
       const result = await showWarning();
       if (result.isConfirmed) {
         await coffeApi.delete(`/${baseUrl}/${id}`);
-        getCategories();
-        showSuccess('Categoría eliminado correctamente');
+        getProviders();
+        showSuccess('Proveedor eliminado correctamente');
       } else {
-        showError('Cancelado', 'El módulo esta a salvo :)');
+        showError('Cancelado', 'El proveedor esta a salvo :)');
       }
     } catch (error) {
       throw handleError(error);
@@ -79,8 +64,7 @@ export const useProviderStore = () => {
     //* Propiedades
     dataProvider,
     //* Métodos
-    getCategories,
-    getCategoriesByBranch,
+    getProviders,
     createProvider,
     updateProvider,
     deleteProvider,

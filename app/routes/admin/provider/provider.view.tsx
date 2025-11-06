@@ -5,7 +5,7 @@ import { Button } from '@/components';
 import { useProviderStore } from '@/hooks';
 
 const providerView = () => {
-  const { dataProvider, getCategories, createProvider, updateProvider, deleteProvider } = useProviderStore();
+  const { dataProvider, getProviders, createProvider, updateProvider, deleteProvider } = useProviderStore();
 
   const [openDialog, setOpenDialog] = useState(false);
   const [itemEdit, setItemEdit] = useState<ProviderModel | null>(null);
@@ -16,7 +16,7 @@ const providerView = () => {
   }, []);
 
   useEffect(() => {
-    getCategories();
+    getProviders();
   }, []);
 
   return (
@@ -36,7 +36,7 @@ const providerView = () => {
           handleDialog(true);
         }}
         dataProvider={dataProvider}
-        onRefresh={getCategories}
+        onRefresh={getProviders}
         onDelete={deleteProvider}
       />
 
