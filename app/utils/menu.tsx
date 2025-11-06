@@ -8,10 +8,11 @@ import {
   FileBarChart2,
   GraduationCap,
   ClipboardList,
-  HandCoins,
   MonitorSmartphone,
   CalendarClock,
   BookOpenText,
+  Tag,
+  Factory,
 } from 'lucide-react';
 
 export const menu = () => {
@@ -46,13 +47,13 @@ export const menu = () => {
         {
           path: '/admin/brand',
           title: 'Marcas',
-          icon: <BookOpenText size={18} />,
+          icon: <Tag size={18} />,
           permission: 'show-categories',
         },
         {
           path: '/admin/provider',
           title: 'Proveedores',
-          icon: <BookOpenText size={18} />,
+          icon: <Factory size={18} />,
           permission: 'show-categories',
         },
         {
@@ -145,7 +146,6 @@ export const menu = () => {
           icon: <ClipboardList size={18} />,
           permission: 'show-inventory-report',
         },
-        // otros reportes si deseas
       ],
     },
   ];

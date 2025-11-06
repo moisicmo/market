@@ -8,25 +8,21 @@ interface inscriptionData {
 
 
 export interface DashboardModel {
-  debts: DebtModel[];
-  inscriptionsData: inscriptionData[];
+  ordersData: inscriptionData[];
   metrics: {
     totalBranches: number;
-    totalDebts: number;
-    totalPayments: number;
-    totalStudents: number;
-    totalTeachers: number;
+    totalOrders: number;
+    totalProducts: number;
+    totalCustomers: number;
   };
 }
 
 export const initDashboardModel:DashboardModel = {
-  debts:[],
-  inscriptionsData: [],
+  ordersData: [],
   metrics:{
     totalBranches: 0,
-    totalDebts: 0,
-    totalPayments: 0,
-    totalStudents: 0,
-    totalTeachers: 0,
+    totalOrders: 0,
+    totalProducts: 0,
+    totalCustomers: 0,
   }
 }

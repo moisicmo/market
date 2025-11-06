@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { useCityStore, useForm } from '@/hooks';
-import { Button, InputCustom } from '@/components';
+import { useForm } from '@/hooks';
+import { Button, InputCustom, InputPhonesCustom } from '@/components';
 import { formBranchFields, formBranchValidations, type BranchModel, type BranchRequest } from '@/models';
 
 interface Props {
@@ -22,11 +22,16 @@ export const BranchCreate = (props: Props) => {
 
   const {
     name,
+    bankAccount,
+    phone,
     address,
     onInputChange,
+    onValueChange,
     onResetForm,
     isFormValid,
     nameValid,
+    bankAccountValid,
+    phoneValid,
     addressValid,
   } = useForm(item ?? formBranchFields, formBranchValidations);
 
@@ -40,12 +45,20 @@ export const BranchCreate = (props: Props) => {
     if (item == null) {
       await onCreate({
         name: name.trim(),
-        address: address.trim(),
+        bankAccount: bankAccount.trim(),
+        phone,
+        city: address.city.trim(),
+        zone: address.zone.trim(),
+        detail: address.detail.trim(),
       });
     } else {
       await onUpdate(item.id, {
         name: name.trim(),
-        address: address.trim(),
+        bankAccount: bankAccount.trim(),
+        phone,
+        city: address.city.trim(),
+        zone: address.zone.trim(),
+        detail: address.detail.trim(),
       });
     }
 
@@ -77,12 +90,45 @@ export const BranchCreate = (props: Props) => {
             helperText={formSubmitted ? nameValid : ''}
           />
           <InputCustom
-            name="address"
-            value={address}
-            label="Dirección"
+            name="bankAccount"
+            value={bankAccount}
+            label="bankAccount"
             onChange={onInputChange}
-            error={!!addressValid && formSubmitted}
-            helperText={formSubmitted ? addressValid : ''}
+            error={!!bankAccountValid && formSubmitted}
+            helperText={formSubmitted ? bankAccountValid : ''}
+          />
+
+          <InputPhonesCustom
+            name="phone"
+            value={phone}
+            onChange={(phones) => onValueChange('phone', phones)}
+            label="Teléfonos"
+            error={!!phoneValid && formSubmitted}
+            helperText={formSubmitted ? phoneValid : ''}
+          />
+          <InputCustom
+            name="address.city"
+            value={address.city}
+            label="Ciudad"
+            onChange={onInputChange}
+            error={!!addressValid?.cityValid && formSubmitted}
+            helperText={formSubmitted ? addressValid?.cityValid : ''}
+          />
+          <InputCustom
+            name="address.zone"
+            value={address.zone}
+            label="Zona"
+            onChange={onInputChange}
+            error={!!addressValid?.zoneValid && formSubmitted}
+            helperText={formSubmitted ? addressValid?.zoneValid : ''}
+          />
+          <InputCustom
+            name="address.detail"
+            value={address.detail}
+            label="Direccion"
+            onChange={onInputChange}
+            error={!!addressValid?.detailValid && formSubmitted}
+            helperText={formSubmitted ? addressValid?.detailValid : ''}
           />
           <div className="flex justify-end gap-2 pt-2">
             <Button

@@ -53,6 +53,10 @@ export const BranchTable = (props: Props) => {
         <TableHeader>
           <TableRow>
             <TableHead>Nombre</TableHead>
+            <TableHead>Cuenta bancaria</TableHead>
+            <TableHead>Telefonos</TableHead>
+            <TableHead>Ciudad</TableHead>
+            <TableHead>Zona</TableHead>
             <TableHead>Dirección</TableHead>
             <TableHead className="sticky right-0 z-10 bg-white">Acciones</TableHead>
           </TableRow>
@@ -61,7 +65,11 @@ export const BranchTable = (props: Props) => {
           {dataBranch.data.map(item => (
             <TableRow key={item.id}>
               <TableCell>{item.name}</TableCell>
-              <TableCell>{item.address}</TableCell>
+              <TableCell>{item.bankAccount}</TableCell>
+              <TableCell>{item.phone}</TableCell>
+              <TableCell>{item.address?.city}</TableCell>
+              <TableCell>{item.address?.zone}</TableCell>
+              <TableCell>{item.address?.detail}</TableCell>
               <TableCell className="sticky right-0 z-10 bg-white">
                 <ActionButtons
                   item={item}

@@ -24,14 +24,14 @@ const dashboard = () => {
         <Card>
           <CardContent className="p-4">
             <h2 className="text-lg font-semibold">Productos</h2>
-            <p className="text-3xl font-bold">{data.metrics?.totalStudents ?? "..."}</p>
+            <p className="text-3xl font-bold">{data.metrics?.totalProducts ?? "..."}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-4">
             <h2 className="text-lg font-semibold">Clientes</h2>
-            <p className="text-3xl font-bold">{data.metrics?.totalTeachers ?? "..."}</p>
+            <p className="text-3xl font-bold">{data.metrics?.totalCustomers ?? "..."}</p>
           </CardContent>
         </Card>
 
@@ -44,8 +44,8 @@ const dashboard = () => {
 
         <Card>
           <CardContent className="p-4">
-            <h2 className="text-lg font-semibold">Deudas Pendientes</h2>
-            <p className="text-3xl font-bold">{data.metrics?.totalDebts ?? "..."}</p>
+            <h2 className="text-lg font-semibold">Ordenes</h2>
+            <p className="text-3xl font-bold">{data.metrics?.totalOrders ?? "..."}</p>
           </CardContent>
         </Card>
       </div>
@@ -54,7 +54,7 @@ const dashboard = () => {
       <div className="bg-white rounded-2xl shadow p-4">
         <h2 className="text-xl font-semibold mb-4">Ventas por Mes</h2>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data.inscriptionsData}>
+          <BarChart data={data.ordersData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
             <YAxis allowDecimals={false} />
@@ -65,7 +65,7 @@ const dashboard = () => {
       </div>
 
       {/* Tabla de Deudas */}
-      <div className="bg-white rounded-2xl shadow p-4">
+      {/* <div className="bg-white rounded-2xl shadow p-4">
         <h2 className="text-xl font-semibold mb-4">Deudas Pendientes</h2>
         <Table>
           <TableHeader>
@@ -75,7 +75,6 @@ const dashboard = () => {
               <TableHead>Monto Total (Bs)</TableHead>
               <TableHead>Saldo (Bs)</TableHead>
               <TableHead>Vencimiento</TableHead>
-              {/* <TableHead>Acción</TableHead> */}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -94,7 +93,7 @@ const dashboard = () => {
             ))}
           </TableBody>
         </Table>
-      </div>
+      </div> */}
     </div>
   );
 };
