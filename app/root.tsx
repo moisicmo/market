@@ -11,6 +11,9 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import { Provider } from "react-redux";
 import { store } from "./store";
+import { ChangePasswordModal } from './components/change.password.modal';
+import { useAuthStore } from './hooks';
+
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -43,13 +46,29 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+function AppContent() {
+  const { showPasswordChangeModal } = useAuthStore();
+  console.log('AppContent - showPasswordChangeModal:', showPasswordChangeModal);
+  return (
+    <>
+      <Outlet />
+      <ChangePasswordModal isOpen={showPasswordChangeModal} />
+    </>
+  );
+}
+
+
 export default function App() {
   return (
     <Provider store={store}>
-      <Outlet />
+      <AppContent />
     </Provider>
   );
 }
+
+
+
+
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = "Oops!";

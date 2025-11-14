@@ -1,17 +1,28 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export const useForm = (initialForm: any = {}, formValidations: any = {}) => {
 
   const [formState, setFormState] = useState({ ...initialForm });
-  const [formValidation, setFormValidation] = useState<any>({});
-
-  useEffect(() => {
-    createValidators();
-  }, [formState]);
 
   useEffect(() => {
     setFormState({ ...initialForm });
   }, [initialForm]);
+
+  const formValidation = useMemo(() => {
+    const buildValidation = (state: any, validations: any) => {
+      const result: any = {};
+      for (const key in validations) {
+        if (typeof validations[key] === 'object' && !Array.isArray(validations[key])) {
+          result[`${key}Valid`] = buildValidation(state[key] ?? {}, validations[key]);
+        } else {
+          const [fn, message] = validations[key];
+          result[`${key}Valid`] = fn(state[key], state) ? null : message;
+        }
+      }
+      return result;
+    };
+    return buildValidation(formState, formValidations);
+  }, [formState, formValidations]);
 
   const isFormValid = useMemo(() => {
     const checkValidity = (obj: any) => {
@@ -28,10 +39,10 @@ export const useForm = (initialForm: any = {}, formValidations: any = {}) => {
     return checkValidity(formValidation);
   }, [formValidation]);
 
-  const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const onInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormState((prevState: any) => setNestedValue(prevState, name, value));
-  };
+  }, []);
 
   const isSelectChange = (name: string, text: string) => {
     setFormState({
@@ -60,13 +71,13 @@ export const useForm = (initialForm: any = {}, formValidations: any = {}) => {
     })
   }
 
-  const onValueChange = (name: string, value: any) => {
+  const onValueChange = useCallback((name: string, value: any) => {
     setFormState((prevState: any) => setNestedValue(prevState, name, value));
-  };
+  }, []);
 
-  const onResetForm = () => {
+  const onResetForm = useCallback(() => {
     setFormState(initialForm);
-  };
+  }, [initialForm]);
 
   const setNestedValue = (obj: any, path: string, value: any) => {
     const keys = path.split('.');
@@ -78,23 +89,6 @@ export const useForm = (initialForm: any = {}, formValidations: any = {}) => {
     }
     current[keys[keys.length - 1]] = value;
     return updated;
-  };
-
-  const createValidators = () => {
-    const buildValidation = (state: any, validations: any) => {
-      const result: any = {};
-      for (const key in validations) {
-        if (typeof validations[key] === 'object' && !Array.isArray(validations[key])) {
-          result[`${key}Valid`] = buildValidation(state[key] ?? {}, validations[key]);
-        } else {
-          const [fn, message] = validations[key];
-          result[`${key}Valid`] = fn(state[key], state) ? null : message;
-        }
-      }
-      return result;
-    };
-
-    setFormValidation(buildValidation(formState, formValidations));
   };
 
   return {
@@ -111,3 +105,4 @@ export const useForm = (initialForm: any = {}, formValidations: any = {}) => {
     isFormValid,
   };
 };
+
