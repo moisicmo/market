@@ -80,22 +80,68 @@ export const useForm = (initialForm: any = {}, formValidations: any = {}) => {
     return updated;
   };
 
-  const createValidators = () => {
-    const buildValidation = (state: any, validations: any) => {
-      const result: any = {};
-      for (const key in validations) {
-        if (typeof validations[key] === 'object' && !Array.isArray(validations[key])) {
-          result[`${key}Valid`] = buildValidation(state[key] ?? {}, validations[key]);
-        } else {
-          const [fn, message] = validations[key];
-          result[`${key}Valid`] = fn(state[key], state) ? null : message;
-        }
-      }
-      return result;
-    };
+  // const createValidators = () => {
+  //   const buildValidation = (state: any, validations: any) => {
+  //     const result: any = {};
+  //     for (const key in validations) {
+  //       if (typeof validations[key] === 'object' && !Array.isArray(validations[key])) {
+  //         result[`${key}Valid`] = buildValidation(state[key] ?? {}, validations[key]);
+  //       } else {
+  //         const [fn, message] = validations[key];
+  //         result[`${key}Valid`] = fn(state[key], state) ? null : message;
+  //       }
+  //     }
+  //     return result;
+  //   };
 
-    setFormValidation(buildValidation(formState, formValidations));
+  //   setFormValidation(buildValidation(formState, formValidations));
+  // };
+  const createValidators = () => {
+  const buildValidation = (state: any, validations: any): Record<string, any> => {
+    const result: any = {};
+
+    for (const key in validations) {
+      const rule = validations[key];
+      const stateValue = state[key];
+
+      // 1️⃣ Caso: validación de array + objetos con reglas (como prices)
+      if (rule.array && rule.item && Array.isArray(stateValue)) {
+        const [fnArray, msgArray] = rule.array;
+        const arrayError = fnArray(stateValue) ? null : msgArray;
+
+        const itemsErrors = stateValue.map((item: any) =>
+          buildValidation(item, rule.item)
+        );
+
+        result[`${key}Valid`] = {
+          arrayValid: arrayError,
+          itemsValid: itemsErrors,
+        };
+        continue;
+      }
+
+      // 2️⃣ Caso: validación anidada (objeto)
+      if (typeof rule === 'object' && !Array.isArray(rule)) {
+        result[`${key}Valid`] = buildValidation(stateValue ?? {}, rule);
+        continue;
+      }
+
+      // 3️⃣ Caso: validación simple [fn, msg]
+      if (Array.isArray(rule)) {
+        const [fn, msg] = rule;
+        result[`${key}Valid`] = fn(stateValue, state) ? null : msg;
+        continue;
+      }
+
+      console.warn(`❗ Validación desconocida en key: ${key}`);
+    }
+
+    return result;
   };
+
+  setFormValidation(buildValidation(formState, formValidations));
+};
+
 
   return {
     ...formState,

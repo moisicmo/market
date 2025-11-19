@@ -1,9 +1,5 @@
-import type { AddressModel } from "./address.response";
+import type { FormBranchModel } from "../request/branch.request";
 
-export interface BranchModel {
+export interface BranchModel extends FormBranchModel{
   id: string;
-  name: string;
-  address: AddressModel | null;
-  bankAccount:string;
-  phone:string[];
 }

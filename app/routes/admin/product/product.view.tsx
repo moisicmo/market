@@ -48,6 +48,7 @@ const productView = () => {
         open={openDialog}
         handleClose={() => handleDialog(false)}
         item={itemEdit == null ? null : { ...itemEdit }}
+        image={itemEdit?.image}
         onCreate={createProduct}
         onUpdate={updateProduct}
         />

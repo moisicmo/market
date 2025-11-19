@@ -6,7 +6,6 @@ export * from './request/category.request';
 export * from './request/provider.request';
 export * from './request/brand.request';
 export * from './request/product.request';
-export * from './request/product.presentation.request';
 export * from './request/debt.request';
 export * from './request/user.request';
 export * from './request/customer.request';

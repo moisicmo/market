@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import type { BranchModel } from '@/models';
+import type { BranchModel, FormBranchModel } from '@/models';
 import { BranchCreate, BranchTable } from '.';
 import { Button } from '@/components';
 import { useBranchStore } from '@/hooks';
@@ -28,6 +28,7 @@ const branchView = () => {
       {/* Tabla de branch */}
       <BranchTable
         handleEdit={(v) => {
+          console.log(v);
           setItemEdit(v);
           handleDialog(true);
         }}

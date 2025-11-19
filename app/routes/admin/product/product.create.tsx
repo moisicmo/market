@@ -1,13 +1,16 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { useForm, useBranchStore, useCategoryStore } from '@/hooks';
+import { useForm, useBranchStore, useCategoryStore, useProviderStore, useBrandStore } from '@/hooks';
 import { Button, InputCustom, SelectCustom, ValueSelect } from '@/components';
-import { formProductFields, formProductValidations, TypeUnit, type ProductModel, type ProductRequest } from '@/models';
+import { formProductFields, formProductValidations, TypeUnit, type FormPriceModel, type ProductModel, type ProductRequest } from '@/models';
+import { ImageUploader } from '@/components/input_image.custom';
+import { PriceSection } from './prices.create';
 
 interface Props {
   open: boolean;
   handleClose: () => void;
   item: ProductModel | null;
-  onCreate: (body: ProductRequest) => void;
+  image?: string;
+  onCreate: (body: ProductRequest,image: File | null) => void;
   onUpdate: (id: string, body: ProductRequest) => void;
 }
 
@@ -16,29 +19,40 @@ export const ProductCreate = (props: Props) => {
     open,
     handleClose,
     item,
+    image,
     onCreate,
     onUpdate,
   } = props;
+  
   const { dataBranch, getBranches } = useBranchStore();
+  const { dataProvider, getProviders } = useProviderStore();
+  const { dataBrand, getBrands } = useBrandStore();
   const { dataCategory, getCategories } = useCategoryStore();
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   const {
     category,
-    branch,
+    provider,
+    brand,
     name,
-    namePresentation,
-    typeUnit,
-    price,
+    code,
+    description,
+    barCode,
+    prices,
+
     onInputChange,
     onResetForm,
     isFormValid,
     onValueChange,
+
     categoryValid,
-    branchValid,
+    providerValid,
+    brandValid,
     nameValid,
-    namePresentationValid,
-    typeUnitValid,
-    priceValid,
+    codeValid,
+    descriptionValid,
+    barCodeValid,
+    pricesValid,
   } = useForm(item ?? formProductFields, formProductValidations);
 
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -46,30 +60,33 @@ export const ProductCreate = (props: Props) => {
   const sendSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormSubmitted(true);
+    
     if (!isFormValid) return;
+    
+    const request = {
+      categoryId: category.id,
+      brandId: brand.id,
+      providerId: provider.id,
+      code: code.trim(),
+      name: name.trim(),
+      description: description.trim(),
+      barCode: barCode.trim(),
+      prices: prices.map((p: any) => ({
+        branchId: p.branch!.id,
+        typeUnit: p.typeUnit,
+        price: p.price,
+      })),
+    };
 
     if (item == null) {
-      await onCreate({
-        categoryId: category.id,
-        branchId: branch.id,
-        name: name.trim(),
-        namePresentation: namePresentation.trim(),
-        typeUnit:typeUnit.trim(),
-        price: parseFloat(price),
-      });
+      await onCreate(request, selectedImage);
     } else {
-      await onUpdate(item.id, {
-        categoryId: category.id,
-        branchId: branch.id,
-        name: name.trim(),
-        namePresentation: namePresentation.trim(),
-        typeUnit:typeUnit.trim(),
-        price: parseFloat(price),
-      });
+      await onUpdate(item.id, request);
     }
 
     handleClose();
     onResetForm();
+    setSelectedImage(null);
   };
 
   useEffect(() => {
@@ -78,14 +95,41 @@ export const ProductCreate = (props: Props) => {
     }
   }, [item]);
 
-  if (!open) return null;
-
   useEffect(() => {
     getBranches();
+    getProviders();
+    getBrands();
     getCategories();
-  }, [])
+  }, []);
 
+  const addPrice = () => {
+    const newPrice: FormPriceModel = {
+      branch: null,
+      typeUnit: '',
+      price: '0',
+    };
+    onValueChange("prices", [...prices, newPrice]);
+  };
 
+  const removePrice = (index: number) => {
+    const updated = prices.filter((_: any, i: number) => i !== index);
+    onValueChange("prices", updated);
+  };
+
+  const handlePriceChange = (index: number, field: string, value: any) => {
+    const updated = [...prices];
+    
+    if (field === 'branch') {
+      const selected = dataBranch.data?.find((b: any) => b.id === value.id);
+      updated[index].branch = selected ?? null;
+    } else if (field === 'typeUnit') {
+      updated[index].typeUnit = value as TypeUnit;
+    } else if (field === 'price') {
+      updated[index].price = value;
+    }
+    
+    onValueChange('prices', updated);
+  };
 
   const typeUnitOptions: ValueSelect[] = Object.entries(TypeUnit).map(
     ([key, value]) => ({
@@ -94,96 +138,147 @@ export const ProductCreate = (props: Props) => {
     })
   );
 
+  if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4">
-          {item ? 'Editar Producto' : 'Producto Nuevo'}
-        </h2>
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-lg w-full max-w-6xl max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b px-4 sm:px-6 py-4 z-10">
+          <h2 className="text-lg sm:text-xl font-bold">
+            {item ? 'Editar Producto' : 'Producto Nuevo'}
+          </h2>
+        </div>
 
-        <form onSubmit={sendSubmit} className="space-y-4">
-          <SelectCustom
-            label="Categoria"
-            options={dataCategory.data?.map((category) => ({ id: category.id, value: category.name })) ?? []}
-            selected={category ? { id: category.id, value: category.name } : null}
-            onSelect={(value) => {
-              if (value && !Array.isArray(value)) {
-                const select = dataCategory.data?.find((r) => r.id === value.id);
-                onValueChange('category', select);
-              }
-            }}
-            error={!!categoryValid && formSubmitted}
-            helperText={formSubmitted ? categoryValid : ''}
-          />
-          <SelectCustom
-            label="Sucursal"
-            options={dataBranch.data?.map((branch) => ({ id: branch.id, value: branch.name })) ?? []}
-            selected={branch ? { id: branch.id, value: branch.name } : null}
-            onSelect={(value) => {
-              if (value && !Array.isArray(value)) {
-                const select = dataBranch.data?.find((r) => r.id === value.id);
-                onValueChange('branch', select);
-              }
-            }}
-            error={!!branchValid && formSubmitted}
-            helperText={formSubmitted ? branchValid : ''}
-          />
-          <InputCustom
-            name="name"
-            value={name}
-            label="Nombre"
-            onChange={onInputChange}
-            error={!!nameValid && formSubmitted}
-            helperText={formSubmitted ? nameValid : ''}
-          />
-          <InputCustom
-            name="namePresentation"
-            value={namePresentation}
-            label="Nombre de presentación"
-            onChange={onInputChange}
-            error={!!namePresentationValid && formSubmitted}
-            helperText={formSubmitted ? namePresentationValid : ''}
-          />
-           <SelectCustom
-            label="Tipo de unidad"
-              options={typeUnitOptions}
-              selected={
-                typeUnit
-                  ? typeUnitOptions.find((opt) => opt.id === typeUnit) ?? null
-                  : null
-              }
-              onSelect={(value) => {
-                if (value && !Array.isArray(value)) {
-                  onValueChange('typeUnit', value.id as TypeUnit);
-                }
-              }}
-              error={!!typeUnitValid && formSubmitted}
-              helperText={formSubmitted ? typeUnitValid : ''}
+        <div className="p-4 sm:p-6">
+          <form onSubmit={sendSubmit} className="space-y-4 sm:space-y-6">
+            {/* Sección de imagen y formulario básico */}
+            <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
+              <div className="w-full lg:w-1/3">
+                <ImageUploader
+                  initialImageUrl={image ?? undefined}
+                  onUpload={(file) => setSelectedImage(file)}
+                  maxSize={10 * 1024 * 1024}
+                  acceptedFormats={['image/jpeg', 'image/png']}
+                />
+              </div>
+
+              <div className="w-full lg:w-2/3 space-y-4 sm:space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  <SelectCustom
+                    label="Categoria"
+                    options={dataCategory.data?.map((category) => ({ id: category.id, value: category.name })) ?? []}
+                    selected={category ? { id: category.id, value: category.name } : null}
+                    onSelect={(value) => {
+                      if (value && !Array.isArray(value)) {
+                        const select = dataCategory.data?.find((r) => r.id === value.id);
+                        onValueChange('category', select);
+                      }
+                    }}
+                    error={!!categoryValid && formSubmitted}
+                    helperText={formSubmitted ? categoryValid : ''}
+                  />
+                  <SelectCustom
+                    label="Marca"
+                    options={dataBrand.data?.map((brand) => ({ id: brand.id, value: brand.name })) ?? []}
+                    selected={brand ? { id: brand.id, value: brand.name } : null}
+                    onSelect={(value) => {
+                      if (value && !Array.isArray(value)) {
+                        const select = dataBrand.data?.find((r) => r.id === value.id);
+                        onValueChange('brand', select);
+                      }
+                    }}
+                    error={!!brandValid && formSubmitted}
+                    helperText={formSubmitted ? brandValid : ''}
+                  />
+                  <SelectCustom
+                    label="Proveedor"
+                    options={dataProvider.data?.map((provider) => ({ id: provider.id, value: provider.name })) ?? []}
+                    selected={provider ? { id: provider.id, value: provider.name } : null}
+                    onSelect={(value) => {
+                      if (value && !Array.isArray(value)) {
+                        const select = dataProvider.data?.find((r) => r.id === value.id);
+                        onValueChange('provider', select);
+                      }
+                    }}
+                    error={!!providerValid && formSubmitted}
+                    helperText={formSubmitted ? providerValid : ''}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <InputCustom
+                    name="name"
+                    value={name}
+                    label="Nombre"
+                    onChange={onInputChange}
+                    error={!!nameValid && formSubmitted}
+                    helperText={formSubmitted ? nameValid : ''}
+                  />
+                  <InputCustom
+                    name="description"
+                    value={description}
+                    label="Descripción"
+                    onChange={onInputChange}
+                    error={!!descriptionValid && formSubmitted}
+                    helperText={formSubmitted ? descriptionValid : ''}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <InputCustom
+                    name="code"
+                    value={code}
+                    label="Código"
+                    onChange={onInputChange}
+                    error={!!codeValid && formSubmitted}
+                    helperText={formSubmitted ? codeValid : ''}
+                  />
+                  <InputCustom
+                    name="barCode"
+                    value={barCode}
+                    label="Código de barras"
+                    onChange={onInputChange}
+                    error={!!barCodeValid && formSubmitted}
+                    helperText={formSubmitted ? barCodeValid : ''}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Sección de precios como componente separado */}
+            <PriceSection
+              prices={prices}
+              pricesValid={pricesValid}
+              formSubmitted={formSubmitted}
+              dataBranch={dataBranch}
+              typeUnitOptions={typeUnitOptions}
+              onAddPrice={addPrice}
+              onRemovePrice={removePrice}
+              onPriceChange={handlePriceChange}
             />
-          <InputCustom
-            name="price"
-            value={price}
-            label="Precio"
-            onChange={onInputChange}
-            error={!!priceValid && formSubmitted}
-            helperText={formSubmitted ? priceValid : ''}
-          />
 
-          <div className="flex justify-end gap-2 pt-2">
-            <Button
-              type="button"  
-              onClick={() => {
-                onResetForm();
-                handleClose();
-              }}
-              color='bg-gray-400'
-            >Cancelar</Button>
-            <Button
-              type='submit'
-            >{item ? 'Editar' : 'Crear'}</Button>
-          </div>
-        </form>
+            {/* Botones de acción */}
+            <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4 sm:pt-6 border-t">
+              <Button
+                type="button"
+                onClick={() => {
+                  onResetForm();
+                  handleClose();
+                }}
+                color='bg-gray-400'
+                className="w-full sm:w-auto order-2 sm:order-1"
+              >
+                Cancelar
+              </Button>
+              <Button
+                type='submit'
+                className="w-full sm:w-auto order-1 sm:order-2 mb-2 sm:mb-0"
+              >
+                {item ? 'Editar' : 'Crear'}
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

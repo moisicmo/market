@@ -29,7 +29,7 @@ interface FormBranchValidations {
 
 export const formBranchValidations: FormBranchValidations = {
   name: [(value) => value.length >= 1, 'Debe ingresar el nombre'],
-  bankAccount: [(value) => value.length >= 1, 'Debe ingresar el nombre'],
+  bankAccount: [(value) => value != null && value.length >= 1, 'Debe ingresar el nombre'],
   phone: [(value) => value.length >= 1, 'Debe ingresar el nombre'],
   address: formAddressValidations,
 };

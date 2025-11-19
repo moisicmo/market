@@ -24,9 +24,28 @@ export const useProductStore = () => {
     }
   };
 
-  const createProduct = async (body: ProductRequest) => {
+  const createProduct = async (body: ProductRequest, image: File | null) => {
     try {
-      const { data } = await coffeApi.post(`${baseUrl}`, body);
+      console.log(body);
+      const formData = new FormData();
+
+      Object.entries(body).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && key !== "prices") {
+          formData.append(key, value as string);
+        }
+      });
+
+      formData.append('prices', JSON.stringify(body.prices));
+
+      if (image) {
+        formData.append("image", image);
+      }
+      const { data } = await coffeApi.post(`${baseUrl}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
       console.log(data);
       getProducts();
       showSuccess('Producto creado correctamente');
@@ -34,9 +53,27 @@ export const useProductStore = () => {
       throw handleError(error);
     }
   };
-  const updateProduct = async (id: string, body: ProductRequest) => {
+
+  const updateProduct = async (id: string, body: ProductRequest, image: File | null) => {
     try {
-      const { data } = await coffeApi.patch(`/${baseUrl}/${id}`, body);
+      console.log(body);
+      const formData = new FormData();
+
+      Object.entries(body).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && key !== "prices") {
+          formData.append(key, value as string);
+        }
+      });
+      formData.append('prices', JSON.stringify(body.prices));
+
+      if (image) {
+        formData.append("image", image);
+      }
+      const { data } = await coffeApi.patch(`/${baseUrl}/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       console.log(data);
       getProducts();
       showSuccess('Producto editado correctamente');

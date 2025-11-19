@@ -1,21 +1,15 @@
-import type { BranchModel, CategoryModel, PriceModel, TypeUnit } from "..";
+import type { BranchModel, CategoryModel, PriceModel, ProviderModel } from "..";
 
 export interface ProductModel {
   id: string;
   code: string;
   name: string;
+  description?: string;
+  image?: string;
   barCode?: string;
-  category: CategoryModel;
   visible: boolean;
-  image: string;
-  productPresentations: ProductPresentationModel[];
-}
-
-export interface ProductPresentationModel {
-  id: string;
-  product?: ProductModel;
-  name: string;
-  typeUnit: TypeUnit;
-  branch: BranchModel;
+  category: CategoryModel;
+  provider: ProviderModel;
+  brand: BranchModel;
   prices: PriceModel[];
 }
