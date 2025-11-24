@@ -1,7 +1,7 @@
-import type { ProductPresentationModel } from "..";
+import type { ProductModel } from "./product.response";
 
 export interface KardexModel {
-  presentation: ProductPresentationModel;
+  product: ProductModel;
   stock: number;
   kardex: Movement[];
 }

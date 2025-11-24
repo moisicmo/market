@@ -1,15 +1,15 @@
-import type { ProductPresentationModel } from "..";
+import type { ProductModel } from "../response/product.response";
 
 
 // request
 export interface InputRequest {
   branchId: string;
   detail: string;
-  presentations: Presentation[];
+  products: ProductInputRequest[];
 }
 
-interface Presentation {
-  productPresentationId: string;
+export interface ProductInputRequest {
+  productId: string;
   quantity: number;
   price: number;
 }
@@ -17,11 +17,11 @@ interface Presentation {
 // model
 interface FormInputModel {
   detail: string;
-  presentations: PresentationModel[];
+  products: ProductModel[];
 };
 
-export interface PresentationModel {
-  productPresentation: ProductPresentationModel;
+export interface ProductInputModel {
+  product: ProductModel;
   quantity: number;
   price: number;
   dueDate: Date;
@@ -29,7 +29,7 @@ export interface PresentationModel {
 
 export const formInputFields: FormInputModel = {
   detail: 'compra',
-  presentations: [],
+  products: [],
 };
 
 // validaciones
@@ -40,14 +40,14 @@ export const formInputValidations: FormInputValidations = {
   detail: [(value) => value.length > 0, 'Debe ingresar un detalle de ingreso'],
 };
 // validaciones de cada presentación individual
-interface PresentationValidations {
-  productPresentation: [(value: ProductPresentationModel | null) => boolean, string];
+interface ProductValidations {
+  product: [(value: ProductModel | null) => boolean, string];
   quantity: [(value: number) => boolean, string];
   price: [(value: number) => boolean, string];
 }
 
-export const presentationValidations: PresentationValidations = {
-  productPresentation: [(value) => value != null, 'Debe seleccionar una presentación de producto'],
+export const productValidations: ProductValidations = {
+  product: [(value) => value != null, 'Debe seleccionar una presentación de producto'],
   quantity: [(value) => value > 0, 'La cantidad debe ser mayor a 0'],
   price: [(value) => value > 0, 'El precio debe ser mayor a 0'],
 };

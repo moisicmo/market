@@ -15,10 +15,9 @@ interface Props {
   dataKardex: BaseResponse<KardexModel>;
   onInputCreate: (body: InputRequest) => void;
   onTransferCreate: (body: TransferRequest) => void;
-  dataBranch: BaseResponse<BranchModel>;
 }
 
-export const PresentationTable = (props: Props) => {
+export const ProductTable = (props: Props) => {
   const {
     branchId,
     itemSelect,
@@ -26,7 +25,6 @@ export const PresentationTable = (props: Props) => {
     dataKardex,
     onInputCreate,
     onTransferCreate,
-    dataBranch,
   } = props;
 
   const [page, setPage] = useState(1);
@@ -74,7 +72,6 @@ export const PresentationTable = (props: Props) => {
           <TableHeader>
             <TableRow>
               <TableHead>Producto</TableHead>
-              <TableHead>Presentación</TableHead>
               <TableHead>Categoría</TableHead>
               <TableHead>Stock</TableHead>
               <TableHead className="sticky right-0 z-10 bg-white">Acciones</TableHead>
@@ -82,20 +79,19 @@ export const PresentationTable = (props: Props) => {
           </TableHeader>
           <TableBody>
             {dataKardex.data.map((kardex) => (
-              <React.Fragment key={kardex.presentation.id}>
+              <React.Fragment key={kardex.product.id}>
                 <TableRow>
-                  <TableCell>{kardex.presentation.product?.name}</TableCell>
-                  <TableCell>{kardex.presentation.name}</TableCell>
-                  <TableCell>{kardex.presentation.product?.category.name}</TableCell>
+                  <TableCell>{kardex.product.name}</TableCell>
+                  <TableCell>{kardex.product.category.name}</TableCell>
                   <TableCell>{kardex.stock}</TableCell>
                   <TableCell className="sticky right-0 z-10 bg-white">
                     <ActionButtons
-                      item={kardex.presentation}
+                      item={kardex.product}
                       onSelect={handleSelect}
                     />
                   </TableCell>
                 </TableRow>
-                {expandedId === kardex.presentation.id && (
+                {expandedId === kardex.product.id && (
                   <TableRow className="bg-gray-50">
                     <TableCell colSpan={12} className="p-0">
                       <div className="rounded-md border border-slate-300 bg-white p-4 shadow-sm">
@@ -132,7 +128,7 @@ export const PresentationTable = (props: Props) => {
         />
       )}
 
-      {openTransferDialog && (
+      {/* {openTransferDialog && (
         <TransferCreate
           branchId={branchId}
           dataKardex={dataKardex.data}
@@ -140,7 +136,7 @@ export const PresentationTable = (props: Props) => {
           onTransferCreate={onTransferCreate}
           dataBranch={dataBranch}
         />
-      )}
+      )} */}
     </>
   );
 };

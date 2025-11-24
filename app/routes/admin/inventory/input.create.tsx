@@ -4,10 +4,12 @@ import { Button, InputCustom, SelectCustom, ValueSelect } from '@/components';
 import {
   formInputFields,
   formInputValidations,
-  presentationValidations,
+  productValidations,
   type KardexModel,
   type InputRequest,
-  type PresentationModel,
+  type ProductModel,
+  type ProductInputModel,
+  type ProductInputRequest,
 } from '@/models';
 import { Trash2 } from 'lucide-react';
 
@@ -18,7 +20,7 @@ interface Props {
   onInputCreate: (body: InputRequest) => void;
 }
 
-type PresentationErrors = {
+type ProductErrors = {
   quantity?: string;
   price?: string;
 };
@@ -38,14 +40,14 @@ export const InputCreate = ({
   } = useForm(formInputFields, formInputValidations);
 
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [presentations, setPresentations] = useState<PresentationModel[]>([]);
+  const [products, setProducts] = useState<ProductInputModel[]>([]);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 
-  const validatePresentations = (presentations: PresentationModel[]): PresentationErrors[] => {
-    return presentations.map((p) => {
-      const errors: PresentationErrors = {};
-      const [validQty, msgQty] = presentationValidations.quantity;
-      const [validPrice, msgPrice] = presentationValidations.price;
+  const validateProducts = (products: ProductInputModel[]): ProductErrors[] => {
+    return products.map((p) => {
+      const errors: ProductErrors = {};
+      const [validQty, msgQty] = productValidations.quantity;
+      const [validPrice, msgPrice] = productValidations.price;
 
       if (!validQty(p.quantity)) errors.quantity = msgQty;
       if (!validPrice(p.price)) errors.price = msgPrice;
@@ -54,8 +56,8 @@ export const InputCreate = ({
     });
   };
 
-  const presentationErrors = validatePresentations(presentations);
-  const hasPresentationErrors = presentationErrors.some((err) =>
+  const productErrors = validateProducts(products);
+  const hasPresentationErrors = productErrors.some((err) =>
     Object.values(err).some(Boolean)
   );
 
@@ -63,18 +65,18 @@ export const InputCreate = ({
     e.preventDefault();
     setFormSubmitted(true);
 
-    console.log('isFormValid:', isFormValid);
-    console.log('presentations:', presentations);
-    console.log('presentationErrors:', presentationErrors);
-    console.log('hasPresentationErrors:', hasPresentationErrors);
+    // console.log('isFormValid:', isFormValid);
+    // console.log('presentations:', products);
+    // console.log('presentationErrors:', presentationErrors);
+    // console.log('hasPresentationErrors:', hasPresentationErrors);
 
-    if (!isFormValid || presentations.length === 0 || hasPresentationErrors) return;
+    if (!isFormValid || products.length === 0 || hasPresentationErrors) return;
 
     console.log('evaluando');
 
 
-    const formattedPresentations = presentations.map((p) => ({
-      productPresentationId: p.productPresentation.id,
+    const formattedProducts: ProductInputRequest[] = products.map((p) => ({
+      productId: p.product.id,
       quantity: p.quantity,
       price: p.price,
     }));
@@ -82,26 +84,26 @@ export const InputCreate = ({
     await onInputCreate({
       branchId,
       detail: detail.trim(),
-      presentations: formattedPresentations,
+      products: formattedProducts,
     });
 
     handleClose();
     onResetForm();
-    setPresentations([]);
+    setProducts([]);
     setFormSubmitted(false);
   };
 
   const handleAddPresentation = () => {
     if (selectedIdx === null) return;
-    const selected = dataKardex[selectedIdx].presentation;
+    const selected = dataKardex[selectedIdx].product;
 
     // Evitar duplicados
-    if (presentations.find((p) => p.productPresentation.id === selected.id)) return;
+    if (products.find((p) => p.product.id === selected.id)) return;
 
-    setPresentations((prev) => [
+    setProducts((prev) => [
       ...prev,
       {
-        productPresentation: selected,
+        product: selected,
         quantity: 1,
         price: 0,
         dueDate: new Date(),
@@ -109,8 +111,8 @@ export const InputCreate = ({
     ]);
   };
 
-  const handleUpdate = (index: number, key: keyof PresentationModel, value: any) => {
-    setPresentations((prev) => {
+  const handleUpdate = (index: number, key: keyof ProductInputModel, value: any) => {
+    setProducts((prev) => {
       const updated = [...prev];
       updated[index] = { ...updated[index], [key]: value };
       return updated;
@@ -118,12 +120,12 @@ export const InputCreate = ({
   };
 
   const handleRemove = (index: number) => {
-    setPresentations((prev) => prev.filter((_, i) => i !== index));
+    setProducts((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg w-full max-w-4xl p-6 max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">Nueva Entrada</h2>
 
         <form onSubmit={sendSubmit} className="space-y-4">
@@ -140,9 +142,9 @@ export const InputCreate = ({
           {/* Selector de presentación */}
           <div className="flex items-end gap-2">
             <SelectCustom
-              label="Presentación"
-              options={dataKardex.map((k, i) => new ValueSelect(i.toString(), k.presentation.name))}
-              selected={selectedIdx !== null ? new ValueSelect(selectedIdx.toString(), dataKardex[selectedIdx].presentation.name) : null}
+              label="Producto"
+              options={dataKardex.map((k, i) => new ValueSelect(i.toString(), k.product.name))}
+              selected={selectedIdx !== null ? new ValueSelect(selectedIdx.toString(), dataKardex[selectedIdx].product.name) : null}
               onSelect={(value) => {
                 if (value && !Array.isArray(value)) {
                   setSelectedIdx(Number(value.id));
@@ -156,35 +158,35 @@ export const InputCreate = ({
             <Button type="button" onClick={handleAddPresentation}>Agregar</Button>
           </div>
           {/* Lista de presentaciones agregadas */}
-          {presentations.length > 0 && (
+          {products.length > 0 && (
             <div className="mt-4 space-y-3">
-              {presentations.map((p, i) => (
+              {products.map((p, i) => (
                 <div key={i} className="rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm space-y-3">
                   <div className="flex justify-between items-center mb-4">
-                    <p className="text-sm font-semibold mb-2">{p.productPresentation.name}</p>
+                    <p className="text-sm font-semibold mb-2">{p.product.name}</p>
                     <button onClick={() => handleRemove(i)} title="Eliminar" className="cursor-pointer">
                       <Trash2 color="var(--color-error)" className="w-5 h-5" />
                     </button>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     <InputCustom
-                      name={`presentations[${i}].quantity`}
+                      name={`products[${i}].quantity`}
                       value={p.quantity}
                       label="Cantidad"
                       type="number"
                       onChange={(e) => handleUpdate(i, 'quantity', Number(e.target.value))}
-                      error={!!presentationErrors[i]?.quantity && formSubmitted}
-                      helperText={formSubmitted ? presentationErrors[i]?.quantity : ''}
+                      error={!!productErrors[i]?.quantity && formSubmitted}
+                      helperText={formSubmitted ? productErrors[i]?.quantity : ''}
                     />
 
                     <InputCustom
-                      name={`presentations[${i}].price`}
+                      name={`products[${i}].price`}
                       value={p.price}
                       label="Precio"
                       type="number"
                       onChange={(e) => handleUpdate(i, 'price', Number(e.target.value))}
-                      error={!!presentationErrors[i]?.price && formSubmitted}
-                      helperText={formSubmitted ? presentationErrors[i]?.price : ''}
+                      error={!!productErrors[i]?.price && formSubmitted}
+                      helperText={formSubmitted ? productErrors[i]?.price : ''}
                     />
                   </div>
                 </div>
@@ -192,7 +194,7 @@ export const InputCreate = ({
             </div>
           )}
           {/* Validación general */}
-          {formSubmitted && presentations.length === 0 && (
+          {formSubmitted && products.length === 0 && (
             <p className="text-sm text-red-500 mt-2">Debe agregar al menos una presentación</p>
           )}
           {/* Acciones */}
@@ -202,7 +204,7 @@ export const InputCreate = ({
               color="bg-gray-400"
               onClick={() => {
                 onResetForm();
-                setPresentations([]);
+                setProducts([]);
                 handleClose();
               }}
             >

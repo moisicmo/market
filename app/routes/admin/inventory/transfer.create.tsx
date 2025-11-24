@@ -2,14 +2,15 @@ import { useState, type FormEvent } from 'react';
 import { useForm } from '@/hooks';
 import { Button, InputCustom, SelectCustom, ValueSelect } from '@/components';
 import {
-  presentationValidations,
+  productValidations,
   type KardexModel,
-  type PresentationModel,
+  type ProductModel,
   type BaseResponse,
   type BranchModel,
   formTransferFields,
   formTransferValidations,
   type TransferRequest,
+  type ProductInputModel,
 } from '@/models';
 import { Trash2 } from 'lucide-react';
 
@@ -45,23 +46,23 @@ export const TransferCreate = ({
   } = useForm(formTransferFields, formTransferValidations);
 
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [presentations, setPresentations] = useState<PresentationModel[]>([]);
+  const [products, setProducts] = useState<ProductInputModel[]>([]);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 
-  const validatePresentations = (
-    presentations: PresentationModel[],
+  const validateRroducts = (
+    presentations: ProductInputModel[],
     dataKardex: KardexModel[]
   ): PresentationErrors[] => {
     return presentations.map((p) => {
       const errors: PresentationErrors = {};
-      const [validQty, msgQty] = presentationValidations.quantity;
-      const [validPrice, msgPrice] = presentationValidations.price;
+      const [validQty, msgQty] = productValidations.quantity;
+      const [validPrice, msgPrice] = productValidations.price;
 
       if (!validQty(p.quantity)) {
         errors.quantity = msgQty;
       } else {
         // ✅ Verificar stock
-        const kardexItem = dataKardex.find(k => k.presentation.id === p.productPresentation.id);
+        const kardexItem = dataKardex.find(k => k.product.id === p.product.id);
         if (kardexItem && p.quantity > kardexItem.stock) {
           errors.quantity = `La cantidad (${p.quantity}) excede el stock disponible (${kardexItem.stock})`;
         }
@@ -74,7 +75,7 @@ export const TransferCreate = ({
   };
 
 
-  const presentationErrors = validatePresentations(presentations, dataKardex);
+  const presentationErrors = validateRroducts(products, dataKardex);
 
   const hasPresentationErrors = presentationErrors.some((err) =>
     Object.values(err).some(Boolean)
@@ -85,16 +86,16 @@ export const TransferCreate = ({
     setFormSubmitted(true);
 
     console.log('isFormValid:', isFormValid);
-    console.log('presentations:', presentations);
+    console.log('presentations:', products);
     console.log('presentationErrors:', presentationErrors);
     console.log('hasPresentationErrors:', hasPresentationErrors);
 
-    if (!isFormValid || presentations.length === 0 || hasPresentationErrors) return;
+    if (!isFormValid || products.length === 0 || hasPresentationErrors) return;
 
     console.log('evaluando');
 
 
-    const formattedPresentations = presentations.map((p) => ({
+    const formattedPresentations = products.map((p) => ({
       productPresentationId: p.productPresentation.id,
       quantity: p.quantity,
       price: p.price,
@@ -114,7 +115,7 @@ export const TransferCreate = ({
 
     handleClose();
     onResetForm();
-    setPresentations([]);
+    setProducts([]);
     setFormSubmitted(false);
   };
 
@@ -123,9 +124,9 @@ export const TransferCreate = ({
     const selected = dataKardex[selectedIdx].presentation;
 
     // Evitar duplicados
-    if (presentations.find((p) => p.productPresentation.id === selected.id)) return;
+    if (products.find((p) => p.productPresentation.id === selected.id)) return;
 
-    setPresentations((prev) => [
+    setProducts((prev) => [
       ...prev,
       {
         productPresentation: selected,
@@ -137,7 +138,7 @@ export const TransferCreate = ({
   };
 
   const handleUpdate = (index: number, key: keyof PresentationModel, value: any) => {
-    setPresentations((prev) => {
+    setProducts((prev) => {
       const updated = [...prev];
       updated[index] = { ...updated[index], [key]: value };
       return updated;
@@ -145,7 +146,7 @@ export const TransferCreate = ({
   };
 
   const handleRemove = (index: number) => {
-    setPresentations((prev) => prev.filter((_, i) => i !== index));
+    setProducts((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -202,9 +203,9 @@ export const TransferCreate = ({
             <Button type="button" onClick={handleAddPresentation}>Agregar</Button>
           </div>
           {/* Lista de presentaciones agregadas */}
-          {presentations.length > 0 && (
+          {products.length > 0 && (
             <div className="mt-4 space-y-3">
-              {presentations.map((p, i) => (
+              {products.map((p, i) => (
                 <div key={i} className="rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm space-y-3">
                   <div className="flex justify-between items-center mb-4">
                     <div>
@@ -248,7 +249,7 @@ export const TransferCreate = ({
             </div>
           )}
           {/* Validación general */}
-          {formSubmitted && presentations.length === 0 && (
+          {formSubmitted && products.length === 0 && (
             <p className="text-sm text-red-500 mt-2">Debe agregar al menos una presentación</p>
           )}
           {/* Acciones */}
@@ -258,7 +259,7 @@ export const TransferCreate = ({
               color="bg-gray-400"
               onClick={() => {
                 onResetForm();
-                setPresentations([]);
+                setProducts([]);
                 handleClose();
               }}
             >

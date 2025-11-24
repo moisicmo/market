@@ -37,7 +37,7 @@ export const CustomerCreate = (props: Props) => {
     if (item == null) {
       await onCreate({
         numberDocument: user.numberDocument,
-        typeDocument: 'DNI',
+        typeDocument: 'dni',
         name: user.name.trim(),
         lastName: user.lastName.trim(),
         email: user.email.trim(),
@@ -45,7 +45,7 @@ export const CustomerCreate = (props: Props) => {
     } else {
       await onCreate({
         numberDocument: user.numberDocument,
-        typeDocument: 'DNI',
+        typeDocument: 'dni',
         name: user.name.trim(),
         lastName: user.lastName.trim(),
         email: user.email.trim(),

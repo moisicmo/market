@@ -1,7 +1,8 @@
 import { Menu, ShoppingCart } from 'lucide-react';
-import { useCartStore, usePopover } from '@/hooks';
+import { useAuthStore, useCartStore, usePopover } from '@/hooks';
 import noimage from '@/assets/images/profile.png';
 import { AccountPopover } from './account.popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Props {
   onNavOpen: () => void;
@@ -15,6 +16,7 @@ export const TopNav = (props: Props) => {
   } = props;
   const accountPopover = usePopover();
 
+  const { branchesUser, branchSelect, setBranchSelect } = useAuthStore();
   const { cart } = useCartStore();
 
   return (
@@ -33,10 +35,27 @@ export const TopNav = (props: Props) => {
 
         {/* Este div ocupa el espacio izquierdo cuando el botón está oculto */}
         <div className="hidden lg:block w-6 h-6"></div>
-
-
         <div className="relative flex items-center gap-4">
+          <Select
+            onValueChange={(value) => {
+              const branch = branchesUser.find(b => b.id === value);
+              if (branch) {
+                setBranchSelect(branch);
+              }
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder={branchSelect?.name || "Seleccionar sucursal"} />
+            </SelectTrigger>
 
+            <SelectContent>
+              {branchesUser.map(branch => (
+                <SelectItem key={branch.id} value={branch.id}>
+                  {branch.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           {/* Botón del carrito */}
           <div className="relative">
             <button

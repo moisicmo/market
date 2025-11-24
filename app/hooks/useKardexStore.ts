@@ -4,11 +4,11 @@ import { InitBaseResponse, type BaseResponse, type KardexModel, type Movement } 
 import { useState } from 'react';
 
 export const useKardexStore = () => {
-  const [dataKardexPresentation, setDataKardexPresentation] = useState<BaseResponse<KardexModel>>(InitBaseResponse);
+  const [dataKardexProduct, setDataKardexProduct] = useState<BaseResponse<KardexModel>>(InitBaseResponse);
   const { handleError } = useErrorStore();
   const baseUrl = 'kardex';
 
-  const getPresentationsByBranchId = async (branchId: string, page: number = 1, limit: number = 10, keys: string = '') => {
+  const getKardexByBranchId = async (branchId: string, page: number = 1, limit: number = 10, keys: string = '') => {
     try {
       const res = await coffeApi.get(`/${baseUrl}?branchId=${branchId}&page=${page}&limit=${limit}&keys=${keys}`);
       const { data, meta } = res.data;
@@ -17,30 +17,30 @@ export const useKardexStore = () => {
         ...meta,
         data,
       };
-      setDataKardexPresentation(payload);
+      setDataKardexProduct(payload);
     } catch (error) {
       throw handleError(error);
     }
   };
 
   const updatePresentations = (moviments: Movement[]) => {
-    console.log('moviments:', moviments);
-    setDataKardexPresentation({
-      ...dataKardexPresentation,
-      data: dataKardexPresentation.data.map(d => {
-        const moviment = moviments.find(
-          m => (m.input?.productPresentationId ?? m.output?.productPresentationId) === d.presentation.id
-        );
-        if (moviment) {
-          return {
-            ...d,
-            stock: moviment.stock,
-            kardex: [moviment, ...(d.kardex ?? [])]
-          };
-        }
-        return d;
-      })
-    });
+    // console.log('moviments:', moviments);
+    // setDataKardexProduct({
+    //   ...dataKardexPresentation,
+    //   data: dataKardexPresentation.data.map(d => {
+    //     const moviment = moviments.find(
+    //       m => (m.input?.productPresentationId ?? m.output?.productPresentationId) === d.presentation.id
+    //     );
+    //     if (moviment) {
+    //       return {
+    //         ...d,
+    //         stock: moviment.stock,
+    //         kardex: [moviment, ...(d.kardex ?? [])]
+    //       };
+    //     }
+    //     return d;
+    //   })
+    // });
   };
 
 
@@ -48,9 +48,9 @@ export const useKardexStore = () => {
 
   return {
     //* Propiedades
-    dataKardexPresentation,
+    dataKardexProduct,
     //* Métodos
-    getPresentationsByBranchId,
+    getKardexByBranchId,
     updatePresentations,
   };
 };

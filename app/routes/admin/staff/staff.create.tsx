@@ -45,7 +45,7 @@ export const StaffCreate = (props: Props) => {
     if (item == null) {
       await onCreate({
         numberDocument: user.numberDocument,
-        typeDocument: 'DNI',
+        typeDocument: 'dni',
         name: user.name.trim(),
         lastName: user.lastName.trim(),
         email: user.email.trim(),
@@ -55,7 +55,7 @@ export const StaffCreate = (props: Props) => {
     } else {
       await onUpdate(item.userId, {
         numberDocument: user.numberDocument,
-        typeDocument: 'DNI',
+        typeDocument: 'dni',
         name: user.name.trim(),
         lastName: user.lastName.trim(),
         email: user.email.trim(),
