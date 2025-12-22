@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useForm } from '@/hooks';
-import { Button, InputCustom, InputPhonesCustom } from '@/components';
+import { Button, InputCustom, InputPhonesCustom, SelectCustom } from '@/components';
 import { formBranchFields, formBranchValidations, type BranchModel, type BranchRequest } from '@/models';
 
 interface Props {
@@ -21,6 +21,7 @@ export const BranchCreate = (props: Props) => {
   } = props;
 
   const {
+    type,
     name,
     bankAccount,
     phone,
@@ -29,6 +30,7 @@ export const BranchCreate = (props: Props) => {
     onValueChange,
     onResetForm,
     isFormValid,
+    typeValid,
     nameValid,
     bankAccountValid,
     phoneValid,
@@ -44,6 +46,7 @@ export const BranchCreate = (props: Props) => {
 
     if (item == null) {
       await onCreate({
+        type: type,
         name: name.trim(),
         bankAccount: bankAccount.trim(),
         phone,
@@ -53,6 +56,7 @@ export const BranchCreate = (props: Props) => {
       });
     } else {
       await onUpdate(item.id, {
+        type: type,
         name: name.trim(),
         bankAccount: bankAccount.trim(),
         phone,
@@ -81,6 +85,18 @@ export const BranchCreate = (props: Props) => {
         </h2>
 
         <form onSubmit={sendSubmit} className="space-y-4">
+          <SelectCustom
+            label="Tipo de sucursal"
+            options={['sucursal', 'deposito'].map((t) => ({ id: t, value: t }))}
+            selected={type ? { id: type, value: type } : null}
+            onSelect={(value) => {
+              if (value && !Array.isArray(value)) {
+                onValueChange('type', value.id);
+              }
+            }}
+            error={!!typeValid && formSubmitted}
+            helperText={formSubmitted ? typeValid : ''}
+          />
           <InputCustom
             name="name"
             value={name}

@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { useForm, useBranchStore, useCategoryStore, useProviderStore, useBrandStore } from '@/hooks';
+import { useForm, useBranchStore, useCategoryStore, useBrandStore } from '@/hooks';
 import { Button, InputCustom, SelectCustom, ValueSelect } from '@/components';
 import { formProductFields, formProductValidations, TypeUnit, type FormPriceModel, type ProductModel, type ProductRequest } from '@/models';
 import { ImageUploader } from '@/components/input_image.custom';
@@ -10,7 +10,7 @@ interface Props {
   handleClose: () => void;
   item: ProductModel | null;
   image?: string;
-  onCreate: (body: ProductRequest,image: File | null) => void;
+  onCreate: (body: ProductRequest, image: File | null) => void;
   onUpdate: (id: string, body: ProductRequest) => void;
 }
 
@@ -23,16 +23,14 @@ export const ProductCreate = (props: Props) => {
     onCreate,
     onUpdate,
   } = props;
-  
+
   const { dataBranch, getBranches } = useBranchStore();
-  const { dataProvider, getProviders } = useProviderStore();
   const { dataBrand, getBrands } = useBrandStore();
   const { dataCategory, getCategories } = useCategoryStore();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   const {
     category,
-    provider,
     brand,
     name,
     code,
@@ -46,7 +44,6 @@ export const ProductCreate = (props: Props) => {
     onValueChange,
 
     categoryValid,
-    providerValid,
     brandValid,
     nameValid,
     codeValid,
@@ -60,13 +57,12 @@ export const ProductCreate = (props: Props) => {
   const sendSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormSubmitted(true);
-    
+
     if (!isFormValid) return;
-    
+
     const request = {
       categoryId: category.id,
       brandId: brand.id,
-      providerId: provider.id,
       code: code.trim(),
       name: name.trim(),
       description: description.trim(),
@@ -75,6 +71,7 @@ export const ProductCreate = (props: Props) => {
         branchId: p.branch!.id,
         typeUnit: p.typeUnit,
         price: p.price,
+        promoPrice: p.promoPrice,
       })),
     };
 
@@ -97,28 +94,57 @@ export const ProductCreate = (props: Props) => {
 
   useEffect(() => {
     getBranches();
-    getProviders();
     getBrands();
     getCategories();
   }, []);
 
+  const branchesSucursal = dataBranch.data?.filter(
+    (b) => b.type === 'sucursal'
+  ) ?? [];
+
+  const createPricesFromBranches = (): FormPriceModel[] => {
+    return branchesSucursal.map((branch) => ({
+      id: crypto.randomUUID(),   // 👈 CLAVE
+      branch,
+      typeUnit: TypeUnit.UNIDAD,
+      price: '',
+      promoPrice: '',
+    }));
+  };
+
   const addPrice = () => {
     const newPrice: FormPriceModel = {
+      id: crypto.randomUUID(),
       branch: null,
       typeUnit: '',
-      price: '0',
+      price: '',
+      promoPrice: '',
     };
     onValueChange("prices", [...prices, newPrice]);
   };
+
 
   const removePrice = (index: number) => {
     const updated = prices.filter((_: any, i: number) => i !== index);
     onValueChange("prices", updated);
   };
 
+  const createCopyPrice = (index: number) => {
+    const original = prices[index];
+    if (!original) return;
+
+    const copied: FormPriceModel = {
+      ...original,
+      id: crypto.randomUUID(), // 👈 NUEVO ID
+    };
+
+    onValueChange("prices", [...prices, copied]);
+  };
+
+
   const handlePriceChange = (index: number, field: string, value: any) => {
     const updated = [...prices];
-    
+
     if (field === 'branch') {
       const selected = dataBranch.data?.find((b: any) => b.id === value.id);
       updated[index].branch = selected ?? null;
@@ -126,10 +152,20 @@ export const ProductCreate = (props: Props) => {
       updated[index].typeUnit = value as TypeUnit;
     } else if (field === 'price') {
       updated[index].price = value;
+    } else if (field === 'promoPrice') {
+      updated[index].promoPrice = value;
     }
-    
+
     onValueChange('prices', updated);
   };
+
+  useEffect(() => {
+    // Solo cuando es producto nuevo
+    if (!item && branchesSucursal.length > 0 && prices.length === 0) {
+      const initialPrices = createPricesFromBranches();
+      onValueChange('prices', initialPrices);
+    }
+  }, [branchesSucursal, item]);
 
   const typeUnitOptions: ValueSelect[] = Object.entries(TypeUnit).map(
     ([key, value]) => ({
@@ -161,9 +197,8 @@ export const ProductCreate = (props: Props) => {
                   acceptedFormats={['image/jpeg', 'image/png']}
                 />
               </div>
-
-              <div className="w-full lg:w-2/3 space-y-4 sm:space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="w-full lg:w-2/3 sm:space-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3">
                   <SelectCustom
                     label="Categoria"
                     options={dataCategory.data?.map((category) => ({ id: category.id, value: category.name })) ?? []}
@@ -190,22 +225,8 @@ export const ProductCreate = (props: Props) => {
                     error={!!brandValid && formSubmitted}
                     helperText={formSubmitted ? brandValid : ''}
                   />
-                  <SelectCustom
-                    label="Proveedor"
-                    options={dataProvider.data?.map((provider) => ({ id: provider.id, value: provider.name })) ?? []}
-                    selected={provider ? { id: provider.id, value: provider.name } : null}
-                    onSelect={(value) => {
-                      if (value && !Array.isArray(value)) {
-                        const select = dataProvider.data?.find((r) => r.id === value.id);
-                        onValueChange('provider', select);
-                      }
-                    }}
-                    error={!!providerValid && formSubmitted}
-                    helperText={formSubmitted ? providerValid : ''}
-                  />
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <InputCustom
                     name="name"
                     value={name}
@@ -214,17 +235,6 @@ export const ProductCreate = (props: Props) => {
                     error={!!nameValid && formSubmitted}
                     helperText={formSubmitted ? nameValid : ''}
                   />
-                  <InputCustom
-                    name="description"
-                    value={description}
-                    label="Descripción"
-                    onChange={onInputChange}
-                    error={!!descriptionValid && formSubmitted}
-                    helperText={formSubmitted ? descriptionValid : ''}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <InputCustom
                     name="code"
                     value={code}
@@ -242,21 +252,29 @@ export const ProductCreate = (props: Props) => {
                     helperText={formSubmitted ? barCodeValid : ''}
                   />
                 </div>
+                <InputCustom
+                  multiline
+                  name="description"
+                  value={description}
+                  label="Descripción"
+                  onChange={onInputChange}
+                  error={!!descriptionValid && formSubmitted}
+                  helperText={formSubmitted ? descriptionValid : ''}
+                />
               </div>
             </div>
-
             {/* Sección de precios como componente separado */}
             <PriceSection
               prices={prices}
               pricesValid={pricesValid}
               formSubmitted={formSubmitted}
-              dataBranch={dataBranch}
+              dataBranch={branchesSucursal}
               typeUnitOptions={typeUnitOptions}
               onAddPrice={addPrice}
               onRemovePrice={removePrice}
+              onCreateCopy={createCopyPrice}
               onPriceChange={handlePriceChange}
             />
-
             {/* Botones de acción */}
             <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4 sm:pt-6 border-t">
               <Button

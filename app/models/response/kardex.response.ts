@@ -1,4 +1,5 @@
 import type { ProductModel } from "./product.response";
+import type { ProviderModel } from "./provider.response";
 
 export interface KardexModel {
   product: ProductModel;
@@ -47,6 +48,7 @@ interface Input {
   id: string;
   branchId: string;
   productPresentationId: string;
+  provider: ProviderModel;
   quantity: number;
   price: number;
   dueDate: Date;

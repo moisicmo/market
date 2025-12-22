@@ -59,6 +59,7 @@ export const ProductTable = (props: Props) => {
               <TableHead>Categoría</TableHead>
               <TableHead>Marca</TableHead>
               <TableHead>Precios</TableHead>
+              <TableHead>Precios Promocionales</TableHead>
               <TableHead className="sticky right-0 z-10 bg-white">Acciones</TableHead>
             </TableRow>
           </TableHeader>
@@ -84,6 +85,16 @@ export const ProductTable = (props: Props) => {
                         product.prices.map((price) => (
                           <li key={price.id}>
                             {` ${price.typeUnit} - Bs.${price.price} (${price.branch.name})`}
+                          </li>))
+                      }
+                    </ul>
+                  </TableCell>
+                  <TableCell>
+                    <ul className="list-disc list-inside space-y-1">
+                      {
+                        product.prices.map((price) => (
+                          <li key={price.id}>
+                            {` ${price.typeUnit} - Bs.${price.promoPrice} (${price.branch.name})`}
                           </li>))
                       }
                     </ul>

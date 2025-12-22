@@ -13,6 +13,7 @@ interface Props {
   error?: boolean;
   helperText?: string;
   className?: string;
+  tabIndex?: number;
 }
 
 
@@ -30,6 +31,7 @@ export const InputCustom = memo((props: Props) => {
     error = false,
     helperText = '',
     className = '',
+    tabIndex,
   } = props;
   const baseInputClass = `
   mt-1 block w-full rounded-md border text-sm
@@ -52,6 +54,7 @@ export const InputCustom = memo((props: Props) => {
             id={id || name}
             name={name}
             value={value}
+            tabIndex={tabIndex}
             onChange={onChange}
             className={baseInputClass}
             rows={4}
@@ -63,6 +66,7 @@ export const InputCustom = memo((props: Props) => {
             type={type}
             value={value}
             onChange={onChange}
+            tabIndex={tabIndex}
             placeholder={placeholder}
             className={baseInputClass}
             autoComplete="off"

@@ -1,4 +1,5 @@
 import type { ProductModel } from "../response/product.response";
+import type { ProviderModel } from "../response/provider.response";
 
 
 // request
@@ -24,6 +25,7 @@ export interface ProductInputModel {
   product: ProductModel;
   quantity: number;
   price: number;
+  provider: ProviderModel | null; // 👈 NUEVO
   dueDate: Date;
 }
 

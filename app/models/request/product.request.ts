@@ -1,13 +1,11 @@
 import type { BrandModel } from "../response/brand.response";
 import type { CategoryModel } from "../response/category.response";
-import type { ProviderModel } from "../response/provider.response";
 import { formPriceValidations, type FormPriceModel, type FormPriceValidations, type PriceRequest } from "./price.request";
 
 
 export interface ProductRequest {
   categoryId: string;
   brandId: string;
-  providerId: string;
   code: string;
   name: string;
   description: string;
@@ -18,7 +16,6 @@ export interface ProductRequest {
 interface FormProductModel {
   category: CategoryModel | null;
   brand: BrandModel | null;
-  provider: BrandModel | null;
   code: string;
   name: string;
   description: string;
@@ -29,7 +26,6 @@ interface FormProductModel {
 export const formProductFields: FormProductModel = {
   category: null,
   brand: null,
-  provider: null,
   code: '',
   name: '',
   description: '',
@@ -40,7 +36,6 @@ export const formProductFields: FormProductModel = {
 interface FormProductValidations {
   category: [(value: CategoryModel) => boolean, string];
   brand: [(value: BrandModel) => boolean, string];
-  provider: [(value: ProviderModel) => boolean, string];
   code: [(value: string) => boolean, string];
   name: [(value: string) => boolean, string];
   prices: {
@@ -52,10 +47,8 @@ interface FormProductValidations {
 export const formProductValidations: FormProductValidations = {
   category: [(value) => value != null, 'Debe ingresar la categoria'],
   brand: [(value) => value != null, 'Debe ingresar la marca'],
-  provider: [(value) => value != null, 'Debe ingresar el proveedor'],
   code: [(value) => value.length >= 1, 'Debe ingresar el código'],
   name: [(value) => value.length >= 1, 'Debe ingresar el nombre'],
-
   prices: {
     array: [(value) => value.length >= 1, "Debe ingresar al menos un precio"],
     item: formPriceValidations,

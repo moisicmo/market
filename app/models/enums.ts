@@ -70,5 +70,4 @@ export enum PayMethod {
 export enum TypeUnit {
   UNIDAD = "UNIDAD",
   CAJA = "CAJA",
-  DOCENA = "DOCENA",
 }

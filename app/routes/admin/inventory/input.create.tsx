@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from 'react';
-import { useForm } from '@/hooks';
+import { useEffect, useState, type FormEvent } from 'react';
+import { useForm, useProviderStore } from '@/hooks';
 import { Button, InputCustom, SelectCustom, ValueSelect } from '@/components';
 import {
   formInputFields,
@@ -7,7 +7,6 @@ import {
   productValidations,
   type KardexModel,
   type InputRequest,
-  type ProductModel,
   type ProductInputModel,
   type ProductInputRequest,
 } from '@/models';
@@ -23,6 +22,7 @@ interface Props {
 type ProductErrors = {
   quantity?: string;
   price?: string;
+  provider?: string;
 };
 
 export const InputCreate = ({
@@ -43,6 +43,8 @@ export const InputCreate = ({
   const [products, setProducts] = useState<ProductInputModel[]>([]);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 
+  const { dataProvider, getProviders } = useProviderStore();
+
   const validateProducts = (products: ProductInputModel[]): ProductErrors[] => {
     return products.map((p) => {
       const errors: ProductErrors = {};
@@ -51,10 +53,12 @@ export const InputCreate = ({
 
       if (!validQty(p.quantity)) errors.quantity = msgQty;
       if (!validPrice(p.price)) errors.price = msgPrice;
+      if (!p.provider) errors.provider = 'Debe seleccionar un proveedor';
 
       return errors;
     });
   };
+
 
   const productErrors = validateProducts(products);
   const hasPresentationErrors = productErrors.some((err) =>
@@ -65,11 +69,6 @@ export const InputCreate = ({
     e.preventDefault();
     setFormSubmitted(true);
 
-    // console.log('isFormValid:', isFormValid);
-    // console.log('presentations:', products);
-    // console.log('presentationErrors:', presentationErrors);
-    // console.log('hasPresentationErrors:', hasPresentationErrors);
-
     if (!isFormValid || products.length === 0 || hasPresentationErrors) return;
 
     console.log('evaluando');
@@ -79,6 +78,7 @@ export const InputCreate = ({
       productId: p.product.id,
       quantity: p.quantity,
       price: p.price,
+      providerId: p.provider?.id,
     }));
     console.log('creando')
     await onInputCreate({
@@ -106,10 +106,12 @@ export const InputCreate = ({
         product: selected,
         quantity: 1,
         price: 0,
+        provider: null,   // 👈 AQUÍ
         dueDate: new Date(),
       },
     ]);
   };
+
 
   const handleUpdate = (index: number, key: keyof ProductInputModel, value: any) => {
     setProducts((prev) => {
@@ -122,6 +124,9 @@ export const InputCreate = ({
   const handleRemove = (index: number) => {
     setProducts((prev) => prev.filter((_, i) => i !== index));
   };
+  useEffect(() => {
+    getProviders();
+  }, []);
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
@@ -188,6 +193,31 @@ export const InputCreate = ({
                       error={!!productErrors[i]?.price && formSubmitted}
                       helperText={formSubmitted ? productErrors[i]?.price : ''}
                     />
+                    <SelectCustom
+                      label="Proveedor"
+                      options={
+                        dataProvider.data?.map((provider) => ({
+                          id: provider.id,
+                          value: provider.name,
+                        })) ?? []
+                      }
+                      selected={
+                        p.provider
+                          ? { id: p.provider.id, value: p.provider.name }
+                          : null
+                      }
+                      onSelect={(value) => {
+                        if (value && !Array.isArray(value)) {
+                          const selectedProvider = dataProvider.data?.find(
+                            (prov) => prov.id === value.id
+                          );
+                          handleUpdate(i, 'provider', selectedProvider);
+                        }
+                      }}
+                      error={!!productErrors[i]?.provider && formSubmitted}
+                      helperText={formSubmitted ? productErrors[i]?.provider : ''}
+                    />
+
                   </div>
                 </div>
               ))}

@@ -1,16 +1,17 @@
-import { Tag, Info, Trash2, Plus, Building, Package, DollarSign } from "lucide-react";
-import { SelectCustom, InputCustom, ValueSelect } from '@/components';
-import type { FormPriceModel } from "@/models";
-import { useState } from "react";
+import { Info, Plus, Package } from "lucide-react";
+import { ValueSelect } from '@/components';
+import type { BranchModel, FormPriceModel } from "@/models";
+import { ExpandedPriceView } from "./prices";
 
 interface PriceSectionProps {
   prices: FormPriceModel[];
   pricesValid?: any;
   formSubmitted: boolean;
-  dataBranch: any;
+  dataBranch: BranchModel[];
   typeUnitOptions: ValueSelect[];
   onAddPrice: () => void;
   onRemovePrice: (index: number) => void;
+  onCreateCopy: (index: number) => void;
   onPriceChange: (index: number, field: string, value: any) => void;
 }
 
@@ -23,125 +24,9 @@ export const PriceSection = (props: PriceSectionProps) => {
     typeUnitOptions,
     onAddPrice,
     onRemovePrice,
+    onCreateCopy,
     onPriceChange,
   } = props;
-
-  const [expandedPrice, setExpandedPrice] = useState<number | null>(0);
-
-  // Versión compacta para cuando hay muchos precios
-  const CompactPriceView = ({ price, index }: { price: FormPriceModel; index: number }) => (
-    <div className="flex items-center justify-between p-3 border rounded-lg bg-white hover:bg-gray-50 transition-colors">
-      <div className="flex items-center gap-3 flex-1">
-        <div className="flex items-center gap-2 min-w-0 flex-1">
-          <Building className="w-4 h-4 text-blue-500 flex-shrink-0" />
-          <span className="text-sm font-medium truncate">
-            {price.branch?.name || "Sin sucursal"}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2 min-w-0 flex-1">
-          <Package className="w-4 h-4 text-green-500 flex-shrink-0" />
-          <span className="text-sm truncate">
-            {typeUnitOptions.find(opt => opt.id === price.typeUnit)?.value || "Sin tipo"}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2 min-w-0 flex-1">
-          <DollarSign className="w-4 h-4 text-amber-500 flex-shrink-0" />
-          <span className="text-sm font-semibold">
-            S/ {Number(price.price).toFixed(2)}
-          </span>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-1 ml-0">
-        <button
-          type="button"
-          onClick={() => setExpandedPrice(expandedPrice === index ? null : index)}
-          className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-        >
-          {expandedPrice === index ? "Ocultar" : "Editar"}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onRemovePrice(index)}
-          className="text-red-500 hover:text-red-600 p-1 rounded"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
-      </div>
-    </div>
-  );
-
-  // Versión expandida para edición
-  const ExpandedPriceView = ({ price, index }: { price: FormPriceModel; index: number }) => (
-    <div className="border-2 border-blue-200 p-4 rounded-lg bg-blue-50 relative">
-      <div className="absolute top-3 right-3">
-        <button
-          type="button"
-          onClick={() => onRemovePrice(index)}
-          className="text-red-500 hover:text-red-600 flex items-center gap-1 text-sm"
-        >
-          <Trash2 className="w-4 h-4" />
-          <span className="hidden sm:inline">Eliminar</span>
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-
-
-        <SelectCustom
-          label="Sucursal"
-          options={dataBranch.data?.map((b: any) => ({ id: b.id, value: b.name })) ?? []}
-          selected={price.branch ? { id: price.branch.id, value: price.branch.name } : null}
-          onSelect={(value) => {
-            if (value && !Array.isArray(value)) {
-              onPriceChange(index, 'branch', value);
-            }
-          }}
-          error={!!pricesValid?.itemsValid?.[index]?.branchValid && formSubmitted}
-          helperText={formSubmitted ? pricesValid?.itemsValid?.[index]?.branchValid : ''}
-        />
-        <SelectCustom
-          label="Tipo Unidad"
-          options={typeUnitOptions}
-          selected={typeUnitOptions.find(opt => opt.id === price.typeUnit) ?? null}
-          onSelect={(value) => {
-            if (value && !Array.isArray(value)) {
-              onPriceChange(index, 'typeUnit', value.id);
-            }
-          }}
-          error={!!pricesValid?.itemsValid?.[index]?.typeUnitValid && formSubmitted}
-          helperText={formSubmitted ? pricesValid?.itemsValid?.[index]?.typeUnitValid : ''}
-        />
-
-        <div>
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-            <DollarSign className="w-4 h-4 text-amber-500" />
-            Precio (S/)
-          </label>
-          <InputCustom
-            name={`prices.${index}.price`}
-            value={price.price}
-            onChange={(e) => {
-              onPriceChange(index, 'price', Number(e.target.value));
-            }}
-            error={!!pricesValid?.itemsValid?.[index]?.priceValid && formSubmitted}
-            helperText={formSubmitted ? pricesValid?.itemsValid?.[index]?.priceValid : ''}
-          />
-        </div>
-      </div>
-
-      <button
-        type="button"
-        onClick={() => setExpandedPrice(null)}
-        className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium"
-      >
-        ↑ Contraer
-      </button>
-    </div>
-  );
 
   return (
     <div className="border-t pt-4 sm:pt-6">
@@ -179,12 +64,18 @@ export const PriceSection = (props: PriceSectionProps) => {
           </div>
         ) : (
           prices.map((price, index) => (
-            <div key={index}>
-              {expandedPrice === index ? (
-                <ExpandedPriceView price={price} index={index} />
-              ) : (
-                <CompactPriceView price={price} index={index} />
-              )}
+            <div key={price.id}>
+              <ExpandedPriceView
+                price={price}
+                index={index}
+                dataBranch={dataBranch}
+                typeUnitOptions={typeUnitOptions}
+                pricesValid={pricesValid}
+                formSubmitted={formSubmitted}
+                onRemovePrice={onRemovePrice}
+                onCreateCopy={onCreateCopy}
+                onPriceChange={onPriceChange}
+              />
             </div>
           ))
         )}
