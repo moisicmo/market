@@ -46,14 +46,30 @@ export const ExpandedPriceView = React.memo(({
           error={!!pricesValid?.itemsValid?.[index]?.branchValid && formSubmitted}
           helperText={formSubmitted ? pricesValid?.itemsValid?.[index]?.branchValid : ''}
         />
-
-        <SelectCustom
+        {
+          typeUnitOptions.map((option) => (
+            <>
+              <InputCustom
+                label={`Precio (S/${option.value})`}
+                name={`prices.${index}.price`}
+                value={price.price}
+                tabIndex={index + 1}
+                onChange={(e) => {
+                  onPriceChange(index, 'price', e.target.value);
+                }}
+                error={!!pricesValid?.itemsValid?.[index]?.priceValid && formSubmitted}
+                helperText={formSubmitted ? pricesValid?.itemsValid?.[index]?.priceValid : ''}
+              />
+            </>
+          ))
+        }
+        {/* <SelectCustom
           label="Tipo Unidad"
           options={typeUnitOptions}
           selected={typeUnitOptions.find(opt => opt.id === price.typeUnit) ?? null}
           onSelect={(value) => value && !Array.isArray(value) && onPriceChange(index, 'typeUnit', value.id)}
-        />
-        <div>
+        /> */}
+        {/* <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
             <DollarSign className="w-4 h-4 text-amber-500" />
             Precio (S/)
@@ -68,7 +84,7 @@ export const ExpandedPriceView = React.memo(({
             error={!!pricesValid?.itemsValid?.[index]?.priceValid && formSubmitted}
             helperText={formSubmitted ? pricesValid?.itemsValid?.[index]?.priceValid : ''}
           />
-        </div>
+        </div> */}
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
             <DollarSign className="w-4 h-4 text-amber-500" />
