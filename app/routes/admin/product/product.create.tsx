@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { useForm, useBranchStore, useCategoryStore, useBrandStore } from '@/hooks';
-import { Button, InputCustom, SelectCustom, ValueSelect } from '@/components';
+import { useForm, useCategoryStore, useBrandStore, useAuthStore } from '@/hooks';
+import { Button, InputCustom, SelectCustom } from '@/components';
 import { formProductFields, formProductValidations, TypeUnit, type FormPriceModel, type ProductModel, type ProductRequest } from '@/models';
 import { ImageUploader } from '@/components/input_image.custom';
 import { PriceSection } from './prices.create';
@@ -11,7 +11,7 @@ interface Props {
   item: ProductModel | null;
   image?: string;
   onCreate: (body: ProductRequest, image: File | null) => void;
-  onUpdate: (id: string, body: ProductRequest) => void;
+  onUpdate: (id: string, body: ProductRequest,  image: File | null) => void;
 }
 
 export const ProductCreate = (props: Props) => {
@@ -24,8 +24,8 @@ export const ProductCreate = (props: Props) => {
     onUpdate,
   } = props;
 
-  const { dataBranch, getBranches } = useBranchStore();
   const { dataBrand, getBrands } = useBrandStore();
+  const { branchesUser } = useAuthStore();
   const { dataCategory, getCategories } = useCategoryStore();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
@@ -36,6 +36,8 @@ export const ProductCreate = (props: Props) => {
     code,
     description,
     barCode,
+    promoPrice,
+    unitConversion,
     prices,
 
     onInputChange,
@@ -49,6 +51,8 @@ export const ProductCreate = (props: Props) => {
     codeValid,
     descriptionValid,
     barCodeValid,
+    promoPriceValid,
+    unitConversionValid,
     pricesValid,
   } = useForm(item ?? formProductFields, formProductValidations);
 
@@ -67,18 +71,23 @@ export const ProductCreate = (props: Props) => {
       name: name.trim(),
       description: description.trim(),
       barCode: barCode.trim(),
+      promoPrice: promoPrice,
+      unitConversion: {
+        fromUnit: unitConversion.fromUnit,
+        toUnit: unitConversion.toUnit,
+        factor: Number(unitConversion.factor),
+      },
       prices: prices.map((p: any) => ({
         branchId: p.branch!.id,
         typeUnit: p.typeUnit,
         price: p.price,
-        promoPrice: p.promoPrice,
       })),
     };
 
     if (item == null) {
       await onCreate(request, selectedImage);
     } else {
-      await onUpdate(item.id, request);
+      await onUpdate(item.id, request, selectedImage);
     }
 
     handleClose();
@@ -93,12 +102,11 @@ export const ProductCreate = (props: Props) => {
   }, [item]);
 
   useEffect(() => {
-    getBranches();
     getBrands();
     getCategories();
   }, []);
 
-  const branchesSucursal = dataBranch.data?.filter(
+  const branchesSucursal = branchesUser?.filter(
     (b) => b.type === 'sucursal'
   ) ?? [];
 
@@ -108,52 +116,29 @@ export const ProductCreate = (props: Props) => {
       branch,
       typeUnit: TypeUnit.UNIDAD,
       price: '',
-      promoPrice: '',
     }));
   };
 
-  const addPrice = () => {
-    const newPrice: FormPriceModel = {
-      id: crypto.randomUUID(),
-      branch: null,
-      typeUnit: '',
-      price: '',
-      promoPrice: '',
-    };
+  const addPrice = (newPrice: FormPriceModel) => {
+    console.log('Adding price:', newPrice);
     onValueChange("prices", [...prices, newPrice]);
   };
-
 
   const removePrice = (index: number) => {
     const updated = prices.filter((_: any, i: number) => i !== index);
     onValueChange("prices", updated);
   };
 
-  const createCopyPrice = (index: number) => {
-    const original = prices[index];
-    if (!original) return;
-
-    const copied: FormPriceModel = {
-      ...original,
-      id: crypto.randomUUID(), // 👈 NUEVO ID
-    };
-
-    onValueChange("prices", [...prices, copied]);
-  };
-
-
   const handlePriceChange = (index: number, field: string, value: any) => {
     const updated = [...prices];
 
     if (field === 'branch') {
-      const selected = dataBranch.data?.find((b: any) => b.id === value.id);
+      const selected = branchesUser?.find((b: any) => b.id === value.id);
       updated[index].branch = selected ?? null;
     } else if (field === 'typeUnit') {
       updated[index].typeUnit = value as TypeUnit;
     } else if (field === 'price') {
       updated[index].price = value;
-    } else if (field === 'promoPrice') {
-      updated[index].promoPrice = value;
     }
 
     onValueChange('prices', updated);
@@ -166,13 +151,6 @@ export const ProductCreate = (props: Props) => {
       onValueChange('prices', initialPrices);
     }
   }, [branchesSucursal, item]);
-
-  const typeUnitOptions: ValueSelect[] = Object.entries(TypeUnit).map(
-    ([key, value]) => ({
-      id: key,
-      value,
-    })
-  );
 
   if (!open) return null;
 
@@ -196,9 +174,74 @@ export const ProductCreate = (props: Props) => {
                   maxSize={10 * 1024 * 1024}
                   acceptedFormats={['image/jpeg', 'image/png']}
                 />
+                {/* CONVERSIÓN DE UNIDADES */}
+                  <p className="text-sm font-semibold mb-2">
+                    Conversión de Unidades
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <SelectCustom
+                      label="De"
+                      options={Object.values(TypeUnit).map(u => ({
+                        id: u,
+                        value: u,
+                      }))}
+                      selected={
+                        unitConversion.fromUnit
+                          ? { id: unitConversion.fromUnit, value: unitConversion.fromUnit }
+                          : null
+                      }
+                      onSelect={(value) => {
+                        if (value && !Array.isArray(value)) {
+                          onValueChange('unitConversion', {
+                            ...unitConversion,
+                            fromUnit: value.id,
+                          });
+                        }
+                      }}
+                      error={!!unitConversionValid?.fromUnit && formSubmitted}
+                      helperText={formSubmitted ? unitConversionValid?.fromUnit : ''}
+                    />
+                    <InputCustom
+                      label="Equivale"
+                      name="unitConversion.factor"
+                      value={unitConversion.factor}
+                      onChange={(e) => {
+                        onValueChange('unitConversion', {
+                          ...unitConversion,
+                          factor: e.target.value,
+                        });
+                      }}
+                      error={!!unitConversionValid?.factor && formSubmitted}
+                      helperText={formSubmitted ? unitConversionValid?.factor : ''}
+                    />
+                    <SelectCustom
+                      label="A"
+                      options={Object.values(TypeUnit).map(u => ({
+                        id: u,
+                        value: u,
+                      }))}
+                      selected={
+                        unitConversion.toUnit
+                          ? { id: unitConversion.toUnit, value: unitConversion.toUnit }
+                          : null
+                      }
+                      onSelect={(value) => {
+                        if (value && !Array.isArray(value)) {
+                          onValueChange('unitConversion', {
+                            ...unitConversion,
+                            toUnit: value.id,
+                          });
+                        }
+                      }}
+                      error={!!unitConversionValid?.toUnit && formSubmitted}
+                      helperText={formSubmitted ? unitConversionValid?.toUnit : ''}
+                    />
+
+                </div>
               </div>
               <div className="w-full lg:w-2/3 sm:space-y-1">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   <SelectCustom
                     label="Categoria"
                     options={dataCategory.data?.map((category) => ({ id: category.id, value: category.name })) ?? []}
@@ -224,6 +267,14 @@ export const ProductCreate = (props: Props) => {
                     }}
                     error={!!brandValid && formSubmitted}
                     helperText={formSubmitted ? brandValid : ''}
+                  />
+                  <InputCustom
+                    name="promoPrice"
+                    value={promoPrice}
+                    label="Precio Promocional (S/)"
+                    onChange={onInputChange}
+                    error={!!promoPriceValid && formSubmitted}
+                    helperText={formSubmitted ? promoPriceValid : ''}
                   />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -269,10 +320,8 @@ export const ProductCreate = (props: Props) => {
               pricesValid={pricesValid}
               formSubmitted={formSubmitted}
               dataBranch={branchesSucursal}
-              typeUnitOptions={typeUnitOptions}
               onAddPrice={addPrice}
               onRemovePrice={removePrice}
-              onCreateCopy={createCopyPrice}
               onPriceChange={handlePriceChange}
             />
             {/* Botones de acción */}

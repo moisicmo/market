@@ -9,6 +9,7 @@ export default [
       route("dashboard", "routes/admin/dashboard.view.tsx"),
       route("branch", "routes/admin/branch/branch.view.tsx"),
       route("role", "routes/admin/role/role.view.tsx"),
+      route("permission", "routes/admin/permission/permission.view.tsx"),
       route("category", "routes/admin/category/category.view.tsx"),
       route("brand", "routes/admin/brand/brand.view.tsx"),
       route("provider", "routes/admin/provider/provider.view.tsx"),

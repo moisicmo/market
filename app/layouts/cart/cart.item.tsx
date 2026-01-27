@@ -28,7 +28,7 @@ export const CartItemView = ({ item, updateItem, removeItem }: Props) => {
       <div className="flex justify-between items-start gap-2">
         <div className="flex flex-col flex-1">
           <h3 className="font-semibold text-gray-900 leading-tight">
-            {item.productPresentationModel.name}
+            {item.productModel.name}
           </h3>
           <p className="text-xs text-gray-600">
             Stock: {item.stock}
@@ -64,7 +64,7 @@ export const CartItemView = ({ item, updateItem, removeItem }: Props) => {
         <div className="flex flex-col flex-1">
           {/* Precio y subtotal */}
           <p className="text-xs text-gray-600">
-            {item.price.toFixed(2)} Bs./{item.productPresentationModel.typeUnit}
+            {item.price.toFixed(2)} Bs./{item.productModel.typeUnit}
           </p>
           <p className="text-sm font-semibold text-gray-900">
             Subtotal: {subtotal} Bs.

@@ -1,25 +1,28 @@
 import { useEffect } from 'react';;
-import { BranchList } from '.';
-import { useBranchStore, useProductStore } from '@/hooks';
+import { ProductTable } from '.';
+import { useAuthStore, useKardexStore } from '@/hooks';
 
 const posView = () => {
-  const { getProducts } = useProductStore();
-  const { getBranches, dataBranch } = useBranchStore();
+  const { branchSelect } = useAuthStore();
+  const { dataKardexProduct, getKardexByBranchId } = useKardexStore();
 
   useEffect(() => {
-    getBranches();
-    getProducts();
+    if (branchSelect) {
+      getKardexByBranchId(branchSelect.id);
+    }
   }, []);
 
   return (
     <>
       {/* Encabezado */}
       <h2 className="text-xl font-semibold text-gray-800">Punto de venta</h2>
-
       {/* Tabla de branch */}
-      <BranchList
-        dataBranch={dataBranch}
-      />
+      {
+        branchSelect &&
+        <ProductTable
+          dataKardex={dataKardexProduct}
+        />
+      }
     </>
   );
 };

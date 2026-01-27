@@ -27,7 +27,7 @@ export interface TransferResponse {
     id: string;
     fromBranchId: string;
     toBranchId: string;
-    productPresentationId: string;
+    productId: string;
     quantity: number;
     price: number;
     detail: string;
@@ -38,7 +38,7 @@ export interface TransferResponse {
 interface Output {
   id: string;
   branchId: string;
-  productPresentationId: string;
+  productId: string;
   quantity: number;
   price: number;
   detail: string;
@@ -47,7 +47,7 @@ interface Output {
 interface Input {
   id: string;
   branchId: string;
-  productPresentationId: string;
+  productId: string;
   provider: ProviderModel;
   quantity: number;
   price: number;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { BaseResponse, BranchModel } from '@/models';
-import { useDebounce } from '@/hooks';
+import { TypeAction, TypeSubject, type BaseResponse, type BranchModel } from '@/models';
+import { useDebounce, usePermissionStore } from '@/hooks';
 import { ActionButtons, InputCustom, PaginationControls } from '@/components';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
@@ -26,6 +26,7 @@ export const BranchTable = (props: Props) => {
 
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(limitInit);
+  const { hasPermission } = usePermissionStore();
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 1500);
   useEffect(() => {
@@ -75,8 +76,8 @@ export const BranchTable = (props: Props) => {
               <TableCell className="sticky right-0 z-10 bg-white">
                 <ActionButtons
                   item={item}
-                  onEdit={handleEdit}
-                  onDelete={onDelete}
+                  onEdit={hasPermission(TypeAction.update, TypeSubject.branch) ? handleEdit : undefined}
+                  onDelete={hasPermission(TypeAction.delete, TypeSubject.branch) ? onDelete : undefined}
                 />
               </TableCell>
             </TableRow>

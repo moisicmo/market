@@ -15,7 +15,7 @@ export const cartSlice = createSlice({
     },
 
     setAddCart: (state, action: PayloadAction<CartItem>) => {
-      const item = state.cart.find((item) => item.productPresentationModel.id == action.payload.productPresentationModel.id);
+      const item = state.cart.find((item) => item.productModel.id == action.payload.productModel.id);
       if (!item) {
         state.cart = [...state.cart, action.payload]
       }
@@ -23,7 +23,7 @@ export const cartSlice = createSlice({
 
     setUpdateItemCart: (state, action: PayloadAction<CartItem>) => {
       state.cart = state.cart.map((item) => {
-        if (item.productPresentationModel.id == action.payload.productPresentationModel.id) {
+        if (item.productModel.id == action.payload.productModel.id) {
           return action.payload;
         }
         return item;
@@ -32,7 +32,7 @@ export const cartSlice = createSlice({
 
     setRemoveCart: (state, action: PayloadAction<CartItem>) => {
       state.cart = state.cart.filter(
-        (e) => e.productPresentationModel.id !== action.payload.productPresentationModel.id
+        (e) => e.productModel.id !== action.payload.productModel.id
       );
     },
   }

@@ -29,7 +29,7 @@ export const useKardexStore = () => {
     //   ...dataKardexPresentation,
     //   data: dataKardexPresentation.data.map(d => {
     //     const moviment = moviments.find(
-    //       m => (m.input?.productPresentationId ?? m.output?.productPresentationId) === d.presentation.id
+    //       m => (m.input?.productId ?? m.output?.productId) === d.presentation.id
     //     );
     //     if (moviment) {
     //       return {

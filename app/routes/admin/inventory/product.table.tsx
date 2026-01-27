@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { BaseResponse, BranchModel, InputRequest, KardexModel, ProductModel, TransferRequest } from '@/models';
+import { TypeAction, TypeSubject, type BaseResponse, type BranchModel, type InputRequest, type KardexModel, type ProductModel, type TransferRequest } from '@/models';
 import { PaginationControls } from '@/components/pagination.control';
 import { ActionButtons, Button, InputCustom } from '@/components';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -7,6 +7,7 @@ import React from 'react';
 import { InputCreate } from './input.create';
 import { MovimentsTable } from './moviments.table';
 import { TransferCreate } from './transfer.create';
+import { usePermissionStore } from '@/hooks';
 
 interface Props {
   branchId: string;
@@ -30,6 +31,7 @@ export const ProductTable = (props: Props) => {
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(limitInit);
+  const { hasPermission } = usePermissionStore();
   const [openInputDialog, setOpenInputDialog] = useState(false);
   const [openTransferDialog, setOpenTransferDialog] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -61,12 +63,16 @@ export const ProductTable = (props: Props) => {
             placeholder="Buscar presentación..."
             onChange={(e) => setQuery(e.target.value)}
           />
-          <Button
-            onClick={() => setOpenInputDialog(true)}
-          >Ingresar Productos</Button>
-          <Button
-            onClick={() => setOpenTransferDialog(true)}
-          >Transferir Productos</Button>
+          {
+            hasPermission(TypeAction.create, TypeSubject.input) &&
+            <Button
+              onClick={() => setOpenInputDialog(true)}
+            >Ingresar Productos</Button>}
+          {
+            hasPermission(TypeAction.create, TypeSubject.transfer) &&
+            <Button
+              onClick={() => setOpenTransferDialog(true)}
+            >Transferir Productos</Button>}
         </div>
         <Table className='mb-3'>
           <TableHeader>
@@ -83,7 +89,7 @@ export const ProductTable = (props: Props) => {
                 <TableRow>
                   <TableCell>{kardex.product.name}</TableCell>
                   <TableCell>{kardex.product.category.name}</TableCell>
-                  <TableCell>{kardex.stock}</TableCell>
+                  <TableCell>{`${kardex.stock} und.`}</TableCell>
                   <TableCell className="sticky right-0 z-10 bg-white">
                     <ActionButtons
                       item={kardex.product}

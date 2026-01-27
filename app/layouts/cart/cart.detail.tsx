@@ -1,5 +1,5 @@
-import { Button, InputCustom, SelectCustom } from "@/components"
-import { useCartStore, useCustomerStore, useForm, usePaymentStore } from "@/hooks";
+import { Button, SelectCustom } from "@/components"
+import { useAuthStore, useCartStore, useCustomerStore, useForm, usePaymentStore } from "@/hooks";
 import { formCartInit, formCartValidations, type CartRequest } from "@/models";
 import { useEffect, useState, type FormEvent } from "react";
 
@@ -12,6 +12,7 @@ export const CartDetail = (props: Props) => {
     onClose,
   } = props;
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const { branchSelect } = useAuthStore();
   const { cart, clearCart } = useCartStore();
   const { sentPayments } = usePaymentStore();
   const { dataCustomer, getCustomers } = useCustomerStore();
@@ -31,10 +32,10 @@ export const CartDetail = (props: Props) => {
     console.log('pagando');
     const request: CartRequest = {
       customerId: customer?.user.id!,
-      branchId: cart[0].productPresentationModel.branch.id,
+      branchId: `${branchSelect?.id}`,
       amount: cart.reduce((total, item) => total + (item.price * item.quantity), 0),
       outputs: cart.map(cart => ({
-        productPresentationId: cart.productPresentationModel.id,
+        productId: cart.productModel.id,
         quantity: cart.quantity,
         price: cart.price
       }))

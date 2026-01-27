@@ -34,10 +34,10 @@ export enum TypeAction {
 }
 
 export enum TypeSubject {
-  all = "todo",
   branch = "sucursales",
   category = "categorias",
   customer = "clientes",
+  sale = "ventas",
   input = "entradas",
   kardex = "kardex",
   order = "ordenes",
@@ -52,6 +52,9 @@ export enum TypeSubject {
   transfer = "transferencias",
   brand = "marcas",
   provider = "proveedores",
+  report = "reportes",
+  delivery = "entregas",
+  inventory = "inventarios",
 }
 
 export enum TypeDebt {

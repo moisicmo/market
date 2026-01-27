@@ -1,49 +1,57 @@
 import { Link } from 'react-router';
-import clsx from 'clsx';
+import { cn } from '@/lib/utils';
 
 interface Props {
-  active: boolean;
+  title: string;
   icon?: React.ReactNode;
-  path?: string | null;
-  title?: string;
-  isTitle?: boolean;
+  path?: string;
+  active?: boolean;
+  onClick?: () => void;
+  rightIcon?: React.ReactNode;
 }
 
-export const SideNavCustom = (props: Props) => {
-
-  const {
-    active = false,
-    icon = null,
-    path = null,
-    title = '',
-    isTitle = false,
-  } = props;
-  
-  const baseClasses = clsx(
-    'flex items-center w-full px-4 py-2 rounded-md text-sm transition-colors duration-200',
-    {
-      'bg-secondary text-white font-semibold': active,
-      'hover:bg-gray-100 text-slate-600': !active,
-      'pl-4': !isTitle,
-    }
+export const SideNavCustom = ({
+  title,
+  icon,
+  path,
+  active = false,
+  onClick,
+  rightIcon,
+}: Props) => {
+  const classes = cn(
+    'flex items-center gap-3 px-1 py-2 rounded-md text-sm transition-colors w-full',
+    active && path
+      ? 'bg-secondary text-white font-medium'
+      : 'text-muted-foreground hover:bg-accent/50'
   );
+
+const content = (
+  <>
+    {/* Left: icon + title */}
+    <div className="flex items-center gap-3 min-w-0">
+      {icon && <span className="h-4 w-4 shrink-0">{icon}</span>}
+      <span className="truncate">{title}</span>
+    </div>
+
+    {/* Right: reserved space for chevron */}
+    <span className="ml-auto h-4 w-4 shrink-0 flex items-center justify-center">
+      {rightIcon}
+    </span>
+  </>
+);
+
 
   if (path) {
     return (
-      <>
-        <ul>
-          <Link to={path} className={baseClasses}>
-            {icon && <span className="mr-2 text-[18px]">{icon}</span>}
-            {title}
-          </Link>
-        </ul>
-      </>
+      <Link to={path} className={classes}>
+        {content}
+      </Link>
     );
   }
 
   return (
-    <li className="px-4 py-2 text-slate-500 uppercase text-xs font-bold tracking-wide">
-      {title}
-    </li>
+    <button onClick={onClick} className={classes}>
+      {content}
+    </button>
   );
 };

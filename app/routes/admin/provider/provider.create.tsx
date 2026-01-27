@@ -25,6 +25,7 @@ export const ProviderCreate = (props: Props) => {
     name,
     nit,
     phone,
+    contact,
     address,
     onInputChange,
     onResetForm,
@@ -33,6 +34,7 @@ export const ProviderCreate = (props: Props) => {
     nameValid,
     nitValid,
     phoneValid,
+    contactValid,
     addressValid,
   } = useForm(item ?? formProviderFields, formProviderValidations);
 
@@ -48,6 +50,7 @@ export const ProviderCreate = (props: Props) => {
         name: name.trim(),
         nit: nit.trim(),
         phone,
+        contact: contact.trim(),
         city: address.city.trim(),
         zone: address.zone.trim(),
         detail: address.detail.trim(),
@@ -57,6 +60,7 @@ export const ProviderCreate = (props: Props) => {
         name: name.trim(),
         nit: nit.trim(),
         phone,
+        contact: contact.trim(),
         city: address.city.trim(),
         zone: address.zone.trim(),
         detail: address.detail.trim(),
@@ -112,6 +116,14 @@ export const ProviderCreate = (props: Props) => {
             label="Teléfonos"
             error={!!phoneValid && formSubmitted}
             helperText={formSubmitted ? phoneValid : ''}
+          />
+          <InputCustom
+            name="contact"
+            value={contact}
+            label="Contacto"
+            onChange={onInputChange}
+            error={!!contactValid && formSubmitted}
+            helperText={formSubmitted ? contactValid : ''}
           />
           <InputCustom
             name="address.city"

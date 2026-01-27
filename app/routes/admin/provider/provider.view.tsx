@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { ProviderModel } from '@/models';
+import { TypeAction, TypeSubject, type ProviderModel } from '@/models';
 import { ProviderCreate, ProviderTable } from '.';
 import { Button } from '@/components';
-import { useProviderStore } from '@/hooks';
+import { usePermissionStore, useProviderStore } from '@/hooks';
 
 const providerView = () => {
   const { dataProvider, getProviders, createProvider, updateProvider, deleteProvider } = useProviderStore();
 
   const [openDialog, setOpenDialog] = useState(false);
+  const { hasPermission } = usePermissionStore();
   const [itemEdit, setItemEdit] = useState<ProviderModel | null>(null);
 
   const handleDialog = useCallback((value: boolean) => {
@@ -24,9 +25,11 @@ const providerView = () => {
       {/* Encabezado */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800">Proveedores</h2>
-        <Button
-          onClick={() => handleDialog(true)}
-        >Nuevo Proveedor</Button>
+        {
+          hasPermission(TypeAction.create, TypeSubject.provider) &&
+          <Button
+            onClick={() => handleDialog(true)}
+          >Nuevo Proveedor</Button>}
       </div>
 
       {/* Tabla de provider */}

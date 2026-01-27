@@ -24,7 +24,7 @@ export const CartView = ({ onClose }: Props) => {
           ) : (
             cart.map((item) => (
               <CartItemView
-                key={`${item.productPresentationModel.id}`}
+                key={`${item.productModel.id}`}
                 item={item}
                 updateItem={(cartItem) => updateItemCart(cartItem)}
                 removeItem={() => removeItemCart(item)}

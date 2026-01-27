@@ -48,7 +48,7 @@ export const StaffCreate = (props: Props) => {
         typeDocument: 'dni',
         name: user.name.trim(),
         lastName: user.lastName.trim(),
-        email: user.email.trim(),
+        email: user.email?.trim() ?? null,
         roleId: role?.id ?? '',
         branchIds: branches.map((branch: BranchModel) => branch.id),
       });
@@ -58,7 +58,7 @@ export const StaffCreate = (props: Props) => {
         typeDocument: 'dni',
         name: user.name.trim(),
         lastName: user.lastName.trim(),
-        email: user.email.trim(),
+        email: user.email?.trim() ?? null,
         roleId: role?.id ?? '',
         branchIds: branches.map((branch: BranchModel) => branch.id),
       });
@@ -96,7 +96,6 @@ export const StaffCreate = (props: Props) => {
               userValid={userValid}
               formSubmitted={formSubmitted}
               onInputChange={onInputChange}
-              onValueChange={onValueChange}
             />
             <SelectCustom
               label="Rol"

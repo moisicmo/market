@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector, useErrorStore } from '.';
 import type { AuthModel, AuthRequest, BranchModel } from '@/models';
 
 export const useAuthStore = () => {
-  const { status, user, branchesUser, branchSelect } = useAppSelector(state => state.auth);
+  const { status, user, roleUser, branchesUser, branchSelect } = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
   const { handleError } = useErrorStore();
 
@@ -17,27 +17,38 @@ export const useAuthStore = () => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', user);
       localStorage.setItem('role', JSON.stringify(role));
-      localStorage.setItem('branches', JSON.stringify(data.branches))
+      localStorage.setItem('branches', JSON.stringify(data.branches));
+      localStorage.setItem('branchSelect', JSON.stringify(data.branches[0]));
       dispatch(onLogin(user));
-      setRoleUser({ role });
+      dispatch(setRoleUser({ role }));
       dispatch(setBranchesUser({ branches: data.branches }));
+      setBranchSelect(data.branches[0]);
     } catch (error) {
       dispatch(onLogout());
       throw handleError(error);
     }
   };
 
-  const setBranchSelect = (branch: BranchModel) => {
-    dispatch(setBranch({branch}));
-  }
   const checkAuthToken = async () => {
     const token = localStorage.getItem('token');
     if (token) {
+      // user
       const user = localStorage.getItem('user');
       dispatch(onLogin(user));
+      // rol
+      const role = localStorage.getItem('role');
+      if (role != null){
+        dispatch(setRoleUser({ role: JSON.parse(role) }));
+      }
+      //branches
       const branches = localStorage.getItem('branches');
       if (branches != null) {
-        dispatch(setBranchesUser({ branches: JSON.parse(branches)}));
+        dispatch(setBranchesUser({ branches: JSON.parse(branches) }));
+      }
+      // branch select
+      const branchSelect = localStorage.getItem('branchSelect');
+      if (branchSelect != null) {
+        dispatch(setBranch({ branch: JSON.parse(branchSelect) }));
       }
       return true;
     } else {
@@ -47,11 +58,18 @@ export const useAuthStore = () => {
     }
   };
 
+  const setBranchSelect = (branch: BranchModel) => {
+    localStorage.setItem('branchSelect', JSON.stringify(branch));
+    dispatch(setBranch({ branch }));
+  };
+  
+
 
   return {
     //* Propiedades
     status,
     user,
+    roleUser,
     branchesUser,
     branchSelect,
     //* Métodos

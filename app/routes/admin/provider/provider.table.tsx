@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { BaseResponse, ProviderModel } from '@/models';
-import { useDebounce } from '@/hooks';
+import { TypeAction, TypeSubject, type BaseResponse, type ProviderModel } from '@/models';
+import { useDebounce, usePermissionStore } from '@/hooks';
 import { PaginationControls } from '@/components/pagination.control';
 import { ActionButtons, InputCustom } from '@/components';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -29,6 +29,7 @@ export const ProviderTable = (props: Props) => {
   const [rowsPerPage, setRowsPerPage] = useState(limitInit);
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 1500);
+  const { hasPermission } = usePermissionStore();
   useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(dataProvider.total / rowsPerPage));
     if (page > maxPage) {
@@ -56,6 +57,7 @@ export const ProviderTable = (props: Props) => {
             <TableHead>Nombre</TableHead>
             <TableHead>Nit</TableHead>
             <TableHead>Teléfonos</TableHead>
+            <TableHead>Contacto</TableHead>
             <TableHead>Ciudad</TableHead>
             <TableHead>Zona</TableHead>
             <TableHead>Dirección</TableHead>
@@ -63,19 +65,20 @@ export const ProviderTable = (props: Props) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {dataProvider.data.map((provider) => 
+          {dataProvider.data.map((provider) =>
             <TableRow key={provider.id}>
               <TableCell>{provider.name}</TableCell>
               <TableCell>{provider.nit}</TableCell>
               <TableCell>{provider.phone}</TableCell>
+              <TableCell>{provider.contact}</TableCell>
               <TableCell>{provider.address?.city}</TableCell>
               <TableCell>{provider.address?.zone}</TableCell>
               <TableCell>{provider.address?.detail}</TableCell>
               <TableCell className="sticky right-0 z-10 bg-white">
                 <ActionButtons
                   item={provider}
-                  onEdit={handleEdit}
-                  onDelete={onDelete}
+                  onEdit={hasPermission(TypeAction.update, TypeSubject.provider) ? handleEdit : undefined}
+                  onDelete={hasPermission(TypeAction.delete, TypeSubject.provider) ? onDelete : undefined}
                 />
               </TableCell>
             </TableRow>

@@ -6,7 +6,6 @@ interface UserFormFieldsProps {
   userValid: any;
   formSubmitted: boolean;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  onValueChange: (name: string, value: any) => void;
 }
 
 export const UserFormFields = ({
@@ -14,7 +13,6 @@ export const UserFormFields = ({
   userValid,
   formSubmitted,
   onInputChange,
-  onValueChange,
 }: UserFormFieldsProps) => {
 
   return (

@@ -25,7 +25,6 @@ export const authSlice = createSlice({
     },
     setBranchesUser: (state, { payload }) => {
       state.branchesUser = payload.branches;
-      state.branchSelect = payload.branches[0];
     },
     setBranch: (state, { payload }) => {
       state.branchSelect = payload.branch;

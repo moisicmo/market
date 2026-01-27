@@ -5,5 +5,6 @@ export interface ProviderModel {
   name: string;
   nit: string;
   phone: string[];
+  contact: string;
   address: AddressModel | null;
 }

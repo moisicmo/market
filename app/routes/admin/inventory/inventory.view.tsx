@@ -1,15 +1,16 @@
 import { useEffect } from 'react';
 import { ProductTable } from '.';
-import { useAuthStore, useKardexStore, useProductStore, useTransferStore } from '@/hooks';
+import { useAuthStore, useKardexStore, usePermissionStore, useProductStore, useTransferStore } from '@/hooks';
 import { ExcelUploader } from '@/components/drag';
 import { useInputStore } from '@/hooks/useInputStore';
-import type { InputRequest, TransferRequest } from '@/models';
+import { TypeAction, TypeSubject, type InputRequest, type TransferRequest } from '@/models';
 
 const InventoryView = () => {
   const { importXlsx } = useProductStore();
   const { branchSelect } = useAuthStore();
   const { dataKardexProduct, getKardexByBranchId, updatePresentations } = useKardexStore();
   const { createInput } = useInputStore();
+  const { hasPermission } = usePermissionStore();
   const { createTransfer } = useTransferStore();
 
 
@@ -53,9 +54,11 @@ const InventoryView = () => {
       <h2 className="text-xl font-semibold text-gray-800">Inventario</h2>
 
       {/* Subida de Excel */}
-      <div className="my-4">
-        <ExcelUploader onUpload={handleExcelUpload} />
-      </div>
+      {
+        hasPermission(TypeAction.create, TypeSubject.input) &&
+        <div className="my-4">
+          <ExcelUploader onUpload={handleExcelUpload} />
+        </div>}
 
       {/* Tabla de branch */}
       {branchSelect && <ProductTable

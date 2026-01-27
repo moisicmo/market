@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { BaseResponse, ProductModel } from '@/models';
-import { useDebounce } from '@/hooks';
+import { TypeAction, TypeSubject, type BaseResponse, type ProductModel } from '@/models';
+import { useDebounce, usePermissionStore } from '@/hooks';
 import { PaginationControls } from '@/components/pagination.control';
 import { ActionButtons, InputCustom } from '@/components';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -28,6 +28,7 @@ export const ProductTable = (props: Props) => {
   const [rowsPerPage, setRowsPerPage] = useState(limitInit);
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 1500);
+  const { hasPermission } = usePermissionStore();
   useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(dataProduct.total / rowsPerPage));
     if (page > maxPage) {
@@ -58,8 +59,8 @@ export const ProductTable = (props: Props) => {
               <TableHead>Nombre</TableHead>
               <TableHead>Categoría</TableHead>
               <TableHead>Marca</TableHead>
+              <TableHead>Precio Promoción</TableHead>
               <TableHead>Precios</TableHead>
-              <TableHead>Precios Promocionales</TableHead>
               <TableHead className="sticky right-0 z-10 bg-white">Acciones</TableHead>
             </TableRow>
           </TableHeader>
@@ -79,6 +80,7 @@ export const ProductTable = (props: Props) => {
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.category.name}</TableCell>
                   <TableCell>{product.brand.name}</TableCell>
+                  <TableCell>{`${product.promoPrice} Bs`}</TableCell>
                   <TableCell>
                     <ul className="list-disc list-inside space-y-1">
                       {
@@ -89,22 +91,12 @@ export const ProductTable = (props: Props) => {
                       }
                     </ul>
                   </TableCell>
-                  <TableCell>
-                    <ul className="list-disc list-inside space-y-1">
-                      {
-                        product.prices.map((price) => (
-                          <li key={price.id}>
-                            {` ${price.typeUnit} - Bs.${price.promoPrice} (${price.branch.name})`}
-                          </li>))
-                      }
-                    </ul>
-                  </TableCell>
 
                   <TableCell className="sticky right-0 z-10 bg-white">
                     <ActionButtons
                       item={product}
-                      onEdit={handleEdit}
-                      onDelete={onDelete}
+                      onEdit={hasPermission(TypeAction.update, TypeSubject.product) ? handleEdit : undefined}
+                      onDelete={hasPermission(TypeAction.delete, TypeSubject.product) ? onDelete : undefined}
                     />
                   </TableCell>
                 </TableRow>

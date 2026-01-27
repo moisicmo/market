@@ -1,5 +1,5 @@
 
-import type { CustomerModel, ProductPresentationModel } from "..";
+import type { CustomerModel, ProductModel } from "..";
 export interface CartRequest {
   customerId: string;
   branchId: string;
@@ -8,7 +8,7 @@ export interface CartRequest {
 }
 
 export interface OputputRequest {
-  productPresentationId: string;
+  productId: string;
   quantity: number;
   price: number;
 }
@@ -30,7 +30,7 @@ export const formCartValidations: FormCartValidations = {
 
 // desde aqui vale
 export interface CartItem {
-  productPresentationModel: ProductPresentationModel;
+  productModel: ProductModel;
   stock: number;
   quantity: number;
   price: number;

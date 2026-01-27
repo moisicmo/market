@@ -1,3 +1,6 @@
+
+// ENUMS
+export * from './enums';
 // REQUEST
 export * from './request/auth.request';
 export * from './request/address.request';
@@ -40,6 +43,3 @@ export * from './response/kardex.response';
 
 export * from './pagination';
 
-
-// ENUMS
-export * from './enums';

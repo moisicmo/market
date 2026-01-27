@@ -41,6 +41,7 @@ export const TopNav = (props: Props) => {
               const branch = branchesUser.find(b => b.id === value);
               if (branch) {
                 setBranchSelect(branch);
+                window.location.reload();
               }
             }}
           >

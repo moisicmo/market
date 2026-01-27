@@ -29,7 +29,7 @@ export const ActionButtons = <T extends { id?: string; userId?: string }>({
 }: ActionButtonsProps<T>) => {
   const identifier = item.userId ?? item.id ?? '';
   const { cart } = useCartStore();
-  const isInCart = cart.some((e) => e.productPresentationModel.id === item.id);
+  const isInCart = cart.some((e) => e.productModel.id === item.id);
   return (
     <div className="flex justify-center items-center gap-3">
       {onSelect && identifier && (

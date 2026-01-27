@@ -22,7 +22,6 @@ export const CustomerCreate = (props: Props) => {
     user,
     onInputChange,
     onResetForm,
-    onValueChange,
     isFormValid,
     userValid,
   } = useForm(item ?? formCustomerInit, formCustomerValidations);
@@ -40,7 +39,7 @@ export const CustomerCreate = (props: Props) => {
         typeDocument: 'dni',
         name: user.name.trim(),
         lastName: user.lastName.trim(),
-        email: user.email.trim(),
+        email: user.email?.trim() ?? null,
       });
     } else {
       await onCreate({
@@ -48,7 +47,7 @@ export const CustomerCreate = (props: Props) => {
         typeDocument: 'dni',
         name: user.name.trim(),
         lastName: user.lastName.trim(),
-        email: user.email.trim(),
+        email: user.email?.trim() ?? null,
       });
     }
 
@@ -77,7 +76,6 @@ export const CustomerCreate = (props: Props) => {
               userValid={userValid}
               formSubmitted={formSubmitted}
               onInputChange={onInputChange}
-              onValueChange={onValueChange}
             />
           </div>
           <div className="flex justify-end gap-2 pt-2">

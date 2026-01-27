@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { TypeAction, TypeSubject, type BaseResponse, type RoleModel } from '@/models';
-import { useDebounce } from '@/hooks';
+import { useDebounce, usePermissionStore } from '@/hooks';
 import { PaginationControls } from '@/components/pagination.control';
 import { ActionButtons, InputCustom } from '@/components';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Shield } from 'lucide-react';
 
 interface Props {
   handleEdit: (role: RoleModel) => void;
@@ -13,6 +15,19 @@ interface Props {
   onRefresh: (page?: number, limit?: number, keys?: string) => void;
   onDelete: (id: string) => void;
 }
+
+const groupPermissions = (permissions: RoleModel['permissions']) => {
+  const groups: Record<string, string[]> = {};
+
+  permissions.forEach(perm => {
+    if (!groups[perm.subject]) {
+      groups[perm.subject] = [];
+    }
+    groups[perm.subject].push(TypeAction[perm.action as unknown as keyof typeof TypeAction]);
+  });
+
+  return groups;
+};
 
 export const RoleTable = (props: Props) => {
   const {
@@ -27,6 +42,7 @@ export const RoleTable = (props: Props) => {
 
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(limitInit);
+  const { hasPermission } = usePermissionStore();
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 1500);
   useEffect(() => {
@@ -53,37 +69,62 @@ export const RoleTable = (props: Props) => {
       <Table className='mb-3'>
         <TableHeader>
           <TableRow>
-            <TableHead>Nombre</TableHead>
-            <TableHead>Permisos</TableHead>
+            <TableHead className="w-1/3">Rol</TableHead>
+            <TableHead className="w-2/3">Permisos</TableHead>
             <TableHead className="sticky right-0 z-10 bg-white">Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {dataRole.data.map(item => (
-            <TableRow key={item.id}>
-              <TableCell>{item.name}</TableCell>
-              <TableCell>
-                <ul className="list-disc list-inside space-y-1">
-                  {
-                    item.permissions.map((perm) => (
-                      <li key={perm.id}>
-                        {`${TypeAction[perm.action as unknown as keyof typeof TypeAction]} ${TypeSubject[perm.subject as unknown as keyof typeof TypeSubject]}`}
-                      </li>))
-                  }
-                </ul>
-              </TableCell>
-              <TableCell className="sticky right-0 z-10 bg-white">
-                <ActionButtons
-                  item={item}
-                  onEdit={handleEdit}
-                  onDelete={onDelete}
-                />
-              </TableCell>
-            </TableRow>
-          ))}
+          {dataRole.data.map(item => {
+            const permissionGroups = groupPermissions(item.permissions);
+            const moduleCount = Object.keys(permissionGroups).length;
+
+            return (
+              <TableRow key={item.id}>
+                <TableCell>
+                  <div className="font-medium">{item.name}</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {item.permissions.length} permiso{item.permissions.length !== 1 ? 's' : ''}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="permissions" className="border-0">
+                      <AccordionTrigger className="py-1 hover:no-underline">
+                        <div className="flex items-center gap-2">
+                          <Shield className="w-4 h-4 text-gray-500" />
+                          <span className="text-sm">
+                            {moduleCount} módulo{moduleCount !== 1 ? 's' : ''}
+                          </span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        {Object.entries(permissionGroups).map(([module, actions]) => (
+                          <div key={module} className="border-l-2 border-primary pl-3 py-1">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium truncate">{module}</span>
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              {actions.join(', ')}
+                            </div>
+                          </div>
+                        ))}
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </TableCell>
+                <TableCell className="sticky right-0 z-10 bg-white">
+                  <ActionButtons
+                    item={item}
+                    onEdit={hasPermission(TypeAction.update, TypeSubject.role) ? handleEdit : undefined}
+                    onDelete={hasPermission(TypeAction.delete, TypeSubject.role) ? onDelete : undefined}
+                  />
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
-      {/* Controles de paginación */}
       <PaginationControls
         total={dataRole.total}
         page={page}

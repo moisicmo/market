@@ -2,14 +2,14 @@ import type { DebtModel, ProductPresentationModel } from "..";
 
 
 // export interface PaymentRequest {
-//   productPresentationId: string;
+//   productId: string;
 //   quantity: number;
 //   price: number;
 // }
 
 
 // export interface FormPaymentModel {
-//   productPresentationId: ProductPresentationModel,
+//   productId: ProductPresentationModel,
 //   quantity: number;
 //   price: number;
 // }

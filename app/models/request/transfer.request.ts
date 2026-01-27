@@ -10,7 +10,7 @@ export interface TransferRequest {
 }
 
 interface Presentation {
-  productPresentationId: string;
+  productId: string;
   quantity: number;
   price: number;
 }

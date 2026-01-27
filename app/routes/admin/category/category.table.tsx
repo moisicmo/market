@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { BaseResponse, CategoryModel } from '@/models';
-import { useDebounce } from '@/hooks';
+import { TypeAction, TypeSubject, type BaseResponse, type CategoryModel } from '@/models';
+import { useDebounce, usePermissionStore } from '@/hooks';
 import { PaginationControls } from '@/components/pagination.control';
 import { ActionButtons, InputCustom } from '@/components';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -27,6 +27,7 @@ export const CategoryTable = (props: Props) => {
 
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(limitInit);
+  const { hasPermission } = usePermissionStore();
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 1500);
   useEffect(() => {
@@ -58,14 +59,14 @@ export const CategoryTable = (props: Props) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {dataCategory.data.map((category) => 
+          {dataCategory.data.map((category) =>
             <TableRow key={category.id}>
               <TableCell>{category.name}</TableCell>
               <TableCell className="sticky right-0 z-10 bg-white">
                 <ActionButtons
                   item={category}
-                  onEdit={handleEdit}
-                  onDelete={onDelete}
+                  onEdit={hasPermission(TypeAction.update, TypeSubject.category) ? handleEdit : undefined}
+                  onDelete={hasPermission(TypeAction.delete, TypeSubject.category) ? onDelete : undefined}
                 />
               </TableCell>
             </TableRow>

@@ -30,12 +30,13 @@ export const useProductStore = () => {
       const formData = new FormData();
 
       Object.entries(body).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && key !== "prices") {
+        if (value !== undefined && value !== null && key !== "prices" && key !== "unitConversion") {
           formData.append(key, value as string);
         }
       });
 
       formData.append('prices', JSON.stringify(body.prices));
+      formData.append('unitConversion', JSON.stringify(body.unitConversion));
 
       if (image) {
         formData.append("image", image);
@@ -60,11 +61,12 @@ export const useProductStore = () => {
       const formData = new FormData();
 
       Object.entries(body).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && key !== "prices") {
+        if (value !== undefined && value !== null && key !== "prices" && key !== "unitConversion") {
           formData.append(key, value as string);
         }
       });
       formData.append('prices', JSON.stringify(body.prices));
+      formData.append('unitConversion', JSON.stringify(body.unitConversion));
 
       if (image) {
         formData.append("image", image);

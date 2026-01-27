@@ -9,6 +9,7 @@ export interface ProductModel {
   barCode?: string;
   visible: boolean;
   category: CategoryModel;
+  promoPrice?: number;
   brand: BranchModel;
   prices: PriceModel[];
 }

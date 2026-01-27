@@ -75,7 +75,7 @@ export const InputCreate = ({
 
 
     // const formattedPresentations = presentations.map((p) => ({
-    //   productPresentationId: p.productPresentation.id,
+    //   productId: p.productPresentation.id,
     //   quantity: p.quantity,
     //   price: p.price,
     //   dueDate: p.dueDate,

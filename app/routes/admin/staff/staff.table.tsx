@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { BaseResponse, StaffModel } from '@/models';
-import { useDebounce } from '@/hooks';
+import { TypeAction, TypeSubject, type BaseResponse, type StaffModel } from '@/models';
+import { useDebounce, usePermissionStore } from '@/hooks';
 import { PaginationControls } from '@/components/pagination.control';
 import { ActionButtons, InputCustom } from '@/components';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -28,6 +28,7 @@ export const StaffTable = (props: Props) => {
   const [rowsPerPage, setRowsPerPage] = useState(limitInit);
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 500);
+  const { hasPermission } = usePermissionStore();
   useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(dataStaff.total / rowsPerPage));
     if (page > maxPage) {
@@ -71,8 +72,8 @@ export const StaffTable = (props: Props) => {
               <TableCell className="sticky right-0 z-10 bg-white">
                 <ActionButtons
                   item={item}
-                  onEdit={handleEdit}
-                  onDelete={onDelete}
+                  onEdit={hasPermission(TypeAction.update, TypeSubject.staff) ? handleEdit : undefined}
+                  onDelete={hasPermission(TypeAction.delete, TypeSubject.staff) ? onDelete : undefined}
                 />
               </TableCell>
             </TableRow>

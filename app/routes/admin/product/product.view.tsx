@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { ProductModel } from '@/models';
+import { TypeAction, TypeSubject, type ProductModel } from '@/models';
 import { ProductCreate, ProductTable } from '.';
 import { Button } from '@/components';
-import { useProductStore } from '@/hooks';
+import { usePermissionStore, useProductStore } from '@/hooks';
 
 const productView = () => {
   const { dataProduct, getProducts, createProduct, updateProduct, deleteProduct } = useProductStore();
 
   const [openDialog, setOpenDialog] = useState(false);
+  const { hasPermission } = usePermissionStore();
   const [itemEdit, setItemEdit] = useState<ProductModel | null>(null);
 
   const handleDialog = useCallback((value: boolean) => {
@@ -25,9 +26,12 @@ const productView = () => {
       {/* Encabezado */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800">Productos</h2>
-        <Button
-          onClick={() => handleDialog(true)}
-        >Nuevo Producto</Button>
+        {
+          hasPermission(TypeAction.create, TypeSubject.product) &&
+          <Button
+            onClick={() => handleDialog(true)}
+          >Nuevo Producto</Button>
+        }
       </div>
 
       {/* Tabla de product */}
@@ -45,12 +49,12 @@ const productView = () => {
       {/* Dialogo para crear o editar productos*/}
       {openDialog && (
         <ProductCreate
-        open={openDialog}
-        handleClose={() => handleDialog(false)}
-        item={itemEdit == null ? null : { ...itemEdit }}
-        image={itemEdit?.image}
-        onCreate={createProduct}
-        onUpdate={updateProduct}
+          open={openDialog}
+          handleClose={() => handleDialog(false)}
+          item={itemEdit == null ? null : { ...itemEdit }}
+          image={itemEdit?.image}
+          onCreate={createProduct}
+          onUpdate={updateProduct}
         />
       )}
     </>
