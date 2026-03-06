@@ -1,32 +1,52 @@
 import Benefits from "../layouts/public/benefits";
-import FeaturedProducts from "../layouts/public/featured-products";
+import CatalogSection from "../layouts/public/featured-products";
 import Footer from "../layouts/public/footer";
 import Hero from "../layouts/public/hero";
 import Navbar from "../layouts/public/navbar";
+import { PublicCartDrawer } from "../layouts/public/public-cart.drawer";
+import { usePublicCart } from "@/hooks/usePublicCart";
+import { useState } from "react";
 
 export const metadata = () => {
   return [
     {
-      title: 'ImportMarket - Productos Importados de Calidad',
-      description: 'Los mejores productos internacionales con envío rápido a toda Bolivia',
-      keywords: 'importados, tecnología, envío nacional, productos premium',
+      title: 'Importadora Jhomir - Un Mundo de Ideas',
+      description: 'Electrodomésticos y artículos del hogar importados. Las mejores marcas al mejor precio en Bolivia.',
+      keywords: 'importadora, electrodomésticos, artículos del hogar, Bolivia, Jhomir',
     },
     {
       property: 'og:title',
-      content: 'ImportMarket - Productos Importados de Calidad',
-    }
-  ]
-}
+      content: 'Importadora Jhomir - Un Mundo de Ideas',
+    },
+  ];
+};
 
 const home = () => {
+  const { items, total, count, addItem, removeItem, updateQuantity, clearCart } = usePublicCart();
+  const [cartOpen, setCartOpen] = useState(false);
+
   return (
     <div>
-      <Navbar />
+      <Navbar cartCount={count} onOpenCart={() => setCartOpen(true)} />
       <Hero />
-      <FeaturedProducts />
+      <CatalogSection
+        cartItems={items}
+        onAddToCart={addItem}
+        onOpenCart={() => setCartOpen(true)}
+      />
       <Benefits />
       <Footer />
+      <PublicCartDrawer
+        open={cartOpen}
+        items={items}
+        total={total}
+        onClose={() => setCartOpen(false)}
+        onRemove={removeItem}
+        onUpdateQuantity={updateQuantity}
+        onClear={clearCart}
+      />
     </div>
   );
-}
+};
+
 export default home;

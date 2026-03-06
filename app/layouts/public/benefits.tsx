@@ -1,44 +1,47 @@
-import { Truck, Shield, DollarSign, Clock } from "lucide-react";
+import { Package, ThumbsUp, MapPin, Headphones } from "lucide-react";
 
 const benefits = [
   {
-    icon: Truck,
-    title: "Envío Rápido",
-    description: "Entrega en 5-7 días hábiles a toda Latinoamérica"
+    icon: Package,
+    title: "Productos Importados",
+    description: "Electrodomésticos y artículos del hogar traídos directamente del exterior con control de calidad.",
   },
   {
-    icon: Shield,
-    title: "Garantía Total",
-    description: "30 días de devolución sin costo adicional"
+    icon: ThumbsUp,
+    title: "Garantía de Calidad",
+    description: "Todos nuestros productos pasan por verificación antes de llegar a tus manos.",
   },
   {
-    icon: DollarSign,
-    title: "Mejores Precios",
-    description: "Hasta 40% más barato que en tiendas locales"
+    icon: MapPin,
+    title: "Varias Sucursales",
+    description: "Encuéntranos en diferentes puntos de la ciudad para tu mayor comodidad.",
   },
   {
-    icon: Clock,
-    title: "Atención 24/7",
-    description: "Soporte en español todo el día"
-  }
+    icon: Headphones,
+    title: "Atención Personalizada",
+    description: "Nuestro equipo está disponible para asesorarte y encontrar el producto ideal.",
+  },
 ];
 
 export default function Benefits() {
   return (
-    <section id="benefits" className="py-16">
+    <section id="benefits" className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">¿Por qué elegirnos?</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">¿Por qué elegir Importadora Jhomir?</h2>
+          <p className="text-gray-500 max-w-xl mx-auto">
+            Años de experiencia trayendo lo mejor del mundo para los hogares bolivianos.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {benefits.map(benefit => (
-            <div key={benefit.title} className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <benefit.icon className="w-8 h-8 text-blue-600" />
+            <div key={benefit.title} className="text-center group">
+              <div className="w-16 h-16 bg-red-50 group-hover:bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors duration-300">
+                <benefit.icon className="w-8 h-8 text-red-600 group-hover:text-white transition-colors duration-300" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">{benefit.title}</h3>
-              <p className="text-gray-600">{benefit.description}</p>
+              <h3 className="text-lg font-semibold mb-2 text-gray-800">{benefit.title}</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">{benefit.description}</p>
             </div>
           ))}
         </div>

@@ -22,6 +22,8 @@ export const cartSlice = createSlice({
     },
 
     setUpdateItemCart: (state, action: PayloadAction<CartItem>) => {
+      const { quantity, stock } = action.payload;
+      if (quantity > stock || quantity < 1) return;
       state.cart = state.cart.map((item) => {
         if (item.productModel.id == action.payload.productModel.id) {
           return action.payload;

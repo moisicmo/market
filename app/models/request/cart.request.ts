@@ -4,6 +4,8 @@ export interface CartRequest {
   customerId: string;
   branchId: string;
   amount: number;
+  paymentType?: 'CONTADO' | 'CUOTAS';
+  amountPaid?: number;
   outputs: OputputRequest[];
 }
 

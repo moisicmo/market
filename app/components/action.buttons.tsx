@@ -13,6 +13,7 @@ interface ActionButtonsProps<T extends { id?: string; userId?: string }> {
   isSelected?: boolean;
   children?: React.ReactNode;
   isPopoverOpen?: boolean;
+  disabled?: boolean;
 }
 
 export const ActionButtons = <T extends { id?: string; userId?: string }>({
@@ -26,6 +27,7 @@ export const ActionButtons = <T extends { id?: string; userId?: string }>({
   isSelected,
   children,
   isPopoverOpen,
+  disabled,
 }: ActionButtonsProps<T>) => {
   const identifier = item.userId ?? item.id ?? '';
   const { cart } = useCartStore();
@@ -82,24 +84,21 @@ export const ActionButtons = <T extends { id?: string; userId?: string }>({
         </button>
       )}
       {onSale && identifier && (
-        // <button onClick={() => onSale(identifier)} title="Agregar" className="cursor-pointer">
-        //   <PackagePlus color="var(--color-info)" className="w-5 h-5" />
-        // </button>
         <Button
           onClick={(e) => {
             e.stopPropagation();
-            if (!isInCart) {
+            if (!isInCart && !disabled) {
               onSale?.(identifier);
             }
           }}
           size="sm"
           variant="outline"
           className="flex items-center gap-1"
-          title="Agregar al carrito de pagos"
-          disabled={isInCart}
+          title={disabled ? 'Sin stock' : 'Agregar al carrito'}
+          disabled={isInCart || disabled}
         >
           <ShoppingCart className="w-5 h-5" />
-          {isInCart ? "Agregado" : "Agregar"}
+          {isInCart ? "Agregado" : disabled ? "Sin stock" : "Agregar"}
         </Button>
       )}
       {onEdit && (

@@ -26,13 +26,16 @@ export const useCustomerStore = () => {
     }
   };
 
-  const createCustomer = async (body: CustomerRequest) => {
+  const createCustomer = async (body: CustomerRequest): Promise<CustomerModel | null> => {
     try {
-      await coffeApi.post(`/${baseUrl}/`, body);
+      const { data } = await coffeApi.post(`/${baseUrl}/`, body);
       await getCustomers();
       showSuccess('Cliente creado correctamente');
+      // data is the user object from the backend — build CustomerModel shape
+      return { userId: data.id, user: data } as CustomerModel;
     } catch (error) {
-      throw handleError(error);
+      handleError(error);
+      return null;
     }
   };
 

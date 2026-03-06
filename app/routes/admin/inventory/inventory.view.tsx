@@ -1,15 +1,14 @@
 import { useEffect } from 'react';
 import { ProductTable } from '.';
-import { useAuthStore, useKardexStore, usePermissionStore, useProductStore, useTransferStore } from '@/hooks';
+import { useAuthStore, useKardexStore, usePermissionStore, useProductStore, useTransferStore, usePurchaseStore } from '@/hooks';
 import { ExcelUploader } from '@/components/drag';
-import { useInputStore } from '@/hooks/useInputStore';
-import { TypeAction, TypeSubject, type InputRequest, type TransferRequest } from '@/models';
+import { TypeAction, TypeSubject, type PurchaseRequest, type TransferRequest } from '@/models';
 
 const InventoryView = () => {
   const { importXlsx } = useProductStore();
   const { branchSelect } = useAuthStore();
   const { dataKardexProduct, getKardexByBranchId, updatePresentations } = useKardexStore();
-  const { createInput } = useInputStore();
+  const { createPurchase } = usePurchaseStore();
   const { hasPermission } = usePermissionStore();
   const { createTransfer } = useTransferStore();
 
@@ -21,8 +20,8 @@ const InventoryView = () => {
   };
 
 
-  const handleCreateInput = async (inputRequest: InputRequest) => {
-    const moviments = await createInput(inputRequest);
+  const handleCreatePurchase = async (purchaseRequest: PurchaseRequest) => {
+    const moviments = await createPurchase(purchaseRequest);
     updatePresentations(moviments);
   }
 
@@ -64,7 +63,7 @@ const InventoryView = () => {
       {branchSelect && <ProductTable
         branchId={branchSelect.id}
         dataKardex={dataKardexProduct}
-        onInputCreate={handleCreateInput}
+        onPurchaseCreate={handleCreatePurchase}
         onTransferCreate={handleCreateTransfer}
       />}
     </>

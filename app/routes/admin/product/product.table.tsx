@@ -60,6 +60,7 @@ export const ProductTable = (props: Props) => {
               <TableHead>Categoría</TableHead>
               <TableHead>Marca</TableHead>
               <TableHead>Precio Promoción</TableHead>
+              <TableHead>Costo Ref.</TableHead>
               <TableHead>Precios</TableHead>
               <TableHead className="sticky right-0 z-10 bg-white">Acciones</TableHead>
             </TableRow>
@@ -81,6 +82,7 @@ export const ProductTable = (props: Props) => {
                   <TableCell>{product.category.name}</TableCell>
                   <TableCell>{product.brand.name}</TableCell>
                   <TableCell>{`${product.promoPrice} Bs`}</TableCell>
+                  <TableCell>{product.refCost != null ? `${product.refCost} Bs` : '—'}</TableCell>
                   <TableCell>
                     <ul className="list-disc list-inside space-y-1">
                       {

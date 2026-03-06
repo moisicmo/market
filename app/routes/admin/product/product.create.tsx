@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useForm, useCategoryStore, useBrandStore, useAuthStore } from '@/hooks';
 import { Button, InputCustom, SelectCustom } from '@/components';
 import { formProductFields, formProductValidations, TypeUnit, type FormPriceModel, type ProductModel, type ProductRequest } from '@/models';
@@ -29,6 +29,23 @@ export const ProductCreate = (props: Props) => {
   const { dataCategory, getCategories } = useCategoryStore();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
+  const normalizedItem = useMemo(() => {
+    if (!item) return null;
+    return {
+      ...item,
+      code: item.code ?? '',
+      description: item.description ?? '',
+      barCode: item.barCode ?? '',
+      promoPrice: String(item.promoPrice ?? 0),
+      refCost: String((item as any).refCost ?? 0),
+      unitConversion: (item as any).unitConversion ?? {
+        fromUnit: TypeUnit.UNIDAD as string,
+        toUnit: TypeUnit.UNIDAD as string,
+        factor: 1,
+      },
+    };
+  }, [item?.id]);
+
   const {
     category,
     brand,
@@ -37,6 +54,7 @@ export const ProductCreate = (props: Props) => {
     description,
     barCode,
     promoPrice,
+    refCost,
     unitConversion,
     prices,
 
@@ -52,9 +70,10 @@ export const ProductCreate = (props: Props) => {
     descriptionValid,
     barCodeValid,
     promoPriceValid,
+    refCostValid,
     unitConversionValid,
     pricesValid,
-  } = useForm(item ?? formProductFields, formProductValidations);
+  } = useForm(normalizedItem ?? formProductFields, formProductValidations);
 
   const [formSubmitted, setFormSubmitted] = useState(false);
 
@@ -71,7 +90,8 @@ export const ProductCreate = (props: Props) => {
       name: name.trim(),
       description: description.trim(),
       barCode: barCode.trim(),
-      promoPrice: promoPrice,
+      promoPrice: Number(promoPrice),
+      refCost: Number(refCost),
       unitConversion: {
         fromUnit: unitConversion.fromUnit,
         toUnit: unitConversion.toUnit,
@@ -271,10 +291,19 @@ export const ProductCreate = (props: Props) => {
                   <InputCustom
                     name="promoPrice"
                     value={promoPrice}
-                    label="Precio Promocional (S/)"
+                    label="Precio Promocional (Bs.)"
+                    type="number"
                     onChange={onInputChange}
                     error={!!promoPriceValid && formSubmitted}
                     helperText={formSubmitted ? promoPriceValid : ''}
+                  />
+                  <InputCustom
+                    name="refCost"
+                    value={refCost}
+                    label="Costo Referencial (Bs.)"
+                    onChange={onInputChange}
+                    error={!!refCostValid && formSubmitted}
+                    helperText={formSubmitted ? refCostValid : ''}
                   />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

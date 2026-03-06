@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import { TypeAction, TypeSubject, type BaseResponse, type BranchModel, type InputRequest, type KardexModel, type ProductModel, type TransferRequest } from '@/models';
+import { type BaseResponse, type PurchaseRequest, type KardexModel, type ProductModel, type TransferRequest } from '@/models';
 import { PaginationControls } from '@/components/pagination.control';
-import { ActionButtons, Button, InputCustom } from '@/components';
+import { ActionButtons, InputCustom } from '@/components';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import React from 'react';
-import { InputCreate } from './input.create';
+import { PurchaseCreate } from '../purchase/purchase.create';
 import { MovimentsTable } from './moviments.table';
-import { TransferCreate } from './transfer.create';
 import { usePermissionStore } from '@/hooks';
 
 interface Props {
@@ -14,7 +13,7 @@ interface Props {
   limitInit?: number;
   itemSelect?: (product: ProductModel) => void;
   dataKardex: BaseResponse<KardexModel>;
-  onInputCreate: (body: InputRequest) => void;
+  onPurchaseCreate: (body: PurchaseRequest) => void;
   onTransferCreate: (body: TransferRequest) => void;
 }
 
@@ -24,16 +23,14 @@ export const ProductTable = (props: Props) => {
     itemSelect,
     limitInit = 10,
     dataKardex,
-    onInputCreate,
+    onPurchaseCreate,
     onTransferCreate,
   } = props;
 
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(limitInit);
-  const { hasPermission } = usePermissionStore();
   const [openInputDialog, setOpenInputDialog] = useState(false);
-  const [openTransferDialog, setOpenTransferDialog] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
 
@@ -60,19 +57,9 @@ export const ProductTable = (props: Props) => {
           <InputCustom
             name="query"
             value={query}
-            placeholder="Buscar presentación..."
+            placeholder="Buscar producto..."
             onChange={(e) => setQuery(e.target.value)}
           />
-          {
-            hasPermission(TypeAction.create, TypeSubject.input) &&
-            <Button
-              onClick={() => setOpenInputDialog(true)}
-            >Ingresar Productos</Button>}
-          {
-            hasPermission(TypeAction.create, TypeSubject.transfer) &&
-            <Button
-              onClick={() => setOpenTransferDialog(true)}
-            >Transferir Productos</Button>}
         </div>
         <Table className='mb-3'>
           <TableHeader>
@@ -124,25 +111,15 @@ export const ProductTable = (props: Props) => {
           }}
         />
       </div>
-      {/* Dialogo para registrar entrada de presentación */}
+      {/* Dialogo para registrar compra */}
       {openInputDialog && (
-        <InputCreate
+        <PurchaseCreate
           branchId={branchId}
           dataKardex={dataKardex.data}
           handleClose={() => setOpenInputDialog(false)}
-          onInputCreate={onInputCreate}
+          onPurchaseCreate={onPurchaseCreate}
         />
       )}
-
-      {/* {openTransferDialog && (
-        <TransferCreate
-          branchId={branchId}
-          dataKardex={dataKardex.data}
-          handleClose={() => setOpenTransferDialog(false)}
-          onTransferCreate={onTransferCreate}
-          dataBranch={dataBranch}
-        />
-      )} */}
     </>
   );
 };

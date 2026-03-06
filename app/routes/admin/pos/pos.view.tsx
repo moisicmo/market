@@ -21,6 +21,7 @@ const posView = () => {
         branchSelect &&
         <ProductTable
           dataKardex={dataKardexProduct}
+          onRefresh={(page, limit, keys) => getKardexByBranchId(branchSelect.id, page, limit, keys)}
         />
       }
     </>

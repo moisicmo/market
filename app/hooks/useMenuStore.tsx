@@ -6,28 +6,12 @@ import {
   Users2 as Staff,
   KeyRound as Role,
   ShieldCheck as Permission,
-  BookOpenText as Teacher,
-  GraduationCap as Student,
-  UserCheck2 as Tutor,
-  ClipboardList as Inscription,
-  CalendarClock as Booking,
-  MonitorSmartphone as Room,
-  HandCoins as Debt,
-  FileBarChart2 as Report,
-  CalendarDays as Attendance,
-  MessageSquareText as Correspondence,
-  CreditCard as Payment,
-  School as Specialty,
-  DollarSign as Price,
-  ArrowLeftRight as Refund,
+  BookOpenText,
+  GraduationCap,
   BarChart3 as ReportIcon,
   UserCog as Users,
-  School,
-  DollarSign,
-  BookOpenText,
   Factory,
   Tag,
-  GraduationCap,
   Package,
   ShoppingCart,
   Receipt,
@@ -67,7 +51,7 @@ export const useMenu = (): MenuItem[] => {
       icon: <Customers size={18} />,
     });
   }
-  
+
   // Catálogo
   const catalogoItems: MenuItem[] = [];
 
@@ -114,9 +98,33 @@ export const useMenu = (): MenuItem[] => {
     });
   }
 
+  if (hasPermission(TypeAction.manage, TypeSubject.purchase)) {
+    operacionesItems.push({
+      path: '/admin/purchase',
+      title: 'Compras',
+      icon: <CalendarClock size={18} />,
+    });
+  }
+
+  if (hasPermission(TypeAction.manage, TypeSubject.writeoff)) {
+    operacionesItems.push({
+      path: '/admin/writeoffs',
+      title: 'Bajas',
+      icon: <CalendarClock size={18} />,
+    });
+  }
+
+  if (hasPermission(TypeAction.manage, TypeSubject.transfer)) {
+    operacionesItems.push({
+      path: '/admin/transfer',
+      title: 'Transferencias',
+      icon: <CalendarClock size={18} />,
+    });
+  }
+
   if (hasPermission(TypeAction.manage, TypeSubject.delivery)) {
     operacionesItems.push({
-      path: '/admin/deliveries',
+      path: '/admin/delivery',
       title: 'Entregas',
       icon: <CalendarClock size={18} />,
     });
@@ -208,6 +216,32 @@ export const useMenu = (): MenuItem[] => {
       group: adminItems,
     });
   }
+  // Cuentas
+  const CuentasYCajasItems: MenuItem[] = [];
+
+  if (hasPermission(TypeAction.manage, TypeSubject.accountsPayable)) {
+    CuentasYCajasItems.push({
+      path: '/admin/accounts/payables',
+      title: 'Cuentas por pagar',
+      icon: <BarChart4 size={18} />,
+    });
+  }
+
+  if (hasPermission(TypeAction.manage, TypeSubject.accountsReceivable)) {
+    CuentasYCajasItems.push({
+      path: '/admin/accounts/receivables',
+      title: 'Cuentas por cobrar',
+      icon: <ClipboardList size={18} />,
+    });
+  }
+
+  if (CuentasYCajasItems.length > 0) {
+    menuItems.push({
+      title: 'Cuentas y Cajas',
+      icon: <ReportIcon size={18} />,
+      group: CuentasYCajasItems,
+    });
+  }
 
   // Reportes
   const reportesItems: MenuItem[] = [];
@@ -225,14 +259,6 @@ export const useMenu = (): MenuItem[] => {
       path: '/admin/reports/inventory',
       title: 'Inventario',
       icon: <ClipboardList size={18} />,
-    });
-  }
-
-  if (hasPermission(TypeAction.manage, TypeSubject.report)) {
-    reportesItems.push({
-      path: '/admin/report/sale',
-      title: 'General',
-      icon: <Report size={18} />,
     });
   }
 

@@ -1,24 +1,18 @@
-import type { FormPermissionModel, FormPermissionValidations, PermissionRequest } from "..";
+import type { FormPermissionValidations, PermissionModel } from "..";
 
 export interface RoleRequest {
   name: string;
-  permissions: PermissionRequest[];
+  permissionIds: string[];
 }
 
 export interface FormRoleModel {
   name: string;
-  permissions: FormPermissionModel[];
+  permissions: PermissionModel[];
 }
 
 export const formRoleInit: FormRoleModel = {
   name: '',
-  permissions: [
-    {
-      action: null,
-      subject: null,
-      reason: '',
-    }
-  ],
+  permissions: [],
 };
 
 export interface FormRoleValidations {

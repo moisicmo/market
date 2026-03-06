@@ -10,6 +10,7 @@ export interface ProductModel {
   visible: boolean;
   category: CategoryModel;
   promoPrice?: number;
+  refCost?: number;
   brand: BranchModel;
   prices: PriceModel[];
 }

@@ -1,6 +1,5 @@
 import type { ProductModel } from "../response/product.response";
-import type { ProviderModel } from "../response/provider.response";
-
+import { TypeUnit } from "../enums";
 
 // request
 export interface InputRequest {
@@ -13,6 +12,7 @@ export interface ProductInputRequest {
   productId: string;
   quantity: number;
   price: number;
+  typeUnit: TypeUnit;
 }
 
 // model
@@ -25,7 +25,7 @@ export interface ProductInputModel {
   product: ProductModel;
   quantity: number;
   price: number;
-  provider: ProviderModel | null; // 👈 NUEVO
+  typeUnit: TypeUnit;
   dueDate: Date;
 }
 

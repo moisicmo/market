@@ -62,7 +62,7 @@ export const AccountPopover = ({
       <div className="py-3 px-4">
         <p className="text-xs font-semibold text-gray-500 uppercase">Cuenta</p>
         {user && (
-          <p className="text-sm text-gray-700">{user.name} {user.lastName}</p>
+          <p className="text-sm text-gray-700">{`${user}`}</p>
         )}
       </div>
       <div className="border-t border-gray-200" />

@@ -1,5 +1,5 @@
 import type { ProductModel } from "./product.response";
-import type { ProviderModel } from "./provider.response";
+import type { TypeUnit } from "../enums";
 
 export interface KardexModel {
   product: ProductModel;
@@ -48,9 +48,9 @@ interface Input {
   id: string;
   branchId: string;
   productId: string;
-  provider: ProviderModel;
   quantity: number;
   price: number;
+  typeUnit: TypeUnit;
   dueDate: Date;
   detail: string;
   createdAt: Date;

@@ -4,7 +4,7 @@ export interface AuthModel {
   id: number;
   name: string;
   lastName: string;
-  email: number;
+  email: string;
   token: string;
   refreshToken: string;
   role: RoleModel[];

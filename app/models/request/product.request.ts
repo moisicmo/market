@@ -16,6 +16,7 @@ export interface ProductRequest {
   description: string;
   barCode: string;
   promoPrice: number;
+  refCost: number;
   prices: PriceRequest[];
   unitConversion: UnitConversion;
 }
@@ -32,6 +33,7 @@ interface FormProductModel {
   description: string;
   barCode: string;
   promoPrice: string;
+  refCost: string;
   unitConversion: FormUnitConversion;
   prices: FormPriceModel[];
 };
@@ -44,6 +46,7 @@ export const formProductFields: FormProductModel = {
   description: '',
   barCode: '',
   promoPrice: '0',
+  refCost: '0',
   unitConversion: {
     fromUnit: TypeUnit.UNIDAD as string,
     toUnit: TypeUnit.UNIDAD as string,
@@ -58,6 +61,7 @@ interface FormProductValidations {
   code: [(value: string) => boolean, string];
   name: [(value: string) => boolean, string];
   promoPrice: [(value: string) => boolean, string];
+  refCost: [(value: string) => boolean, string];
   unitConversion: {
     fromUnit: [(value: string) => boolean, string];
     toUnit: [(value: string) => boolean, string];
@@ -75,6 +79,7 @@ export const formProductValidations: FormProductValidations = {
   code: [(value) => value.length >= 1, 'Debe ingresar el código'],
   name: [(value) => value.length >= 1, 'Debe ingresar el nombre'],
   promoPrice: [(value) => value !== "", 'Debe ingresar el precio promocional'],
+  refCost: [(value) => value !== "", 'Debe ingresar el costo referencial'],
   unitConversion: {
     fromUnit: [(value) => value.length >= 1, 'Debe ingresar la unidad de origen'],
     toUnit: [(value) => value.length >= 1, 'Debe ingresar la unidad de destino'],

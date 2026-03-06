@@ -6,11 +6,20 @@ export interface TransferRequest {
   fromBranchId: string;
   toBranchId: string;
   detail: string;
-  outputs: Presentation[];
+  outputs: TransferOutputItem[];
 }
 
-interface Presentation {
+export interface TransferOutputItem {
   productId: string;
+  quantity: number;
+  price: number;
+}
+
+export interface TransferItemFormModel {
+  productId: string;
+  productName: string;
+  productCode?: string;
+  stock: number;
   quantity: number;
   price: number;
 }

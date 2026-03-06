@@ -17,9 +17,21 @@ export default [
       route("staff", "routes/admin/staff/staff.view.tsx"),
       route("customer", "routes/admin/customer/customer.view.tsx"),
       route("payment", "routes/admin/payment/payment.view.tsx"),
-      
       route("inventory", "routes/admin/inventory/inventory.view.tsx"),
+      route("purchase", "routes/admin/purchase/purchase.view.tsx"),
       route("pos", "routes/admin/pos/pos.view.tsx"),
+      route("sales", "routes/admin/order/order.view.tsx"),
+      route("delivery", "routes/admin/delivery/delivery.view.tsx"),
+      route("writeoffs", "routes/admin/writeoff/writeoff.view.tsx"),
+      route("transfer", "routes/admin/transfer/transfer.view.tsx"),
+      ...prefix("accounts", [
+        route("payables", "routes/admin/accounts/accounts-payable.view.tsx"),
+        route("receivables", "routes/admin/accounts/accounts-receivable.view.tsx"),
+      ]),
+      ...prefix("reports", [
+        route("inventory", "routes/admin/report/report-inventory.view.tsx"),
+        route("sales", "routes/admin/report/report-sale.view.tsx"),
+      ]),
     ]),
   ]),
 ] satisfies RouteConfig;

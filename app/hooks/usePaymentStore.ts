@@ -1,6 +1,6 @@
 import { coffeApi } from '@/services';
-import { setClearCart, updateDebtByStudent } from '@/store';
-import { useAlertStore, useErrorStore, usePrintStore } from '.';
+import { setClearCart } from '@/store';
+import { useAlertStore, useErrorStore } from '.';
 import { InitBaseResponse, type BaseResponse, type CartRequest, type InvoiceModel, type PaymentModel } from '@/models';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -9,8 +9,7 @@ export const usePaymentStore = () => {
   const [dataPayment, setDataPayment] = useState<BaseResponse<PaymentModel>>(InitBaseResponse);
   const dispatch = useDispatch();
   const { handleError } = useErrorStore();
-  const { showLoading, swalClose } = useAlertStore();
-  const { handlePdf } = usePrintStore();
+  const { showSuccess, showLoading, swalClose } = useAlertStore();
 
   const baseUrl = 'order';
 
@@ -33,17 +32,10 @@ export const usePaymentStore = () => {
 
   const sentPayments = async (body: CartRequest) => {
     try {
-      showLoading('Registrando los pago(s)..');
-      const res = await coffeApi.post(`/${baseUrl}`, body);
-      const { kardexLists, pdfBase64 } = res.data;
-      console.log(kardexLists);
-      console.log(pdfBase64);
-      // const invoice: InvoiceModel = kardexLists;
-      // invoice.payments.forEach(payment => {
-      //   dispatch(updateDebtByStudent(payment.debt));
-      // });
+      showLoading('Registrando reserva');
+      await coffeApi.post(`/${baseUrl}`, body);
       swalClose();
-      await handlePdf(pdfBase64);
+      showSuccess('Reserva registrada');
       dispatch(setClearCart());
     } catch (error: any) {
       swalClose();

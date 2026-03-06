@@ -55,6 +55,10 @@ export enum TypeSubject {
   report = "reportes",
   delivery = "entregas",
   inventory = "inventarios",
+  purchase = "compras",
+  writeoff = "bajas",
+  accountsReceivable= "cuentas-por-cobrar",
+  accountsPayable = "cuentas-por-pagar",
 }
 
 export enum TypeDebt {
@@ -73,4 +77,9 @@ export enum PayMethod {
 export enum TypeUnit {
   UNIDAD = "UNIDAD",
   CAJA = "CAJA",
+}
+
+export enum PaymentType {
+  CONTADO = "CONTADO",
+  CUOTAS = "CUOTAS",
 }
