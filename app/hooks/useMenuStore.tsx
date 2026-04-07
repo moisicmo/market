@@ -114,11 +114,11 @@ export const useMenu = (): MenuItem[] => {
     });
   }
 
-  if (hasPermission(TypeAction.manage, TypeSubject.transfer)) {
+  if (hasPermission(TypeAction.manage, TypeSubject.transferRequest)) {
     operacionesItems.push({
-      path: '/admin/transfer',
-      title: 'Transferencias',
-      icon: <CalendarClock size={18} />,
+      path: '/admin/transfer-request',
+      title: 'Solicitudes Traspaso',
+      icon: <ClipboardList size={18} />,
     });
   }
 

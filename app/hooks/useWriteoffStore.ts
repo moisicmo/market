@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { coffeApi } from '@/services';
-import { useAlertStore, useErrorStore } from '.';
+import { useAlertStore, useErrorStore, usePrintStore } from '.';
 import { InitBaseResponse, type BaseResponse, type WriteoffModel, type WriteoffRequest } from '@/models';
 
 export const useWriteoffStore = () => {
   const { handleError } = useErrorStore();
   const { showLoading, swalClose, showSuccess } = useAlertStore();
+  const { handleXlsx } = usePrintStore();
   const baseUrl = 'writeoff';
 
   const [dataWriteoffs, setDataWriteoffs] = useState<BaseResponse<WriteoffModel>>(InitBaseResponse<WriteoffModel>());
@@ -34,9 +35,24 @@ export const useWriteoffStore = () => {
     }
   };
 
+  const exportWriteoffs = async (branchId = '', keys = '') => {
+    try {
+      showLoading('Generando reporte...');
+      const res = await coffeApi.get(
+        `/${baseUrl}/export?branchId=${branchId}&keys=${keys}`,
+      );
+      swalClose();
+      handleXlsx(res.data.xlsxBase64, 'reporte-bajas.xlsx');
+    } catch (error) {
+      swalClose();
+      throw handleError(error);
+    }
+  };
+
   return {
     dataWriteoffs,
     getWriteoffs,
     createWriteoff,
+    exportWriteoffs,
   };
 };

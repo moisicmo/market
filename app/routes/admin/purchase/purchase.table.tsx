@@ -52,11 +52,12 @@ export const PurchaseTable = ({ dataPurchase, onRefresh, onReprintPdf }: Props) 
             <TableHead className="w-8"></TableHead>
             <TableHead>Código</TableHead>
             <TableHead>Proveedor</TableHead>
+            <TableHead>Observación</TableHead>
             <TableHead>Tipo pago</TableHead>
             <TableHead>Total</TableHead>
             <TableHead>Productos</TableHead>
-            <TableHead>Descarga</TableHead>
-            <TableHead>Registro</TableHead>
+            <TableHead>Fecha y hora</TableHead>
+            <TableHead>Registrado por</TableHead>
             <TableHead className="sticky right-0 z-10 bg-white">Acciones</TableHead>
           </TableRow>
         </TableHeader>
@@ -74,6 +75,9 @@ export const PurchaseTable = ({ dataPurchase, onRefresh, onReprintPdf }: Props) 
                 </TableCell>
                 <TableCell className="font-mono text-xs">{purchase.code}</TableCell>
                 <TableCell>{purchase.provider.name}</TableCell>
+                <TableCell className="text-gray-500 text-sm max-w-xs truncate">
+                  {purchase.inputs[0]?.detail ?? '—'}
+                </TableCell>
                 <TableCell>
                   <span
                     className={`text-xs font-medium px-2 py-1 rounded-full ${
@@ -87,14 +91,12 @@ export const PurchaseTable = ({ dataPurchase, onRefresh, onReprintPdf }: Props) 
                       : `Cuotas (${purchase._count.installments})`}
                   </span>
                 </TableCell>
-                <TableCell>Bs. {purchase.totalAmount.toFixed(2)}</TableCell>
+                <TableCell className="font-semibold">Bs. {purchase.totalAmount.toFixed(2)}</TableCell>
                 <TableCell>{purchase._count.inputs}</TableCell>
                 <TableCell>
-                  {format(new Date(purchase.dischargeDate), 'dd/MM/yyyy', { locale: es })}
+                  {format(new Date(purchase.createdAt), 'dd/MM/yyyy HH:mm', { locale: es })}
                 </TableCell>
-                <TableCell>
-                  {format(new Date(purchase.createdAt), 'dd/MM/yyyy', { locale: es })}
-                </TableCell>
+                <TableCell className="text-sm">{purchase.createdByName}</TableCell>
                 <TableCell
                   className="sticky right-0 z-10 bg-white"
                   onClick={(e) => e.stopPropagation()}
@@ -111,7 +113,7 @@ export const PurchaseTable = ({ dataPurchase, onRefresh, onReprintPdf }: Props) 
 
               {expandedId === purchase.id && (
                 <TableRow className="bg-slate-50">
-                  <TableCell colSpan={10} className="p-0">
+                  <TableCell colSpan={11} className="p-0">
                     <div className="rounded-md border border-slate-200 bg-white m-3 shadow-sm overflow-hidden">
                       <Table className="w-full text-sm">
                         <TableHeader>
@@ -129,8 +131,12 @@ export const PurchaseTable = ({ dataPurchase, onRefresh, onReprintPdf }: Props) 
                               <TableCell>{item.product.name}</TableCell>
                               <TableCell>{item.quantity}</TableCell>
                               <TableCell>
-                                <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                                  {item.typeUnit}
+                                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                  item.typeUnit === 'CAJA'
+                                    ? 'bg-blue-100 text-blue-700'
+                                    : 'bg-slate-100 text-slate-600'
+                                }`}>
+                                  {item.typeUnit === 'CAJA' ? 'Caja' : 'Unidad'}
                                 </span>
                               </TableCell>
                               <TableCell>Bs. {item.price.toFixed(2)}</TableCell>
@@ -139,6 +145,12 @@ export const PurchaseTable = ({ dataPurchase, onRefresh, onReprintPdf }: Props) 
                               </TableCell>
                             </TableRow>
                           ))}
+                          <TableRow className="bg-slate-50 border-t-2">
+                            <TableCell colSpan={4} className="text-right font-semibold">Total:</TableCell>
+                            <TableCell className="font-bold">
+                              Bs. {purchase.inputs.reduce((sum, item) => sum + item.quantity * item.price, 0).toFixed(2)}
+                            </TableCell>
+                          </TableRow>
                         </TableBody>
                       </Table>
                     </div>

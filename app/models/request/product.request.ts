@@ -46,7 +46,7 @@ export const formProductFields: FormProductModel = {
   description: '',
   barCode: '',
   promoPrice: '0',
-  refCost: '0',
+  refCost: '0.00',
   unitConversion: {
     fromUnit: TypeUnit.UNIDAD as string,
     toUnit: TypeUnit.UNIDAD as string,

@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux';
 import { coffeApi } from '@/services';
 import { onLogin, onLogout, setBranch, setBranchesUser, setRoleUser, setUserProfile } from '@/store';
-import { useAppSelector, useErrorStore } from '.';
+import { useAlertStore, useAppSelector, useErrorStore } from '.';
 import type { AuthModel, AuthRequest, BranchModel, ValidatePinRequest, UpdateProfileRequest, UpdatePasswordRequest, ForgotPasswordRequest } from '@/models';
 import { useState } from 'react';
 
@@ -27,6 +27,7 @@ export const useAuthStore = () => {
 
   const dispatch = useDispatch();
   const { handleError } = useErrorStore();
+  const { showLoading, swalClose, showSuccess } = useAlertStore();
 
   const startLogin = async (body: AuthRequest): Promise<boolean> => {
     try {
@@ -109,17 +110,33 @@ export const useAuthStore = () => {
   };
 
   const updateProfile = async (body: UpdateProfileRequest) => {
-    const { data } = await coffeApi.patch('/auth/profile', body);
-    const newName = `${body.name} ${body.lastName}`;
-    localStorage.setItem('user', newName);
-    dispatch(onLogin(newName));
-    dispatch(setUserProfile({ name: body.name, lastName: body.lastName, email: body.email ?? '' }));
-    return data;
+    try {
+      showLoading('Actualizando perfil...');
+      const { data } = await coffeApi.patch('/auth/profile', body);
+      const newName = `${body.name} ${body.lastName}`;
+      localStorage.setItem('user', newName);
+      dispatch(onLogin(newName));
+      dispatch(setUserProfile({ name: body.name, lastName: body.lastName, email: body.email ?? '' }));
+      swalClose();
+      showSuccess('Perfil actualizado correctamente');
+      return data;
+    } catch (error) {
+      swalClose();
+      throw handleError(error);
+    }
   };
 
   const updatePassword = async (body: UpdatePasswordRequest) => {
-    const { data } = await coffeApi.patch('/auth/password', body);
-    return data;
+    try {
+      showLoading('Actualizando contraseña...');
+      const { data } = await coffeApi.patch('/auth/password', body);
+      swalClose();
+      showSuccess('Contraseña actualizada correctamente');
+      return data;
+    } catch (error) {
+      swalClose();
+      throw handleError(error);
+    }
   };
 
   const setBranchSelect = (branch: BranchModel) => {

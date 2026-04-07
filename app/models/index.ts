@@ -21,6 +21,7 @@ export * from './request/input.request';
 export * from './request/transfer.request';
 export * from './request/purchase.request';
 export * from './request/writeoff.request';
+export * from './request/transfer-request.request';
 export * from './request/update-password.request';
 export * from './request/validate-pin.request';
 export * from './request/update-profile.request';
@@ -51,6 +52,7 @@ export * from './response/order.response';
 export * from './response/writeoff.response';
 export * from './response/transfer.response';
 export * from './response/sale-debt.response';
+export * from './response/transfer-request.response';
 
 export * from './pagination';
 

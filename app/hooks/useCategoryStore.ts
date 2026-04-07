@@ -7,7 +7,7 @@ import { useState } from 'react';
 export const useCategoryStore = () => {
   const [dataCategory, setDataCategory] = useState<BaseResponse<CategoryModel>>(InitBaseResponse);
   const { handleError } = useErrorStore();
-  const { showSuccess, showWarning, showError } = useAlertStore();
+  const { showLoading, swalClose, showSuccess, showWarning, showError } = useAlertStore();
   const baseUrl = 'category';
 
   const getCategories = async (page: number = 1, limit: number = 10, keys: string = '') => {
@@ -42,21 +42,27 @@ export const useCategoryStore = () => {
 
   const createCategory = async (body: CategoryRequest) => {
     try {
+      showLoading('Creando categoría...');
       const { data } = await coffeApi.post(`${baseUrl}`, body);
       console.log(data);
       getCategories();
+      swalClose();
       showSuccess('Categoría creada correctamente');
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };
   const updateCategory = async (id: string, body: CategoryRequest) => {
     try {
+      showLoading('Editando categoría...');
       const { data } = await coffeApi.patch(`/${baseUrl}/${id}`, body);
       console.log(data);
       getCategories();
+      swalClose();
       showSuccess('Categoría editada correctamente');
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };
@@ -64,13 +70,16 @@ export const useCategoryStore = () => {
     try {
       const result = await showWarning();
       if (result.isConfirmed) {
+        showLoading('Eliminando categoría...');
         await coffeApi.delete(`/${baseUrl}/${id}`);
         getCategories();
+        swalClose();
         showSuccess('Categoría eliminado correctamente');
       } else {
         showError('Cancelado', 'El módulo esta a salvo :)');
       }
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };

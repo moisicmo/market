@@ -23,7 +23,7 @@ export default [
       route("sales", "routes/admin/order/order.view.tsx"),
       route("delivery", "routes/admin/delivery/delivery.view.tsx"),
       route("writeoffs", "routes/admin/writeoff/writeoff.view.tsx"),
-      route("transfer", "routes/admin/transfer/transfer.view.tsx"),
+      route("transfer-request", "routes/admin/transfer-request/transfer-request.view.tsx"),
       ...prefix("accounts", [
         route("payables", "routes/admin/accounts/accounts-payable.view.tsx"),
         route("receivables", "routes/admin/accounts/accounts-receivable.view.tsx"),

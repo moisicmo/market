@@ -3,10 +3,11 @@ import { useAuthStore, useWriteoffStore, useKardexStore, usePermissionStore } fr
 import { WriteoffTable, WriteoffCreate } from '.';
 import { Button } from '@/components';
 import { TypeAction, TypeSubject, type WriteoffRequest } from '@/models';
+import { Download } from 'lucide-react';
 
 const WriteoffView = () => {
   const { branchSelect } = useAuthStore();
-  const { dataWriteoffs, getWriteoffs, createWriteoff } = useWriteoffStore();
+  const { dataWriteoffs, getWriteoffs, createWriteoff, exportWriteoffs } = useWriteoffStore();
   const { dataKardexProduct, getKardexByBranchId } = useKardexStore();
   const { hasPermission } = usePermissionStore();
   const [openDialog, setOpenDialog] = useState(false);
@@ -32,9 +33,19 @@ const WriteoffView = () => {
     <>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800">Bajas</h2>
-        {hasPermission(TypeAction.create, TypeSubject.writeoff) && (
-          <Button onClick={() => handleDialog(true)}>Nueva baja</Button>
-        )}
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => exportWriteoffs(branchSelect?.id ?? '')}
+            className="flex items-center gap-2 border-green-500 text-green-600 hover:bg-green-50"
+          >
+            <Download className="w-4 h-4" />
+            Descargar XLSX
+          </Button>
+          {hasPermission(TypeAction.create, TypeSubject.writeoff) && (
+            <Button onClick={() => handleDialog(true)}>Nueva baja</Button>
+          )}
+        </div>
       </div>
 
       <WriteoffTable

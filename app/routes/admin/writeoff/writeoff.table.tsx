@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, FileText } from 'lucide-react';
 import React from 'react';
 import { TypeAction, TypeSubject, type BaseResponse, type WriteoffModel, WriteoffReasonLabels, type WriteoffReason } from '@/models';
 import { PaginationControls } from '@/components/pagination.control';
-import { InputCustom } from '@/components';
+import { Button, InputCustom } from '@/components';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useDebounce, usePermissionStore } from '@/hooks';
 
@@ -62,6 +62,7 @@ export const WriteoffTable = ({ dataWriteoffs, onRefresh }: Props) => {
             <TableHead>Descripción</TableHead>
             <TableHead>Productos</TableHead>
             <TableHead>Total uds.</TableHead>
+            {/* <TableHead>Acciones</TableHead> */}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -94,6 +95,15 @@ export const WriteoffTable = ({ dataWriteoffs, onRefresh }: Props) => {
                 <TableCell className="font-semibold">
                   {wo.outputs.reduce((s, o) => s + o.quantity, 0)}
                 </TableCell>
+                {/* <TableCell className="font-semibold">
+                  <Button
+                    type="button"
+                    onClick={() => { }}
+                    title="Ver comprobante"
+                  >
+                    <FileText className="w-4 h-4" />
+                  </Button>
+                </TableCell> */}
               </TableRow>
 
               {expandedId === wo.id && (

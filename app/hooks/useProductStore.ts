@@ -6,7 +6,7 @@ import { useState } from 'react';
 export const useProductStore = () => {
   const [dataProduct, setDataProduct] = useState<BaseResponse<ProductModel>>(InitBaseResponse);
   const { handleError } = useErrorStore();
-  const { showSuccess, showWarning, showError } = useAlertStore();
+  const { showLoading, swalClose, showSuccess, showWarning, showError } = useAlertStore();
   const baseUrl = 'product';
 
   const getProducts = async (page: number = 1, limit: number = 10, keys: string = '') => {
@@ -26,6 +26,7 @@ export const useProductStore = () => {
 
   const createProduct = async (body: ProductRequest, image: File | null) => {
     try {
+      showLoading('Creando producto...');
       console.log(body);
       const formData = new FormData();
 
@@ -49,14 +50,17 @@ export const useProductStore = () => {
 
       console.log(data);
       getProducts();
+      swalClose();
       showSuccess('Producto creado correctamente');
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };
 
   const updateProduct = async (id: string, body: ProductRequest, image: File | null) => {
     try {
+      showLoading('Editando producto...');
       console.log(body);
       const formData = new FormData();
 
@@ -78,8 +82,10 @@ export const useProductStore = () => {
       });
       console.log(data);
       getProducts();
+      swalClose();
       showSuccess('Producto editado correctamente');
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };
@@ -87,19 +93,23 @@ export const useProductStore = () => {
     try {
       const result = await showWarning();
       if (result.isConfirmed) {
+        showLoading('Eliminando producto...');
         await coffeApi.delete(`/${baseUrl}/${id}`);
         getProducts();
+        swalClose();
         showSuccess('Producto eliminado correctamente');
       } else {
         showError('Cancelado', 'El módulo esta a salvo :)');
       }
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };
 
   const importXlsx = async (file: File) => {
     try {
+      showLoading('Importando archivo...');
       const formData = new FormData();
       formData.append('file', file);
 
@@ -110,8 +120,10 @@ export const useProductStore = () => {
       });
 
       getProducts();
+      swalClose();
       showSuccess('Archivo importado correctamente');
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };

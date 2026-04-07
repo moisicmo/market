@@ -12,7 +12,7 @@ import {
 
 export const usePurchaseStore = () => {
   const { handleError } = useErrorStore();
-  const { showSuccess } = useAlertStore();
+  const { showLoading, swalClose, showSuccess } = useAlertStore();
   const { handlePdf } = usePrintStore();
   const baseUrl = 'purchase';
 
@@ -31,12 +31,15 @@ export const usePurchaseStore = () => {
 
   const createPurchase = async (body: PurchaseRequest): Promise<Movement[]> => {
     try {
+      showLoading('Registrando compra...');
       const { data } = await coffeApi.post(`/${baseUrl}`, body);
       const { kardexLists, pdfBase64 } = data;
+      swalClose();
       showSuccess('Compra registrada correctamente');
       await handlePdf(pdfBase64);
       return kardexLists;
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };
@@ -64,9 +67,12 @@ export const usePurchaseStore = () => {
 
   const payInstallment = async (id: string) => {
     try {
+      showLoading('Registrando pago...');
       await coffeApi.patch(`/${baseUrl}/installments/${id}/pay`);
+      swalClose();
       showSuccess('Cuota registrada como pagada');
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };

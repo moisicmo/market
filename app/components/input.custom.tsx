@@ -5,6 +5,7 @@ interface Props {
   name: string;
   value: any;
   onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   type?: string;
   label?: string;
   placeholder?: string;
@@ -23,6 +24,7 @@ export const InputCustom = memo((props: Props) => {
     name,
     value,
     onChange,
+    onBlur,
     type = 'text',
     label,
     placeholder,
@@ -56,6 +58,7 @@ export const InputCustom = memo((props: Props) => {
             value={value}
             tabIndex={tabIndex}
             onChange={onChange}
+            onBlur={onBlur}
             className={baseInputClass}
             rows={4}
           />
@@ -66,6 +69,7 @@ export const InputCustom = memo((props: Props) => {
             type={type}
             value={value}
             onChange={onChange}
+            onBlur={onBlur}
             tabIndex={tabIndex}
             placeholder={placeholder}
             className={baseInputClass}

@@ -5,6 +5,7 @@ export interface PurchaseInputModel {
   quantity: number;
   price: number;
   typeUnit: TypeUnit;
+  detail: string;
 }
 
 export interface PurchaseModel {
@@ -15,6 +16,7 @@ export interface PurchaseModel {
   totalAmount: number;
   active: boolean;
   createdAt: Date;
+  createdByName: string;
   provider: { id: string; name: string };
   branch: { id: string; name: string };
   inputs: PurchaseInputModel[];

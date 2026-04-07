@@ -7,7 +7,7 @@ import { useState } from 'react';
 export const useBrandStore = () => {
   const [dataBrand, setDataBrand] = useState<BaseResponse<BrandModel>>(InitBaseResponse);
   const { handleError } = useErrorStore();
-  const { showSuccess, showWarning, showError } = useAlertStore();
+  const { showLoading, swalClose, showSuccess, showWarning, showError } = useAlertStore();
   const baseUrl = 'brand';
 
   const getBrands = async (page: number = 1, limit: number = 10, keys: string = '') => {
@@ -27,21 +27,27 @@ export const useBrandStore = () => {
 
   const createBrand = async (body: BrandRequest) => {
     try {
+      showLoading('Creando marca...');
       const { data } = await coffeApi.post(`${baseUrl}`, body);
       console.log(data);
       getBrands();
+      swalClose();
       showSuccess('Marca creada correctamente');
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };
   const updateBrand = async (id: string, body: BrandRequest) => {
     try {
+      showLoading('Editando marca...');
       const { data } = await coffeApi.patch(`/${baseUrl}/${id}`, body);
       console.log(data);
       getBrands();
+      swalClose();
       showSuccess('Marca editada correctamente');
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };
@@ -49,13 +55,16 @@ export const useBrandStore = () => {
     try {
       const result = await showWarning();
       if (result.isConfirmed) {
+        showLoading('Eliminando marca...');
         await coffeApi.delete(`/${baseUrl}/${id}`);
         getBrands();
+        swalClose();
         showSuccess('Marca eliminada correctamente');
       } else {
         showError('Cancelado', 'La marca esta a salvo :)');
       }
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };

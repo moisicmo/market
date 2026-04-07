@@ -6,7 +6,7 @@ import { useState } from 'react';
 export const useStaffStore = () => {
   const [dataStaff, setDataStaff] = useState<BaseResponse<StaffModel>>(InitBaseResponse);
   const { handleError } = useErrorStore();
-  const { showSuccess, showWarning, showError } = useAlertStore();
+  const { showLoading, swalClose, showSuccess, showWarning, showError } = useAlertStore();
   const baseUrl = 'staff';
 
   const getStaffs = async (page = 1, limit = 10, keys = '') => {
@@ -26,21 +26,27 @@ export const useStaffStore = () => {
 
   const createStaff = async (body: StaffRequest) => {
     try {
+      showLoading('Creando staff...');
       const { data } = await coffeApi.post(`/${baseUrl}/`, body);
       console.log(data);
       getStaffs();
+      swalClose();
       showSuccess('Staff creado correctamente');
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };
   const updateStaff = async (id: string, body: StaffRequest) => {
     try {
+      showLoading('Editando staff...');
       const { data } = await coffeApi.patch(`/${baseUrl}/${id}`, body);
       console.log(data);
       getStaffs();
+      swalClose();
       showSuccess('Staff editado correctamente');
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };
@@ -48,13 +54,16 @@ export const useStaffStore = () => {
     try {
       const result = await showWarning();
       if (result.isConfirmed) {
+        showLoading('Eliminando staff...');
         await coffeApi.delete(`/${baseUrl}/${id}`);
         getStaffs();
+        swalClose();
         showSuccess('Staff eliminado correctamente');
       } else {
         showError('Cancelado', 'El Staff esta a salvo :)');
       }
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };

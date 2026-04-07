@@ -59,6 +59,8 @@ export enum TypeSubject {
   writeoff = "bajas",
   accountsReceivable= "cuentas-por-cobrar",
   accountsPayable = "cuentas-por-pagar",
+  transferRequest = "solicitudes-traspaso",
+  transferResponse = "respuestas-traspaso",
 }
 
 export enum TypeDebt {
@@ -82,4 +84,12 @@ export enum TypeUnit {
 export enum PaymentType {
   CONTADO = "CONTADO",
   CUOTAS = "CUOTAS",
+}
+
+export enum TransferRequestStatus {
+  SOLICITADO = "SOLICITADO",
+  DESPACHADO = "DESPACHADO",
+  RECIBIDO = "RECIBIDO",
+  RECHAZADO = "RECHAZADO",
+  OBSERVADO = "OBSERVADO",
 }

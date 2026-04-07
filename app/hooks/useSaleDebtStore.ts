@@ -5,7 +5,7 @@ import { InitBaseResponse, type BaseResponse, type SaleDebtModel, type SalePayme
 
 export const useSaleDebtStore = () => {
   const { handleError } = useErrorStore();
-  const { showSuccess } = useAlertStore();
+  const { showLoading, swalClose, showSuccess } = useAlertStore();
   const baseUrl = 'sale-debt';
 
   const [dataSaleDebts, setDataSaleDebts] = useState<BaseResponse<SaleDebtModel>>(InitBaseResponse<SaleDebtModel>());
@@ -24,9 +24,12 @@ export const useSaleDebtStore = () => {
 
   const addPayment = async (id: string, body: SalePaymentRequest) => {
     try {
+      showLoading('Registrando pago...');
       await coffeApi.post(`/${baseUrl}/${id}/payment`, body);
+      swalClose();
       showSuccess('Pago registrado correctamente');
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };

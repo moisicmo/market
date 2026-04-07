@@ -72,7 +72,7 @@ export const PurchaseCreate = ({
       return errors;
     });
 
-  const totalAmount = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
+  const totalAmount = items.reduce((sum, item) => sum + item.quantity * Number(item.price), 0);
   const remaining = totalAmount - amountPaid;
   const totalInstallments = installments.reduce((s, i) => s + i.amount, 0);
   const difference = remaining - totalInstallments;
@@ -120,7 +120,7 @@ export const PurchaseCreate = ({
       items: items.map((item) => ({
         productId: item.product.id,
         quantity: item.quantity,
-        price: item.price,
+        price: Number(item.price),
         typeUnit: item.typeUnit,
         detail: (detail as string).trim(),
       })),
@@ -157,7 +157,7 @@ export const PurchaseCreate = ({
     if (items.find((p) => p.product.id === product.id)) return;
     setItems((prev) => [
       ...prev,
-      { product, quantity: 1, price: product.refCost ?? 0, typeUnit: TypeUnit.UNIDAD },
+      { product, quantity: 1, price: Number(product.refCost ?? 0).toFixed(2), typeUnit: TypeUnit.UNIDAD },
     ]);
     setProductSearch('');
     setShowDropdown(false);
@@ -206,7 +206,7 @@ export const PurchaseCreate = ({
             <InputCustom
               name="code"
               value={code}
-              label="Código de compra"
+              label="Número de comprobante"
               onChange={onInputChange}
               error={!!codeValid && formSubmitted}
               helperText={formSubmitted ? codeValid : ''}
@@ -423,9 +423,9 @@ export const PurchaseCreate = ({
                     <p className="text-sm font-semibold">{item.product.name}</p>
                     <div className="flex items-center gap-3">
                       <span className="text-sm text-slate-500">
-                        Subtotal:{' '}
+                        {item.quantity} {item.typeUnit === TypeUnit.CAJA ? 'caja(s)' : 'ud(s)'} × Bs. {Number(item.price).toFixed(2)} ={' '}
                         <span className="font-semibold text-slate-700">
-                          Bs. {(item.quantity * item.price).toFixed(2)}
+                          Bs. {(item.quantity * Number(item.price)).toFixed(2)}
                         </span>
                       </span>
                       <button
@@ -451,9 +451,19 @@ export const PurchaseCreate = ({
                     <InputCustom
                       name={`items[${i}].price`}
                       value={item.price}
-                      label="Precio"
-                      type="number"
-                      onChange={(e) => handleUpdateItem(i, 'price', Number(e.target.value))}
+                      label="Costo"
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (/^\d*\.?\d{0,2}$/.test(val) || val === '') {
+                          handleUpdateItem(i, 'price', val);
+                        }
+                      }}
+                      onBlur={() => {
+                        const num = parseFloat(String(item.price));
+                        if (!isNaN(num)) {
+                          handleUpdateItem(i, 'price', num.toFixed(2));
+                        }
+                      }}
                       error={!!itemErrors[i]?.price && formSubmitted}
                       helperText={formSubmitted ? itemErrors[i]?.price : ''}
                     />

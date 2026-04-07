@@ -37,7 +37,7 @@ export const ProductCreate = (props: Props) => {
       description: item.description ?? '',
       barCode: item.barCode ?? '',
       promoPrice: String(item.promoPrice ?? 0),
-      refCost: String((item as any).refCost ?? 0),
+      refCost: Number((item as any).refCost ?? 0).toFixed(2),
       unitConversion: (item as any).unitConversion ?? {
         fromUnit: TypeUnit.UNIDAD as string,
         toUnit: TypeUnit.UNIDAD as string,
@@ -195,70 +195,92 @@ export const ProductCreate = (props: Props) => {
                   acceptedFormats={['image/jpeg', 'image/png']}
                 />
                 {/* CONVERSIÓN DE UNIDADES */}
-                  <p className="text-sm font-semibold mb-2">
+                  <p className="text-sm font-semibold mb-1">
                     Conversión de Unidades
                   </p>
+                  <p className="text-xs text-gray-400 mb-2">
+                    Ej: 1 Caja = 12 Unidades. Por defecto 1 Unidad = 1 Unidad.
+                  </p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <SelectCustom
-                      label="De"
-                      options={Object.values(TypeUnit).map(u => ({
-                        id: u,
-                        value: u,
-                      }))}
-                      selected={
-                        unitConversion.fromUnit
-                          ? { id: unitConversion.fromUnit, value: unitConversion.fromUnit }
-                          : null
-                      }
-                      onSelect={(value) => {
-                        if (value && !Array.isArray(value)) {
-                          onValueChange('unitConversion', {
-                            ...unitConversion,
-                            fromUnit: value.id,
-                          });
+                  <div className="flex items-end gap-2">
+                    <div className="flex-none">
+                      <p className="text-xs text-gray-500 mb-1 text-center">1</p>
+                    </div>
+                    <div className="flex-1">
+                      <SelectCustom
+                        label="De"
+                        options={Object.values(TypeUnit).map(u => ({
+                          id: u,
+                          value: u === TypeUnit.CAJA ? 'Caja' : 'Unidad',
+                        }))}
+                        selected={
+                          unitConversion.fromUnit
+                            ? { id: unitConversion.fromUnit, value: unitConversion.fromUnit === TypeUnit.CAJA ? 'Caja' : 'Unidad' }
+                            : null
                         }
-                      }}
-                      error={!!unitConversionValid?.fromUnit && formSubmitted}
-                      helperText={formSubmitted ? unitConversionValid?.fromUnit : ''}
-                    />
-                    <InputCustom
-                      label="Equivale"
-                      name="unitConversion.factor"
-                      value={unitConversion.factor}
-                      onChange={(e) => {
-                        onValueChange('unitConversion', {
-                          ...unitConversion,
-                          factor: e.target.value,
-                        });
-                      }}
-                      error={!!unitConversionValid?.factor && formSubmitted}
-                      helperText={formSubmitted ? unitConversionValid?.factor : ''}
-                    />
-                    <SelectCustom
-                      label="A"
-                      options={Object.values(TypeUnit).map(u => ({
-                        id: u,
-                        value: u,
-                      }))}
-                      selected={
-                        unitConversion.toUnit
-                          ? { id: unitConversion.toUnit, value: unitConversion.toUnit }
-                          : null
-                      }
-                      onSelect={(value) => {
-                        if (value && !Array.isArray(value)) {
-                          onValueChange('unitConversion', {
-                            ...unitConversion,
-                            toUnit: value.id,
-                          });
+                        onSelect={(value) => {
+                          if (value && !Array.isArray(value)) {
+                            onValueChange('unitConversion', {
+                              ...unitConversion,
+                              fromUnit: value.id,
+                            });
+                          }
+                        }}
+                        error={!!unitConversionValid?.fromUnit && formSubmitted}
+                        helperText={formSubmitted ? unitConversionValid?.fromUnit : ''}
+                      />
+                    </div>
+                    <div className="flex-none pb-3">
+                      <span className="text-sm font-medium text-gray-500">=</span>
+                    </div>
+                    <div className="flex-1">
+                      <InputCustom
+                        label="Equivale a"
+                        name="unitConversion.factor"
+                        value={unitConversion.factor}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (/^\d*$/.test(val) || val === '') {
+                            onValueChange('unitConversion', {
+                              ...unitConversion,
+                              factor: val,
+                            });
+                          }
+                        }}
+                        error={!!unitConversionValid?.factor && formSubmitted}
+                        helperText={formSubmitted ? unitConversionValid?.factor : ''}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <SelectCustom
+                        label="A"
+                        options={Object.values(TypeUnit).map(u => ({
+                          id: u,
+                          value: u === TypeUnit.CAJA ? 'Caja' : 'Unidad',
+                        }))}
+                        selected={
+                          unitConversion.toUnit
+                            ? { id: unitConversion.toUnit, value: unitConversion.toUnit === TypeUnit.CAJA ? 'Caja' : 'Unidad' }
+                            : null
                         }
-                      }}
-                      error={!!unitConversionValid?.toUnit && formSubmitted}
-                      helperText={formSubmitted ? unitConversionValid?.toUnit : ''}
-                    />
-
-                </div>
+                        onSelect={(value) => {
+                          if (value && !Array.isArray(value)) {
+                            onValueChange('unitConversion', {
+                              ...unitConversion,
+                              toUnit: value.id,
+                            });
+                          }
+                        }}
+                        error={!!unitConversionValid?.toUnit && formSubmitted}
+                        helperText={formSubmitted ? unitConversionValid?.toUnit : ''}
+                      />
+                    </div>
+                  </div>
+                  {unitConversion.fromUnit && unitConversion.toUnit && Number(unitConversion.factor) > 0 && (
+                    <p className="text-xs text-blue-600 mt-1 font-medium">
+                      1 {unitConversion.fromUnit === TypeUnit.CAJA ? 'Caja' : 'Unidad'} = {unitConversion.factor} {unitConversion.toUnit === TypeUnit.CAJA ? 'Caja(s)' : 'Unidad(es)'}
+                    </p>
+                  )}
               </div>
               <div className="w-full lg:w-2/3 sm:space-y-1">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -301,7 +323,18 @@ export const ProductCreate = (props: Props) => {
                     name="refCost"
                     value={refCost}
                     label="Costo Referencial (Bs.)"
-                    onChange={onInputChange}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (/^\d*\.?\d{0,2}$/.test(val) || val === '') {
+                        onValueChange('refCost', val);
+                      }
+                    }}
+                    onBlur={() => {
+                      const num = parseFloat(refCost);
+                      if (!isNaN(num)) {
+                        onValueChange('refCost', num.toFixed(2));
+                      }
+                    }}
                     error={!!refCostValid && formSubmitted}
                     helperText={formSubmitted ? refCostValid : ''}
                   />

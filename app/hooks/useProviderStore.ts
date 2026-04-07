@@ -6,7 +6,7 @@ import { useState } from 'react';
 export const useProviderStore = () => {
   const [dataProvider, setDataProvider] = useState<BaseResponse<ProviderModel>>(InitBaseResponse);
   const { handleError } = useErrorStore();
-  const { showSuccess, showWarning, showError } = useAlertStore();
+  const { showLoading, swalClose, showSuccess, showWarning, showError } = useAlertStore();
   const baseUrl = 'provider';
 
   const getProviders = async (page: number = 1, limit: number = 10, keys: string = '') => {
@@ -26,22 +26,28 @@ export const useProviderStore = () => {
 
   const createProvider = async (body: ProviderRequest) => {
     try {
+      showLoading('Creando proveedor...');
       const { data } = await coffeApi.post(`${baseUrl}`, body);
       console.log(data);
       getProviders();
+      swalClose();
       showSuccess('Proveedor creada correctamente');
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };
 
   const updateProvider = async (id: string, body: ProviderRequest) => {
     try {
+      showLoading('Editando proveedor...');
       const { data } = await coffeApi.patch(`/${baseUrl}/${id}`, body);
       console.log(data);
       getProviders();
+      swalClose();
       showSuccess('Proveedor editada correctamente');
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };
@@ -49,13 +55,16 @@ export const useProviderStore = () => {
     try {
       const result = await showWarning();
       if (result.isConfirmed) {
+        showLoading('Eliminando proveedor...');
         await coffeApi.delete(`/${baseUrl}/${id}`);
         getProviders();
+        swalClose();
         showSuccess('Proveedor eliminado correctamente');
       } else {
         showError('Cancelado', 'El proveedor esta a salvo :)');
       }
     } catch (error) {
+      swalClose();
       throw handleError(error);
     }
   };

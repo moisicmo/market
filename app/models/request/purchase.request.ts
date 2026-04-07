@@ -33,7 +33,7 @@ export interface InstallmentRequest {
 export interface PurchaseItemFormModel {
   product: ProductModel;
   quantity: number;
-  price: number;
+  price: string;
   typeUnit: TypeUnit;
   dueDate?: Date;
 }
@@ -59,16 +59,16 @@ interface FormPurchaseValidations {
 }
 
 export const formPurchaseValidations: FormPurchaseValidations = {
-  code: [(value) => value.length > 0, 'Debe ingresar un código de compra'],
+  code: [(value) => value.length > 0, 'Debe ingresar un número de comprobante'],
   detail: [(value) => value.length > 0, 'Debe ingresar un detalle'],
 };
 
 interface PurchaseItemValidations {
   quantity: [(value: number) => boolean, string];
-  price: [(value: number) => boolean, string];
+  price: [(value: string) => boolean, string];
 }
 
 export const purchaseItemValidations: PurchaseItemValidations = {
   quantity: [(value) => value > 0, 'La cantidad debe ser mayor a 0'],
-  price: [(value) => value > 0, 'El precio debe ser mayor a 0'],
+  price: [(value) => Number(value) > 0, 'El precio debe ser mayor a 0'],
 };
